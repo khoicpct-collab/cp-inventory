@@ -1,433 +1,373 @@
-// app.js - Tích hợp Google Sheets
-const API_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+// app.js - Main application logic
 
 // Global variables
+let currentSheet = '01';
+let locks = [];
 let materials = [];
-let stockData = [];
-let categories = [];
 
-// API Service Class
-class GoogleSheetsAPI {
-    static async request(endpoint, data = null) {
-        try {
-            const url = new URL(API_URL);
-            
-            if (data && Object.keys(data).length > 0) {
-                // GET request với parameters
-                Object.keys(data).forEach(key => {
-                    url.searchParams.set(key, data[key]);
-                });
-            }
-            
-            url.searchParams.set('method', endpoint);
-            
-            console.log('API Request:', url.toString());
-            const response = await fetch(url);
-            const result = await response.json();
-            
-            if (result.error) {
-                throw new Error(result.error);
-            }
-            
-            return result;
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
-        }
-    }
-
-    // Material methods
-    static async getMaterials() {
-        return await this.request('getMaterials');
-    }
-    
-    static async addMaterial(data) {
-        return await this.request('addMaterial', data);
-    }
-
-    // Stock methods
-    static async getStock(materialId = null) {
-        const params = {};
-        if (materialId) params.materialId = materialId;
-        return await this.request('getStock', params);
-    }
-    
-    static async addStock(data) {
-        return await this.request('addStock', data);
-    }
-
-    // Category methods
-    static async getCategories() {
-        return await this.request('getCategories');
-    }
-}
-
-// Initialize application
+// Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-    initApp();
+    initializeApp();
 });
 
-async function initApp() {
-    showLoading(true);
-    try {
-        await loadAllData();
-        setupEventListeners();
-    } catch (error) {
-        console.error('Khởi tạo ứng dụng thất bại:', error);
-        showError('Không thể kết nối đến database. Vui lòng kiểm tra kết nối.');
-    }
-    showLoading(false);
-}
-
-// Load all data from Google Sheets
-async function loadAllData() {
-    try {
-        console.log('Đang tải dữ liệu từ Google Sheets...');
-        
-        const [materialsResult, stockResult, categoriesResult] = await Promise.all([
-            GoogleSheetsAPI.getMaterials(),
-            GoogleSheetsAPI.getStock(),
-            GoogleSheetsAPI.getCategories()
-        ]);
-
-        materials = materialsResult.materials || [];
-        stockData = stockResult.stock || [];
-        categories = categoriesResult.categories || [];
-
-        console.log('Dữ liệu đã tải:', {
-            materials: materials.length,
-            stock: stockData.length,
-            categories: categories.length
-        });
-
-        updateDashboard();
-        renderMaterials();
-        populateFilters();
-
-    } catch (error) {
-        console.error('Lỗi tải dữ liệu:', error);
-        // Fallback to sample data
-        loadSampleData();
-        showError('Đang sử dụng dữ liệu mẫu. Vui lòng kiểm tra kết nối Google Sheets.');
-    }
-}
-
-// Sample data fallback
-function loadSampleData() {
-    materials = [
-        { ID: 1, Name: 'RBF,P', Code: 'RBF001', Category: 'protein', Description: 'Nguyên liệu A', Active: true },
-        { ID: 2, Name: 'PMBM', Code: 'PMB001', Category: 'protein', Description: 'Protein từ thịt và xương', Active: true },
-        { ID: 3, Name: 'FM60', Code: 'FM6001', Category: 'plant', Description: 'Bột cá 60% protein', Active: true }
-    ];
-
-    stockData = [
-        { ID: 1, MaterialID: 1, LOC: 'C06', Bags: 110, Weight: 5345, InputDate: '2025-11-04', SupplierCode: '10102122922', TruckNumber: '', Age: 0 },
-        { ID: 2, MaterialID: 1, LOC: 'A09', Bags: 721, Weight: 32116, InputDate: '2025-11-04', SupplierCode: '10102122959', TruckNumber: '', Age: 0 },
-        { ID: 3, MaterialID: 2, LOC: 'C01', Bags: 539, Weight: 29499, InputDate: '2025-10-24', SupplierCode: '10102122269(US)', TruckNumber: '', Age: 11 }
-    ];
-
-    categories = [
-        { ID: 1, Name: 'Protein động vật', Color: '#e74c3c' },
-        { ID: 2, Name: 'Nguyên liệu thực vật', Color: '#2ecc71' },
-        { ID: 3, Name: 'Phụ gia', Color: '#3498db' }
-    ];
-}
-
-// Update dashboard statistics
-function updateDashboard() {
-    const totalMaterials = materials.filter(m => m.Active).length;
-    const totalLocations = new Set(stockData.map(item => item.LOC)).size;
+async function initializeApp() {
+    // Load locks and materials
+    await loadLocksAndMaterials();
     
-    const today = new Date().toISOString().split('T')[0];
-    const todayTransactions = stockData.filter(item => item.InputDate === today).length;
+    // Initialize date selector
+    initializeDateSelector();
     
-    const totalStock = stockData.reduce((sum, item) => sum + (parseFloat(item.Weight) || 0), 0);
-
-    document.getElementById('totalMaterials').textContent = totalMaterials;
-    document.getElementById('totalLocations').textContent = totalLocations;
-    document.getElementById('todayTransactions').textContent = todayTransactions;
-    document.getElementById('totalStock').textContent = totalStock.toLocaleString('vi-VN') + ' kg';
+    // Set current date as default for forms
+    setDefaultDates();
+    
+    // Load initial data
+    await loadSheetData(currentSheet);
+    
+    // Set up event listeners
+    setupEventListeners();
+    
+    // Check for end of month
+    checkEndOfMonth();
 }
 
-// Render materials to the container
-function renderMaterials() {
-    const container = document.getElementById('materialsContainer');
-    if (!container) return;
-
-    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-    const sortBy = document.getElementById('sortSelect')?.value || 'name';
-    const supplierFilter = document.getElementById('supplierFilter')?.value || '';
-
-    // Filter materials
-    let filteredMaterials = materials.filter(material => {
-        if (!material.Active) return false;
-        
-        const matchesSearch = material.Name.toLowerCase().includes(searchTerm) || 
-                             material.Code.toLowerCase().includes(searchTerm) ||
-                             material.Description.toLowerCase().includes(searchTerm);
-        
-        const matchesSupplier = !supplierFilter || 
-                               stockData.some(item => 
-                                   item.MaterialID == material.ID && 
-                                   item.SupplierCode === supplierFilter
-                               );
-        
-        return matchesSearch && matchesSupplier;
-    });
-
-    // Sort materials
-    filteredMaterials.sort((a, b) => {
-        switch (sortBy) {
-            case 'name':
-                return a.Name.localeCompare(b.Name);
-            case 'date':
-                const aStock = getMaterialStock(a.ID);
-                const bStock = getMaterialStock(b.ID);
-                const aLatest = aStock.length > 0 ? new Date(aStock[aStock.length - 1].InputDate) : new Date(0);
-                const bLatest = bStock.length > 0 ? new Date(bStock[bStock.length - 1].InputDate) : new Date(0);
-                return bLatest - aLatest;
-            case 'location':
-                const aLoc = getMaterialStock(a.ID)[0]?.LOC || '';
-                const bLoc = getMaterialStock(b.ID)[0]?.LOC || '';
-                return aLoc.localeCompare(bLoc);
-            default:
-                return 0;
+// Load locks and materials from external files
+async function loadLocksAndMaterials() {
+    try {
+        // Assuming these are available globally after including the script tags
+        if (typeof LOCKS !== 'undefined') {
+            locks = LOCKS;
+            populateSelect('import-lock', locks);
+            populateSelect('export-lock', locks);
         }
-    });
-
-    // Render HTML
-    container.innerHTML = filteredMaterials.map(material => {
-        const materialStock = getMaterialStock(material.ID);
-        const totalBags = materialStock.reduce((sum, item) => sum + (parseInt(item.Bags) || 0), 0);
-        const totalWeight = materialStock.reduce((sum, item) => sum + (parseFloat(item.Weight) || 0), 0);
-
-        return `
-            <div class="card material-card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="fas fa-box"></i> ${material.Name}
-                        <small class="text-muted">${material.Code}</small>
-                    </h5>
-                    <div>
-                        <span class="badge bg-primary me-2">${materialStock.length} lô</span>
-                        <span class="badge bg-success">${totalBags} bao</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="card-text">${material.Description}</p>
-                    
-                    <div class="location-section">
-                        <h6><i class="fas fa-map-marker-alt"></i> Chi tiết các lô:</h6>
-                        <div class="table-responsive">
-                            <table class="table table-sm table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>LOC</th>
-                                        <th>Số bao</th>
-                                        <th>Trọng lượng (kg)</th>
-                                        <th>Ngày nhập</th>
-                                        <th>Tuổi</th>
-                                        <th>Mã NCC</th>
-                                        <th>Số xe</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${materialStock.map(item => {
-                                        const age = item.Age || calculateAge(item.InputDate);
-                                        const ageClass = getAgeClass(age);
-                                        return `
-                                            <tr class="transaction-row">
-                                                <td><strong>${item.LOC}</strong></td>
-                                                <td>${item.Bags}</td>
-                                                <td>${parseFloat(item.Weight).toLocaleString('vi-VN')}</td>
-                                                <td>${formatDate(item.InputDate)}</td>
-                                                <td><span class="badge bg-${ageClass}">${age} ngày</span></td>
-                                                <td>${item.SupplierCode || '-'}</td>
-                                                <td>${item.TruckNumber || '-'}</td>
-                                            </tr>
-                                        `;
-                                    }).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('') || '<div class="text-center text-muted">Không tìm thấy nguyên liệu nào.</div>';
+        
+        if (typeof MATERIALS !== 'undefined') {
+            materials = MATERIALS;
+            populateSelect('import-material', materials);
+            populateSelect('export-material', materials);
+        }
+    } catch (error) {
+        console.error('Error loading locks and materials:', error);
+        showNotification('Lỗi', 'Không thể tải danh sách khoá và nguyên liệu', 'error');
+    }
 }
 
-// Get stock for a specific material
-function getMaterialStock(materialId) {
-    return stockData
-        .filter(item => item.MaterialID == materialId)
-        .sort((a, b) => new Date(a.InputDate) - new Date(b.InputDate)); // Cũ nhất lên đầu
-}
-
-// Populate filters and selects
-function populateFilters() {
-    populateMaterialSelect();
-    populateSupplierFilter();
-}
-
-function populateMaterialSelect() {
-    const select = document.getElementById('materialSelect');
+// Populate select elements with options
+function populateSelect(selectId, options) {
+    const select = document.getElementById(selectId);
     if (!select) return;
-
-    select.innerHTML = '<option value="">-- Chọn nguyên liệu --</option>' +
-        materials
-            .filter(m => m.Active)
-            .map(material => 
-                `<option value="${material.ID}">${material.Name} (${material.Code})</option>`
-            ).join('');
-}
-
-function populateSupplierFilter() {
-    const select = document.getElementById('supplierFilter');
-    if (!select) return;
-
-    const suppliers = [...new Set(stockData.map(item => item.SupplierCode).filter(Boolean))];
     
-    select.innerHTML = '<option value="">Tất cả NCC</option>' +
-        suppliers.map(supplier => 
-            `<option value="${supplier}">${supplier}</option>`
-        ).join('');
+    // Clear existing options
+    select.innerHTML = '';
+    
+    // Add default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '-- Chọn --';
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    select.appendChild(defaultOption);
+    
+    // Add options from array
+    options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        select.appendChild(optionElement);
+    });
 }
 
-// Add new transaction
-async function addTransaction() {
-    const materialId = document.getElementById('materialSelect').value;
-    const locationCode = document.getElementById('locationCode').value.trim();
-    const receiveBags = parseInt(document.getElementById('receiveBags').value) || 0;
-    const receiveWeight = parseFloat(document.getElementById('receiveWeight').value) || 0;
-    const supplierCode = document.getElementById('supplierCode').value.trim();
-    const truckNumber = document.getElementById('truckNumber').value.trim();
-
-    // Validation
-    if (!materialId) {
-        alert('Vui lòng chọn nguyên liệu');
-        return;
+// Initialize date selector with days of the month
+function initializeDateSelector() {
+    const select = document.getElementById('sheet-select');
+    if (!select) return;
+    
+    // Clear existing options
+    select.innerHTML = '';
+    
+    // Add options for days 01-31
+    for (let i = 1; i <= 31; i++) {
+        const day = i.toString().padStart(2, '0');
+        const option = document.createElement('option');
+        option.value = day;
+        option.textContent = `Ngày ${day}`;
+        select.appendChild(option);
     }
+    
+    // Set current day as selected
+    const today = new Date().getDate().toString().padStart(2, '0');
+    select.value = today;
+    currentSheet = today;
+    
+    // Add change event listener
+    select.addEventListener('change', function() {
+        currentSheet = this.value;
+        loadSheetData(currentSheet);
+    });
+}
 
-    if (!locationCode) {
-        alert('Vui lòng nhập vị trí LOC');
-        return;
-    }
+// Set default dates for forms
+function setDefaultDates() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('import-date').value = today;
+    document.getElementById('export-date').value = today;
+}
 
-    if (receiveBags === 0 && receiveWeight === 0) {
-        alert('Vui lòng nhập số bao hoặc trọng lượng nhập kho');
-        return;
-    }
-
-    const material = materials.find(m => m.ID == materialId);
-    if (!material) {
-        alert('Nguyên liệu không tồn tại');
-        return;
-    }
-
-    const transactionData = {
-        materialId: materialId,
-        loc: locationCode,
-        bags: receiveBags,
-        weight: receiveWeight,
-        inputDate: new Date().toISOString().split('T')[0], // Today's date
-        supplierCode: supplierCode,
-        truckNumber: truckNumber,
-        formulaDate: '' // Có thể thêm trường này sau
-    };
-
+// Load data from Google Sheets
+async function loadSheetData(sheetName) {
     try {
-        showLoading(true);
+        // Update connection status
+        updateConnectionStatus('connecting');
         
-        const result = await GoogleSheetsAPI.addStock(transactionData);
+        // Make request to Google Apps Script
+        const response = await fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?sheet=${sheetName}`);
         
-        // Add to local data for immediate UI update
-        const newStockItem = {
-            ...transactionData,
-            ID: stockData.length + 1,
-            Age: 0
-        };
-        stockData.push(newStockItem);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         
-        // Update UI
-        updateDashboard();
-        renderMaterials();
-        clearForm();
+        const data = await response.json();
         
-        showLoading(false);
-        showSuccess(`✅ Đã thêm lô ${locationCode} cho ${material.Name} thành công!`);
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        // Update UI with data
+        updateUI(data);
+        
+        // Update connection status
+        updateConnectionStatus('connected');
         
     } catch (error) {
-        showLoading(false);
-        showError('❌ Lỗi khi thêm giao dịch: ' + error.message);
+        console.error('Error loading sheet data:', error);
+        updateConnectionStatus('error');
+        showNotification('Lỗi', 'Không thể tải dữ liệu từ Google Sheets', 'error');
     }
 }
 
-// Utility functions
-function calculateAge(inputDate) {
-    const today = new Date();
-    const input = new Date(inputDate);
-    const diffTime = Math.abs(today - input);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+// Update UI with data from Google Sheets
+function updateUI(data) {
+    // Update summary cards
+    document.getElementById('total-import').textContent = `${data.summary.totalImport || 0} tấn`;
+    document.getElementById('total-export').textContent = `${data.summary.totalExport || 0} tấn`;
+    document.getElementById('total-inventory').textContent = `${data.summary.totalInventory || 0} tấn`;
+    
+    // Update silo data
+    document.getElementById('silo-import-date').textContent = formatDate(data.silo.importDate) || '-';
+    document.getElementById('silo-inventory').textContent = `${data.silo.inventory || 0} tấn`;
+    
+    // Update liquid data
+    document.getElementById('liquid-import-date').textContent = formatDate(data.liquid.importDate) || '-';
+    document.getElementById('liquid-inventory').textContent = `${data.liquid.inventory || 0} tấn`;
+    
+    // Update age inventory data
+    if (data.ageInventory) {
+        document.getElementById('age-0-30-tons').textContent = `${data.ageInventory['0-30']?.tons || 0} tấn`;
+        document.getElementById('age-0-30-percent').textContent = `${data.ageInventory['0-30']?.percent || 0}%`;
+        
+        document.getElementById('age-31-60-tons').textContent = `${data.ageInventory['31-60']?.tons || 0} tấn`;
+        document.getElementById('age-31-60-percent').textContent = `${data.ageInventory['31-60']?.percent || 0}%`;
+        
+        document.getElementById('age-61-tons').textContent = `${data.ageInventory['61']?.tons || 0} tấn`;
+        document.getElementById('age-61-percent').textContent = `${data.ageInventory['61']?.percent || 0}%`;
+        
+        document.getElementById('age-total-tons').textContent = `${data.ageInventory.total?.tons || 0} tấn`;
+        document.getElementById('age-total-percent').textContent = `${data.ageInventory.total?.percent || 0}%`;
+    }
 }
 
-function getAgeClass(age) {
-    if (age <= 7) return 'success';
-    if (age <= 14) return 'warning';
-    return 'danger';
-}
-
+// Format date for display
 function formatDate(dateString) {
+    if (!dateString) return '';
+    
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    
     return date.toLocaleDateString('vi-VN');
 }
 
-function clearForm() {
-    document.getElementById('locationCode').value = '';
-    document.getElementById('receiveBags').value = '0';
-    document.getElementById('receiveWeight').value = '0';
-    document.getElementById('usageBags').value = '0';
-    document.getElementById('usageWeight').value = '0';
-    document.getElementById('supplierCode').value = '';
-    document.getElementById('truckNumber').value = '';
-}
-
-function showLoading(show) {
-    // Implement loading indicator if needed
-    if (show) {
-        document.body.style.opacity = '0.7';
-    } else {
-        document.body.style.opacity = '1';
+// Update connection status indicator
+function updateConnectionStatus(status) {
+    const statusElement = document.getElementById('connection-status');
+    const indicator = document.getElementById('status-indicator');
+    
+    if (!statusElement || !indicator) return;
+    
+    switch (status) {
+        case 'connecting':
+            statusElement.textContent = 'Đang kết nối...';
+            indicator.className = 'status-indicator';
+            break;
+        case 'connected':
+            statusElement.textContent = 'Đã kết nối thành công';
+            indicator.className = 'status-indicator connected';
+            break;
+        case 'error':
+            statusElement.textContent = 'Lỗi kết nối';
+            indicator.className = 'status-indicator';
+            indicator.style.backgroundColor = 'var(--danger-color)';
+            break;
     }
 }
 
-function showSuccess(message) {
-    alert(message);
-}
-
-function showError(message) {
-    alert(message);
-}
-
-// Event listeners
+// Set up event listeners
 function setupEventListeners() {
-    // Search and filter events
-    const searchInput = document.getElementById('searchInput');
-    const sortSelect = document.getElementById('sortSelect');
-    const supplierFilter = document.getElementById('supplierFilter');
+    // Tab switching
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            switchTab(tabId);
+        });
+    });
     
-    if (searchInput) searchInput.addEventListener('input', renderMaterials);
-    if (sortSelect) sortSelect.addEventListener('change', renderMaterials);
-    if (supplierFilter) supplierFilter.addEventListener('change', renderMaterials);
+    // Form submissions
+    document.getElementById('import-form').addEventListener('submit', handleImportSubmit);
+    document.getElementById('export-form').addEventListener('submit', handleExportSubmit);
     
-    // Refresh button
-    const refreshBtn = document.querySelector('button[onclick="loadData()"]');
-    if (refreshBtn) {
-        refreshBtn.onclick = loadAllData;
+    // Modal close
+    document.querySelector('.close').addEventListener('click', closeModal);
+    document.getElementById('modal-confirm').addEventListener('click', closeModal);
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('notification-modal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+}
+
+// Switch between tabs
+function switchTab(tabId) {
+    // Update tab buttons
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+    
+    // Update tab panes
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.remove('active');
+    });
+    document.getElementById(`${tabId}-tab`).classList.add('active');
+}
+
+// Handle import form submission
+async function handleImportSubmit(e) {
+    e.preventDefault();
+    
+    const formData = {
+        lock: document.getElementById('import-lock').value,
+        material: document.getElementById('import-material').value,
+        quantity: parseFloat(document.getElementById('import-quantity').value),
+        date: document.getElementById('import-date').value,
+        type: 'import'
+    };
+    
+    await submitData(formData);
+}
+
+// Handle export form submission
+async function handleExportSubmit(e) {
+    e.preventDefault();
+    
+    const formData = {
+        lock: document.getElementById('export-lock').value,
+        material: document.getElementById('export-material').value,
+        quantity: parseFloat(document.getElementById('export-quantity').value),
+        date: document.getElementById('export-date').value,
+        type: 'export'
+    };
+    
+    await submitData(formData);
+}
+
+// Submit data to Google Sheets
+async function submitData(formData) {
+    try {
+        // Here you would typically send data to your Google Apps Script
+        // For now, we'll just show a success message
+        console.log('Submitting data:', formData);
+        
+        // Simulate API call
+        // const response = await fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
+        //     method: 'POST',
+        //     body: JSON.stringify(formData)
+        // });
+        
+        showNotification('Thành công', 'Dữ liệu đã được lưu thành công', 'success');
+        
+        // Reset form
+        document.getElementById(`${formData.type}-form`).reset();
+        setDefaultDates();
+        
+        // Reload data to reflect changes
+        await loadSheetData(currentSheet);
+        
+    } catch (error) {
+        console.error('Error submitting data:', error);
+        showNotification('Lỗi', 'Không thể lưu dữ liệu', 'error');
     }
 }
 
-// Global function for refresh
-function loadData() {
-    loadAllData();
+// Check if it's the end of the month
+function checkEndOfMonth() {
+    const today = new Date();
+    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    
+    if (today.getDate() === lastDayOfMonth) {
+        showEndOfMonthNotification();
+    }
+}
+
+// Show end of month notification
+function showEndOfMonthNotification() {
+    showNotification(
+        'Cuối tháng', 
+        'Hôm nay là ngày cuối tháng. Vui lòng sao lưu dữ liệu và hệ thống sẽ tự động xóa dữ liệu cũ.', 
+        'warning',
+        true
+    );
+}
+
+// Show notification modal
+function showNotification(title, message, type, showConfirm = false) {
+    const modal = document.getElementById('notification-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+    const modalConfirm = document.getElementById('modal-confirm');
+    
+    if (!modal || !modalTitle || !modalMessage) return;
+    
+    // Set content
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    
+    // Style based on type
+    modalTitle.className = '';
+    switch (type) {
+        case 'success':
+            modalTitle.classList.add('success');
+            break;
+        case 'error':
+            modalTitle.classList.add('error');
+            break;
+        case 'warning':
+            modalTitle.classList.add('warning');
+            break;
+    }
+    
+    // Show/hide confirm button
+    modalConfirm.style.display = showConfirm ? 'block' : 'none';
+    
+    // Show modal
+    modal.style.display = 'block';
+}
+
+// Close modal
+function closeModal() {
+    const modal = document.getElementById('notification-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
