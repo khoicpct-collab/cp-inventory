@@ -262,11 +262,13 @@
             overflow: hidden;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 1000px;
         }
 
         th, td {
@@ -344,22 +346,22 @@
             <div class="age-grid">
                 <div class="age-item">
                     <span class="age-days">00-30 ngày</span>
-                    <span class="age-tonnage">0 tấn</span>
-                    <span class="age-percentage">0%</span>
+                    <span class="age-tonnage" id="age0-30">0 tấn</span>
+                    <span class="age-percentage" id="percent0-30">0%</span>
                 </div>
                 <div class="age-item">
                     <span class="age-days">31-60 ngày</span>
-                    <span class="age-tonnage">0 tấn</span>
-                    <span class="age-percentage">0%</span>
+                    <span class="age-tonnage" id="age31-60">0 tấn</span>
+                    <span class="age-percentage" id="percent31-60">0%</span>
                 </div>
                 <div class="age-item">
                     <span class="age-days">>61 ngày</span>
-                    <span class="age-tonnage">0 tấn</span>
-                    <span class="age-percentage">0%</span>
+                    <span class="age-tonnage" id="age61">0 tấn</span>
+                    <span class="age-percentage" id="percent61">0%</span>
                 </div>
                 <div class="age-item">
                     <span class="age-days">Tổng cộng</span>
-                    <span class="age-tonnage">0 tấn</span>
+                    <span class="age-tonnage" id="ageTotal">0 tấn</span>
                     <span class="age-percentage">100%</span>
                 </div>
             </div>
@@ -528,7 +530,6 @@
                 <label>Chọn ngày làm việc:</label>
                 <select id="reportDay">
                     <option value="">Chọn ngày</option>
-                    <!-- PHP code sẽ được thay thế bằng JavaScript -->
                 </select>
                 <button id="loadSheetData" class="btn-primary">Tải data từ Sheet</button>
             </div>
@@ -562,8 +563,58 @@
     </div>
 
     <script>
-        // Thay thế PHP bằng JavaScript để tạo option cho ngày
+        // Dữ liệu mẫu
+        const sampleData = {
+            totalImport: 12500,
+            totalExport: 8500,
+            totalInventory: 4000,
+            ageData: {
+                "0-30": { tons: 2500, percent: 62.5 },
+                "31-60": { tons: 1200, percent: 30 },
+                "61": { tons: 300, percent: 7.5 },
+                "total": { tons: 4000, percent: 100 }
+            },
+            tableData: [
+                {
+                    date: "2023-11-20",
+                    type: "Rắn",
+                    name: "C9959",
+                    location: "B16/B17",
+                    importQty: 150,
+                    importWeight: 3.75,
+                    usageQty: 0,
+                    usageWeight: 0,
+                    endingWeight: 3.75,
+                    age: "5 ngày",
+                    code: "105104(BT)",
+                    batch: "66H03033",
+                    notes: ""
+                },
+                {
+                    date: "2023-11-10",
+                    type: "Rắn",
+                    name: "C9959",
+                    location: "A02(TUI)",
+                    importQty: 8,
+                    importWeight: 6.4,
+                    usageQty: 8,
+                    usageWeight: 6.4,
+                    endingWeight: 0,
+                    age: "15 ngày",
+                    code: "105172(BT)",
+                    batch: "66H06004",
+                    notes: "Đã sử dụng hết"
+                }
+            ]
+        };
+
+        // Khởi tạo ứng dụng
         document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            // Tạo option cho ngày
             const reportDaySelect = document.getElementById('reportDay');
             for (let i = 1; i <= 31; i++) {
                 const day = i.toString().padStart(2, '0');
@@ -582,6 +633,20 @@
                 document.getElementById('transactionForm').style.display = 'none';
             });
             
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                loadSampleData();
+            });
+            
+            document.getElementById('loadSheetData').addEventListener('click', function() {
+                const selectedDay = document.getElementById('reportDay').value;
+                if (selectedDay) {
+                    alert(`Đang tải dữ liệu từ Sheet ngày ${selectedDay}...`);
+                    loadSampleData();
+                } else {
+                    alert('Vui lòng chọn ngày!');
+                }
+            });
+            
             // Xử lý thay đổi loại nguyên liệu
             document.getElementById('materialType').addEventListener('change', function() {
                 const type = this.value;
@@ -597,11 +662,125 @@
             // Xử lý form submit
             document.getElementById('newTransactionForm').addEventListener('submit', function(e) {
                 e.preventDefault();
-                // Xử lý lưu dữ liệu ở đây
-                alert('Dữ liệu đã được lưu!');
-                document.getElementById('transactionForm').style.display = 'none';
+                saveTransaction();
             });
-        });
+            
+            // Tải dữ liệu mẫu khi khởi động
+            loadSampleData();
+        }
+
+        function loadSampleData() {
+            // Cập nhật tổng quan
+            document.getElementById('totalImport').textContent = sampleData.totalImport.toLocaleString();
+            document.getElementById('totalExport').textContent = sampleData.totalExport.toLocaleString();
+            document.getElementById('totalInventory').textContent = sampleData.totalInventory.toLocaleString();
+            
+            // Cập nhật thông tin tuổi lưu kho
+            document.getElementById('age0-30').textContent = sampleData.ageData["0-30"].tons.toLocaleString() + ' tấn';
+            document.getElementById('percent0-30').textContent = sampleData.ageData["0-30"].percent + '%';
+            
+            document.getElementById('age31-60').textContent = sampleData.ageData["31-60"].tons.toLocaleString() + ' tấn';
+            document.getElementById('percent31-60').textContent = sampleData.ageData["31-60"].percent + '%';
+            
+            document.getElementById('age61').textContent = sampleData.ageData["61"].tons.toLocaleString() + ' tấn';
+            document.getElementById('percent61').textContent = sampleData.ageData["61"].percent + '%';
+            
+            document.getElementById('ageTotal').textContent = sampleData.ageData["total"].tons.toLocaleString() + ' tấn';
+            
+            // Cập nhật bảng dữ liệu
+            updateTable(sampleData.tableData);
+        }
+
+        function updateTable(data) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${item.date}</td>
+                    <td>${item.type}</td>
+                    <td>${item.name}</td>
+                    <td>${item.location}</td>
+                    <td>${item.importQty}</td>
+                    <td>${item.importWeight}</td>
+                    <td>${item.usageQty}</td>
+                    <td>${item.usageWeight}</td>
+                    <td>${item.endingWeight}</td>
+                    <td>${item.age}</td>
+                    <td>${item.code}</td>
+                    <td>${item.batch}</td>
+                    <td>${item.notes}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        function saveTransaction() {
+            // Lấy dữ liệu từ form
+            const inputDate = document.getElementById('inputDate').value;
+            const materialType = document.getElementById('materialType').value;
+            
+            if (!inputDate || !materialType) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                return;
+            }
+            
+            // Tạo đối tượng transaction mới
+            const newTransaction = {
+                date: inputDate,
+                type: materialType === 'solid' ? 'Rắn' : 'Lỏng',
+                name: '',
+                location: '',
+                importQty: 0,
+                importWeight: 0,
+                usageQty: 0,
+                usageWeight: 0,
+                endingWeight: 0,
+                age: '0 ngày',
+                code: document.getElementById('supplierCode').value,
+                batch: document.getElementById('batchNumber').value,
+                notes: document.getElementById('notes').value
+            };
+            
+            // Điền thông tin cụ thể theo loại
+            if (materialType === 'solid') {
+                newTransaction.name = document.getElementById('materialName').value;
+                newTransaction.location = document.getElementById('lockLocation').value;
+                newTransaction.importQty = parseInt(document.getElementById('importBags').value) || 0;
+                newTransaction.importWeight = parseFloat(document.getElementById('importWeight').value) || 0;
+                newTransaction.usageQty = parseInt(document.getElementById('usageBags').value) || 0;
+                newTransaction.usageWeight = parseFloat(document.getElementById('usageWeight').value) || 0;
+                newTransaction.endingWeight = newTransaction.importWeight - newTransaction.usageWeight;
+            } else {
+                newTransaction.name = document.getElementById('liquidName').value;
+                newTransaction.location = document.getElementById('siloLocation').value;
+                newTransaction.importQty = parseFloat(document.getElementById('importLiters').value) || 0;
+                newTransaction.importWeight = parseFloat(document.getElementById('importLiquidWeight').value) || 0;
+                newTransaction.usageQty = parseFloat(document.getElementById('usageLiters').value) || 0;
+                newTransaction.usageWeight = parseFloat(document.getElementById('usageLiquidWeight').value) || 0;
+                newTransaction.endingWeight = newTransaction.importWeight - newTransaction.usageWeight;
+            }
+            
+            // Thêm vào dữ liệu mẫu
+            sampleData.tableData.unshift(newTransaction);
+            
+            // Cập nhật tổng quan
+            sampleData.totalImport += newTransaction.importWeight;
+            sampleData.totalExport += newTransaction.usageWeight;
+            sampleData.totalInventory = sampleData.totalImport - sampleData.totalExport;
+            
+            // Cập nhật giao diện
+            loadSampleData();
+            
+            // Đóng form và thông báo
+            document.getElementById('transactionForm').style.display = 'none';
+            document.getElementById('newTransactionForm').reset();
+            
+            alert('Dữ liệu đã được lưu thành công!');
+        }
     </script>
 </body>
 </html>
