@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Kết nối Google Sheets</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        .card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test Kết nối Google Sheets</h1>
+    
+    <div>
+        <button onclick="testConnection()">🔗 Test Kết nối</button>
+        <button onclick="getMaterials()">📦 Lấy Danh sách Nguyên liệu</button>
+        <button onclick="getStock()">📊 Lấy Dữ liệu Kho</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        // THAY THẾ BẰNG URL CỦA BẠN
+        const API_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+
+        async function testConnection() {
+            showMessage('Đang kết nối...', 'info');
+            
+            try {
+                const response = await fetch(`${API_URL}?method=getMaterials`);
+                const data = await response.json();
+                
+                if (data.materials) {
+                    showMessage('✅ Kết nối thành công!', 'success');
+                } else {
+                    showMessage('❌ Kết nối thất bại', 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Lỗi kết nối: ' + error.message, 'error');
+            }
+        }
+
+        async function getMaterials() {
+            showMessage('Đang tải nguyên liệu...', 'info');
+            
+            try {
+                const response = await fetch(`${API_URL}?method=getMaterials`);
+                const data = await response.json();
+                
+                let html = '<h3>📦 Danh sách Nguyên liệu:</h3>';
+                data.materials.forEach(material => {
+                    html += `<div class="card">
+                        <strong>${material.Name}</strong> (${material.Code})<br>
+                        ${material.Description} - ${material.Category}
+                    </div>`;
+                });
+                
+                document.getElementById('result').innerHTML = html;
+            } catch (error) {
+                showMessage('❌ Lỗi: ' + error.message, 'error');
+            }
+        }
+
+        async function getStock() {
+            showMessage('Đang tải dữ liệu kho...', 'info');
+            
+            try {
+                const response = await fetch(`${API_URL}?method=getStock`);
+                const data = await response.json();
+                
+                let html = '<h3>📊 Dữ liệu Kho:</h3>';
+                data.stock.forEach(item => {
+                    html += `<div class="card">
+                        <strong>LOC ${item.LOC}</strong> - ${item.Bags} bao - ${item.Weight}kg<br>
+                        Ngày nhập: ${item.InputDate} - NCC: ${item.SupplierCode}
+                    </div>`;
+                });
+                
+                document.getElementById('result').innerHTML = html;
+            } catch (error) {
+                showMessage('❌ Lỗi: ' + error.message, 'error');
+            }
+        }
+
+        function showMessage(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="card ${type}">${message}</div>`;
+        }
+    </script>
+</body>
+</html>
