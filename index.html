@@ -31,7 +31,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -85,7 +85,7 @@
         }
         
         .input-section {
-            flex: 1;
+            flex: 0 0 350px;
             background-color: white;
             padding: 25px;
             border-radius: var(--border-radius);
@@ -93,12 +93,13 @@
         }
         
         .report-section {
-            flex: 2;
+            flex: 1;
             background-color: white;
             padding: 25px;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             min-height: 500px;
+            overflow-x: auto;
         }
         
         .section-title {
@@ -184,36 +185,59 @@
             margin-top: 25px;
         }
         
+        /* Report Controls */
+        .report-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .date-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
         /* Table Styles */
         .table-container {
             overflow-x: auto;
             margin-top: 20px;
         }
         
-        table {
+        .inventory-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            min-width: 1200px;
         }
         
-        table th, table td {
+        .inventory-table th, .inventory-table td {
             padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+            text-align: center;
+            border: 1px solid #ddd;
         }
         
-        table th {
+        .inventory-table th {
             background-color: var(--primary-color);
             color: white;
             font-weight: 600;
         }
         
-        table tr:nth-child(even) {
+        .inventory-table tr:nth-child(even) {
             background-color: #f9f9f9;
         }
         
-        table tr:hover {
+        .inventory-table tr:hover {
             background-color: #f1f1f1;
+        }
+        
+        .inventory-table .section-header {
+            background-color: #e9ecef;
+            font-weight: bold;
         }
         
         /* Tab Styles */
@@ -251,6 +275,23 @@
             display: block;
         }
         
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         /* Footer Styles */
         footer {
             text-align: center;
@@ -261,11 +302,23 @@
         }
         
         /* Responsive Styles */
-        @media (max-width: 992px) {
+        @media (max-width: 1200px) {
             .main-content {
                 flex-direction: column;
             }
             
+            .input-section {
+                flex: 1;
+            }
+            
+            .report-controls {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+        
+        @media (max-width: 992px) {
             header h1 {
                 font-size: 2.2rem;
             }
@@ -292,6 +345,11 @@
             header p {
                 font-size: 1rem;
             }
+            
+            .date-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -306,48 +364,53 @@
             <div class="input-section">
                 <h2 class="section-title">Nhập Liệu Nguyên Liệu</h2>
                 
+                <div class="form-group">
+                    <label for="selected-date">Chọn ngày làm việc</label>
+                    <input type="date" id="selected-date" class="form-control" value="">
+                </div>
+                
                 <div class="tabs">
                     <div class="tab active" data-tab="general">Nguyên liệu thường</div>
-                    <div class="tab" data-tab="silo">Silo (U6-V13)</div>
-                    <div class="tab" data-tab="liquid">Chất lỏng (X6-Y13)</div>
+                    <div class="tab" data-tab="silo">Silo</div>
+                    <div class="tab" data-tab="liquid">Chất lỏng</div>
                 </div>
                 
                 <div class="tab-content active" id="general-tab">
                     <div class="form-group">
                         <label for="lot">Lô (Lot)</label>
-                        <input type="text" id="lot" class="form-control" placeholder="Nhập mã lô...">
+                        <input type="text" id="lot" class="form-control" placeholder="Nhập mã lô..." value="E01">
                     </div>
                     
                     <div class="input-row">
                         <div class="form-group">
                             <label for="material">Nguyên liệu</label>
-                            <input type="text" id="material" class="form-control" placeholder="Nhập tên nguyên liệu...">
+                            <input type="text" id="material" class="form-control" placeholder="Nhập tên nguyên liệu..." value="WG">
                         </div>
                         <div class="form-group">
                             <label for="bags">Số bao</label>
-                            <input type="number" id="bags" class="form-control" placeholder="Số lượng bao...">
+                            <input type="number" id="bags" class="form-control" placeholder="Số lượng bao..." value="0">
                         </div>
                     </div>
                     
                     <div class="input-row">
                         <div class="form-group">
                             <label for="weight">Số kg</label>
-                            <input type="number" id="weight" class="form-control" placeholder="Khối lượng...">
+                            <input type="number" id="weight" class="form-control" placeholder="Khối lượng..." value="38455">
                         </div>
                         <div class="form-group">
                             <label for="input-date">Ngày nhập</label>
-                            <input type="date" id="input-date" class="form-control">
+                            <input type="date" id="input-date" class="form-control" value="">
                         </div>
                     </div>
                     
                     <div class="input-row">
                         <div class="form-group">
                             <label for="ages">Tuổi</label>
-                            <input type="number" id="ages" class="form-control" placeholder="Tuổi nguyên liệu...">
+                            <input type="number" id="ages" class="form-control" placeholder="Tuổi nguyên liệu..." value="94">
                         </div>
                         <div class="form-group">
                             <label for="supplier">NCC/Công thức</label>
-                            <input type="text" id="supplier" class="form-control" placeholder="Nhà cung cấp...">
+                            <input type="text" id="supplier" class="form-control" placeholder="Nhà cung cấp..." value="0">
                         </div>
                     </div>
                 </div>
@@ -418,61 +481,90 @@
                         <i class="fas fa-eraser"></i> Xóa Form
                     </button>
                 </div>
+                
+                <div class="spinner" id="loading-spinner"></div>
+                <div id="message" style="margin-top: 15px;"></div>
             </div>
             
             <div class="report-section">
                 <h2 class="section-title">Báo Cáo Quản Lý Nguyên Liệu</h2>
                 
-                <div class="btn-group">
-                    <button class="btn" id="view-report-btn">
-                        <i class="fas fa-chart-bar"></i> Xem Báo Cáo
-                    </button>
+                <div class="report-controls">
+                    <div class="date-controls">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="report-date">Chọn ngày báo cáo</label>
+                            <input type="date" id="report-date" class="form-control" value="">
+                        </div>
+                        <button class="btn" id="view-report-btn">
+                            <i class="fas fa-chart-bar"></i> Xem Báo Cáo
+                        </button>
+                    </div>
                     <button class="btn btn-accent" id="export-excel-btn">
-                        <i class="fas fa-file-excel"></i> Xuất Phiếu Quản Lý (.xls)
+                        <i class="fas fa-file-excel"></i> Xuất Phiếu Quản Lý
                     </button>
                 </div>
                 
                 <div class="table-container">
-                    <table id="material-table">
+                    <table class="inventory-table" id="inventory-table">
                         <thead>
                             <tr>
-                                <th>Nguyên liệu</th>
-                                <th>Số bao</th>
-                                <th>Số kg</th>
-                                <th>Ngày nhập</th>
-                                <th>Tuổi</th>
-                                <th>NCC/Công thức</th>
-                                <th>Loại</th>
+                                <th rowspan="2">INVENTORY WH</th>
+                                <th rowspan="2">Name</th>
+                                <th rowspan="2">Lock</th>
+                                <th colspan="2">Ton dau</th>
+                                <th colspan="2">Nhap</th>
+                                <th colspan="2">Su dung</th>
+                                <th colspan="2">Ton cuoi</th>
+                                <th rowspan="2">Ngay nhap</th>
+                                <th rowspan="2">Code/NCC</th>
+                                <th rowspan="2">Truck</th>
+                            </tr>
+                            <tr>
+                                <th>Bag</th>
+                                <th>Weight</th>
+                                <th>Bag</th>
+                                <th>Weight</th>
+                                <th>Bag</th>
+                                <th>Weight</th>
+                                <th>Bag</th>
+                                <th>Weight</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Dữ liệu mẫu -->
+                        <tbody id="table-body">
+                            <!-- Dữ liệu sẽ được tải từ Google Sheets -->
                             <tr>
+                                <td>WH1</td>
                                 <td>WG</td>
-                                <td>-</td>
-                                <td>38,455</td>
-                                <td>4/6/25</td>
-                                <td>94</td>
-                                <td>0</td>
-                                <td>Thường</td>
+                                <td></td>
+                                <td>150</td>
+                                <td>7,500</td>
+                                <td>50</td>
+                                <td>2,500</td>
+                                <td>30</td>
+                                <td>1,500</td>
+                                <td>170</td>
+                                <td>8,500</td>
+                                <td>04/06/2025</td>
+                                <td>CP001</td>
+                                <td>T001</td>
                             </tr>
                             <tr>
-                                <td>WG</td>
-                                <td>-</td>
-                                <td>62,190</td>
-                                <td>5/6/25</td>
-                                <td>93</td>
-                                <td>0</td>
-                                <td>Thường</td>
+                                <td>WH2</td>
+                                <td>CORN</td>
+                                <td></td>
+                                <td>200</td>
+                                <td>10,000</td>
+                                <td>100</td>
+                                <td>5,000</td>
+                                <td>80</td>
+                                <td>4,000</td>
+                                <td>220</td>
+                                <td>11,000</td>
+                                <td>05/06/2025</td>
+                                <td>CP002</td>
+                                <td>T002</td>
                             </tr>
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="2"><strong>TỔNG</strong></td>
-                                <td><strong>100,645</strong></td>
-                                <td colspan="4"></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -485,54 +577,221 @@
     </div>
 
     <script>
+        // URL Google Apps Script của bạn
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJ--jULTnpZIE-aXx19ibz8Qu6nagmEK-PsDBVUvi-0F6mQiDg5MKqUYyhVNwgnD799g/exec';
+        
+        // Thiết lập ngày mặc định
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('selected-date').value = today;
+            document.getElementById('input-date').value = today;
+            document.getElementById('report-date').value = today;
+        });
+        
         // Xử lý tab chuyển đổi
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
-                // Xóa active class từ tất cả các tab và nội dung
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 
-                // Thêm active class vào tab được click
                 tab.classList.add('active');
-                
-                // Hiển thị nội dung tab tương ứng
                 const tabId = tab.getAttribute('data-tab');
                 document.getElementById(`${tabId}-tab`).classList.add('active');
             });
         });
         
+        // Hiển thị thông báo
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = message;
+            messageDiv.style.color = type === 'success' ? 'green' : 'red';
+            messageDiv.style.padding = '10px';
+            messageDiv.style.borderRadius = '5px';
+            messageDiv.style.backgroundColor = type === 'success' ? '#e8f5e8' : '#ffe8e8';
+            
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+                messageDiv.style.backgroundColor = 'transparent';
+            }, 5000);
+        }
+        
+        // Hiển thị/ẩn loading
+        function showLoading(show) {
+            document.getElementById('loading-spinner').style.display = show ? 'block' : 'none';
+        }
+        
+        // Gửi dữ liệu lên Google Sheets
+        async function sendToGoogleSheets(data) {
+            showLoading(true);
+            
+            try {
+                // Thêm ngày được chọn vào dữ liệu
+                data.selectedDate = document.getElementById('selected-date').value;
+                
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.text();
+                showLoading(false);
+                
+                if (result === 'success') {
+                    showMessage('Đã thêm nguyên liệu thành công!', 'success');
+                    return true;
+                } else {
+                    showMessage('Có lỗi xảy ra khi thêm dữ liệu: ' + result, 'error');
+                    return false;
+                }
+            } catch (error) {
+                showLoading(false);
+                showMessage('Lỗi kết nối: ' + error.message, 'error');
+                return false;
+            }
+        }
+        
+        // Lấy dữ liệu từ Google Sheets
+        async function loadDataFromSheets() {
+            showLoading(true);
+            
+            try {
+                const reportDate = document.getElementById('report-date').value;
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getData&date=${reportDate}`);
+                const data = await response.json();
+                
+                const tableBody = document.getElementById('table-body');
+                tableBody.innerHTML = '';
+                
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.warehouse || ''}</td>
+                            <td>${item.name || ''}</td>
+                            <td>${item.lock || ''}</td>
+                            <td>${item.startBags || ''}</td>
+                            <td>${item.startWeight || ''}</td>
+                            <td>${item.inputBags || ''}</td>
+                            <td>${item.inputWeight || ''}</td>
+                            <td>${item.usedBags || ''}</td>
+                            <td>${item.usedWeight || ''}</td>
+                            <td>${item.endBags || ''}</td>
+                            <td>${item.endWeight || ''}</td>
+                            <td>${item.inputDate || ''}</td>
+                            <td>${item.codeSupplier || ''}</td>
+                            <td>${item.truck || ''}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="14" style="text-align: center;">Không có dữ liệu cho ngày được chọn</td></tr>';
+                }
+                
+                showLoading(false);
+            } catch (error) {
+                showLoading(false);
+                console.error('Lỗi khi tải dữ liệu:', error);
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="14" style="text-align: center;">Lỗi khi tải dữ liệu</td></tr>';
+            }
+        }
+        
         // Xử lý nút thêm nguyên liệu
-        document.getElementById('add-material-btn').addEventListener('click', () => {
-            alert('Đã thêm nguyên liệu vào hệ thống!');
-            // Ở đây sẽ là code để thêm dữ liệu vào bảng
+        document.getElementById('add-material-btn').addEventListener('click', async () => {
+            const selectedDate = document.getElementById('selected-date').value;
+            if (!selectedDate) {
+                showMessage('Vui lòng chọn ngày làm việc!', 'error');
+                return;
+            }
+            
+            const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+            let data = {};
+            
+            if (activeTab === 'general') {
+                data = {
+                    type: 'general',
+                    lot: document.getElementById('lot').value,
+                    material: document.getElementById('material').value,
+                    bags: document.getElementById('bags').value,
+                    weight: document.getElementById('weight').value,
+                    inputDate: document.getElementById('input-date').value,
+                    ages: document.getElementById('ages').value,
+                    supplier: document.getElementById('supplier').value
+                };
+            } else if (activeTab === 'silo') {
+                data = {
+                    type: 'silo',
+                    lot: document.getElementById('silo-lot').value,
+                    material: document.getElementById('silo-material').value,
+                    weight: document.getElementById('silo-weight').value,
+                    inputDate: document.getElementById('silo-date').value,
+                    ages: document.getElementById('silo-ages').value
+                };
+            } else if (activeTab === 'liquid') {
+                data = {
+                    type: 'liquid',
+                    lot: document.getElementById('liquid-lot').value,
+                    material: document.getElementById('liquid-material').value,
+                    weight: document.getElementById('liquid-weight').value,
+                    inputDate: document.getElementById('liquid-date').value,
+                    ages: document.getElementById('liquid-ages').value
+                };
+            }
+            
+            const success = await sendToGoogleSheets(data);
+            if (success) {
+                // Xóa form sau khi thêm thành công
+                document.getElementById('clear-form-btn').click();
+            }
         });
         
         // Xử lý nút xóa form
         document.getElementById('clear-form-btn').addEventListener('click', () => {
             document.querySelectorAll('.form-control').forEach(input => {
                 if (input.type === 'text' || input.type === 'number') {
-                    input.value = '';
+                    // Giữ lại giá trị mặc định cho một số trường
+                    if (input.id !== 'selected-date' && input.id !== 'report-date') {
+                        input.value = '';
+                    }
                 }
             });
+            
+            // Đặt lại tab mặc định
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-tab="general"]').classList.add('active');
+            document.getElementById('general-tab').classList.add('active');
         });
         
         // Xử lý nút xem báo cáo
         document.getElementById('view-report-btn').addEventListener('click', () => {
-            alert('Đang tải báo cáo...');
-            // Ở đây sẽ là code để tải và hiển thị báo cáo
+            const reportDate = document.getElementById('report-date').value;
+            if (!reportDate) {
+                showMessage('Vui lòng chọn ngày báo cáo!', 'error');
+                return;
+            }
+            loadDataFromSheets();
         });
         
         // Xử lý nút xuất Excel
         document.getElementById('export-excel-btn').addEventListener('click', () => {
             // Tạo workbook và worksheet
             const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.table_to_sheet(document.getElementById('material-table'));
+            const ws = XLSX.utils.table_to_sheet(document.getElementById('inventory-table'));
             
             // Thêm worksheet vào workbook
-            XLSX.utils.book_append_sheet(wb, ws, "Quản lý nguyên liệu");
+            XLSX.utils.book_append_sheet(wb, ws, "Bao cao nguyen lieu");
             
             // Xuất file
-            XLSX.writeFile(wb, "Phieu_Quan_Ly_Nguyen_Lieu.xlsx");
+            const reportDate = document.getElementById('report-date').value || 'bao-cao';
+            XLSX.writeFile(wb, `Phieu_Quan_Ly_Nguyen_Lieu_${reportDate}.xlsx`);
+        });
+        
+        // Tải dữ liệu khi trang được tải
+        window.addEventListener('load', function() {
+            loadDataFromSheets();
         });
     </script>
 </body>
