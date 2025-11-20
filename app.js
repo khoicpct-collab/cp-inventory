@@ -5,6 +5,9 @@ let currentSheet = '01';
 let locks = [];
 let materials = [];
 
+// Google Apps Script URL - SỬ DỤNG URL NÀY
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby22vJkdZdDUGz_CimlDqgbEXhpsQlSZr8BZHgA7vZKv4hYtq16M0DI9axosfc8_8PEJA/exec';
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
@@ -119,13 +122,17 @@ async function loadSheetData(sheetName) {
         updateConnectionStatus('connecting');
         
         // Make request to Google Apps Script
-        const response = await fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?sheet=${sheetName}`);
+        const url = `${SCRIPT_URL}?sheet=${sheetName}`;
+        console.log('Fetching data from:', url);
+        
+        const response = await fetch(url);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
+        console.log('Data received:', data);
         
         if (data.error) {
             throw new Error(data.error);
@@ -140,47 +147,62 @@ async function loadSheetData(sheetName) {
     } catch (error) {
         console.error('Error loading sheet data:', error);
         updateConnectionStatus('error');
-        showNotification('Lỗi', 'Không thể tải dữ liệu từ Google Sheets', 'error');
+        showNotification('Lỗi', `Không thể tải dữ liệu từ Google Sheets: ${error.message}`, 'error');
     }
 }
 
 // Update UI with data from Google Sheets
 function updateUI(data) {
     // Update summary cards
-    document.getElementById('total-import').textContent = `${data.summary.totalImport || 0} tấn`;
-    document.getElementById('total-export').textContent = `${data.summary.totalExport || 0} tấn`;
-    document.getElementById('total-inventory').textContent = `${data.summary.totalInventory || 0} tấn`;
+    document.getElementById('total-import').textContent = `${formatNumber(data.summary?.totalImport) || 0} tấn`;
+    document.getElementById('total-export').textContent = `${formatNumber(data.summary?.totalExport) || 0} tấn`;
+    document.getElementById('total-inventory').textContent = `${formatNumber(data.summary?.totalInventory) || 0} tấn`;
     
     // Update silo data
-    document.getElementById('silo-import-date').textContent = formatDate(data.silo.importDate) || '-';
-    document.getElementById('silo-inventory').textContent = `${data.silo.inventory || 0} tấn`;
+    document.getElementById('silo-import-date').textContent = formatDate(data.silo?.importDate) || '-';
+    document.getElementById('silo-inventory').textContent = `${formatNumber(data.silo?.inventory) || 0} tấn`;
     
     // Update liquid data
-    document.getElementById('liquid-import-date').textContent = formatDate(data.liquid.importDate) || '-';
-    document.getElementById('liquid-inventory').textContent = `${data.liquid.inventory || 0} tấn`;
+    document.getElementById('liquid-import-date').textContent = formatDate(data.liquid?.importDate) || '-';
+    document.getElementById('liquid-inventory').textContent = `${formatNumber(data.liquid?.inventory) || 0} tấn`;
     
     // Update age inventory data
     if (data.ageInventory) {
-        document.getElementById('age-0-30-tons').textContent = `${data.ageInventory['0-30']?.tons || 0} tấn`;
-        document.getElementById('age-0-30-percent').textContent = `${data.ageInventory['0-30']?.percent || 0}%`;
+        document.getElementById('age-0-30-tons').textContent = `${formatNumber(data.ageInventory['0-30']?.tons) || 0} tấn`;
+        document.getElementById('age-0-30-percent').textContent = `${formatNumber(data.ageInventory['0-30']?.percent) || 0}%`;
         
-        document.getElementById('age-31-60-tons').textContent = `${data.ageInventory['31-60']?.tons || 0} tấn`;
-        document.getElementById('age-31-60-percent').textContent = `${data.ageInventory['31-60']?.percent || 0}%`;
+        document.getElementById('age-31-60-tons').textContent = `${formatNumber(data.ageInventory['31-60']?.tons) || 0} tấn`;
+        document.getElementById('age-31-60-percent').textContent = `${formatNumber(data.ageInventory['31-60']?.percent) || 0}%`;
         
-        document.getElementById('age-61-tons').textContent = `${data.ageInventory['61']?.tons || 0} tấn`;
-        document.getElementById('age-61-percent').textContent = `${data.ageInventory['61']?.percent || 0}%`;
+        document.getElementById('age-61-tons').textContent = `${formatNumber(data.ageInventory['61']?.tons) || 0} tấn`;
+        document.getElementById('age-61-percent').textContent = `${formatNumber(data.ageInventory['61']?.percent) || 0}%`;
         
-        document.getElementById('age-total-tons').textContent = `${data.ageInventory.total?.tons || 0} tấn`;
-        document.getElementById('age-total-percent').textContent = `${data.ageInventory.total?.percent || 0}%`;
+        document.getElementById('age-total-tons').textContent = `${formatNumber(data.ageInventory.total?.tons) || 0} tấn`;
+        document.getElementById('age-total-percent').textContent = `${formatNumber(data.ageInventory.total?.percent) || 0}%`;
     }
+}
+
+// Format number with 2 decimal places
+function formatNumber(value) {
+    if (value === null || value === undefined) return '0';
+    return parseFloat(value).toFixed(2);
 }
 
 // Format date for display
 function formatDate(dateString) {
     if (!dateString) return '';
     
+    // Check if it's already a Date object
+    if (dateString instanceof Date) {
+        return dateString.toLocaleDateString('vi-VN');
+    }
+    
+    // Try to parse as date string
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString;
+    if (isNaN(date.getTime())) {
+        // If not a valid date, return original string
+        return dateString;
+    }
     
     return date.toLocaleDateString('vi-VN');
 }
@@ -261,7 +283,8 @@ async function handleImportSubmit(e) {
         material: document.getElementById('import-material').value,
         quantity: parseFloat(document.getElementById('import-quantity').value),
         date: document.getElementById('import-date').value,
-        type: 'import'
+        type: 'import',
+        sheet: currentSheet
     };
     
     await submitData(formData);
@@ -276,7 +299,8 @@ async function handleExportSubmit(e) {
         material: document.getElementById('export-material').value,
         quantity: parseFloat(document.getElementById('export-quantity').value),
         date: document.getElementById('export-date').value,
-        type: 'export'
+        type: 'export',
+        sheet: currentSheet
     };
     
     await submitData(formData);
@@ -285,15 +309,27 @@ async function handleExportSubmit(e) {
 // Submit data to Google Sheets
 async function submitData(formData) {
     try {
-        // Here you would typically send data to your Google Apps Script
-        // For now, we'll just show a success message
-        console.log('Submitting data:', formData);
+        showNotification('Đang xử lý', 'Đang gửi dữ liệu...', 'info');
         
-        // Simulate API call
-        // const response = await fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
-        //     method: 'POST',
-        //     body: JSON.stringify(formData)
-        // });
+        // Send data to Google Apps Script
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Submission result:', result);
+        
+        if (result.error) {
+            throw new Error(result.error);
+        }
         
         showNotification('Thành công', 'Dữ liệu đã được lưu thành công', 'success');
         
@@ -306,7 +342,7 @@ async function submitData(formData) {
         
     } catch (error) {
         console.error('Error submitting data:', error);
-        showNotification('Lỗi', 'Không thể lưu dữ liệu', 'error');
+        showNotification('Lỗi', `Không thể lưu dữ liệu: ${error.message}`, 'error');
     }
 }
 
@@ -347,13 +383,16 @@ function showNotification(title, message, type, showConfirm = false) {
     modalTitle.className = '';
     switch (type) {
         case 'success':
-            modalTitle.classList.add('success');
+            modalTitle.style.color = 'var(--success-color)';
             break;
         case 'error':
-            modalTitle.classList.add('error');
+            modalTitle.style.color = 'var(--danger-color)';
             break;
         case 'warning':
-            modalTitle.classList.add('warning');
+            modalTitle.style.color = 'var(--warning-color)';
+            break;
+        case 'info':
+            modalTitle.style.color = 'var(--primary-color)';
             break;
     }
     
