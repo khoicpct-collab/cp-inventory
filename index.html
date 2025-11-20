@@ -3,80 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CP Inventory Management</title>
+    <title>QUẢN LÝ KHO NGUYÊN LIỆU C.P.CT</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>QUẢN LÝ KHO NGUYÊN LIỆU</h1>
-            <div class="header-actions">
-                <button id="addTransactionBtn" class="btn-primary">+ Thêm giao dịch mới</button>
-                <button id="refreshBtn" class="btn-secondary">🔄 Làm mới</button>
+        <header class="main-header">
+            <h1>QUẢN LÝ KHO NGUYÊN LIỆU C.P.CT</h1>
+            <div class="header-controls">
+                <div class="control-buttons">
+                    <button id="refreshBtn" class="btn-secondary">🔄 Làm mới</button>
+                    <button id="generateReport" class="btn-primary">Xem báo cáo</button>
+                    <button id="addTransactionBtn" class="btn-primary">+ Thêm data</button>
+                </div>
+                <div class="daily-summary">
+                    <div class="summary-box">
+                        <span class="summary-label">Tổng nhập</span>
+                        <span class="summary-value" id="totalImport">0</span>
+                    </div>
+                    <div class="summary-box">
+                        <span class="summary-label">Tổng xuất</span>
+                        <span class="summary-value" id="totalExport">0</span>
+                    </div>
+                    <div class="summary-box">
+                        <span class="summary-label">Tổng tồn kho</span>
+                        <span class="summary-value" id="totalInventory">0</span>
+                    </div>
+                </div>
             </div>
         </header>
 
-        <!-- Form thêm giao dịch -->
+        <!-- Age Inventory Info -->
+        <div class="age-inventory-panel">
+            <h3>THÔNG TIN TUỔI LƯU KHO</h3>
+            <div class="age-grid">
+                <div class="age-item">
+                    <span class="age-days">0-7 ngày</span>
+                    <span class="age-tonnage">0 tấn</span>
+                    <span class="age-percentage">0%</span>
+                </div>
+                <div class="age-item">
+                    <span class="age-days">8-15 ngày</span>
+                    <span class="age-tonnage">0 tấn</span>
+                    <span class="age-percentage">0%</span>
+                </div>
+                <div class="age-item">
+                    <span class="age-days">16-30 ngày</span>
+                    <span class="age-tonnage">0 tấn</span>
+                    <span class="age-percentage">0%</span>
+                </div>
+                <div class="age-item">
+                    <span class="age-days">>30 ngày</span>
+                    <span class="age-tonnage">0 tấn</span>
+                    <span class="age-percentage">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form thêm data -->
         <div id="transactionForm" class="form-modal" style="display: none;">
             <div class="form-content">
-                <h2>Thêm giao dịch mới</h2>
+                <h2>THÊM DATA MỚI</h2>
                 <form id="newTransactionForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Ngày nhập *</label>
-                            <input type="date" id="inputDate" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Tên nguyên liệu *</label>
-                            <select id="materialName" required>
-                                <option value="">Chọn nguyên liệu</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Vị trí kho *</label>
-                            <select id="lockLocation" required>
-                                <option value="">Chọn vị trí</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Nhập (Bao)</label>
-                            <input type="number" id="importBags" min="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Nhập (Khối lượng)</label>
-                            <input type="number" id="importWeight" min="0" value="0" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label>Sử dụng (Bao)</label>
-                            <input type="number" id="usageBags" min="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Sử dụng (Khối lượng)</label>
-                            <input type="number" id="usageWeight" min="0" value="0" step="0.01">
+                    <div class="form-section">
+                        <h3>Thông tin cơ bản</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Ngày nhập *</label>
+                                <input type="date" id="inputDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Loại nguyên liệu *</label>
+                                <select id="materialType" required>
+                                    <option value="">Chọn loại</option>
+                                    <option value="solid">Nguyên liệu rắn</option>
+                                    <option value="liquid">Chất lỏng</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Code/NCC</label>
-                            <input type="text" id="supplierCode">
+                    <div class="form-section" id="solidSection">
+                        <h3>Nguyên liệu rắn</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tên nguyên liệu</label>
+                                <select id="materialName">
+                                    <option value="">Chọn nguyên liệu</option>
+                                </select>
+                                <input type="text" id="customMaterial" placeholder="Hoặc nhập tên mới" style="margin-top: 5px; display: none;">
+                            </div>
+                            <div class="form-group">
+                                <label>Vị trí kho *</label>
+                                <select id="lockLocation" required>
+                                    <option value="">Chọn vị trí</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Ngày công thức</label>
-                            <input type="date" id="formulaDate">
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nhập (Bao)</label>
+                                <input type="number" id="importBags" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Nhập (Khối lượng - tấn)</label>
+                                <input type="number" id="importWeight" min="0" value="0" step="0.01">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Ngày sản xuất</label>
-                            <input type="date" id="productionDate">
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Sử dụng (Bao)</label>
+                                <input type="number" id="usageBags" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Sử dụng (Khối lượng - tấn)</label>
+                                <input type="number" id="usageWeight" min="0" value="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="liquidSection" style="display: none;">
+                        <h3>Chất lỏng - Silo</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tên chất lỏng</label>
+                                <select id="liquidName">
+                                    <option value="">Chọn chất lỏng</option>
+                                    <option value="dau_ca_bien">Dầu cá biển</option>
+                                    <option value="dau_nanh">Dầu nành</option>
+                                    <option value="dich_ca">Dịch cá</option>
+                                    <option value="nuoc_mam">Nước mắm</option>
+                                    <option value="mam_tom">Mắm tôm</option>
+                                    <option value="custom">Khác (nhập tay)</option>
+                                </select>
+                                <input type="text" id="customLiquid" placeholder="Nhập tên chất lỏng" style="margin-top: 5px; display: none;">
+                            </div>
+                            <div class="form-group">
+                                <label>Silo/Vị trí</label>
+                                <input type="text" id="siloLocation" placeholder="Ví dụ: Silo A1">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nhập (Lít)</label>
+                                <input type="number" id="importLiters" min="0" value="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Nhập (Khối lượng - tấn)</label>
+                                <input type="number" id="importLiquidWeight" min="0" value="0" step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Sử dụng (Lít)</label>
+                                <input type="number" id="usageLiters" min="0" value="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Sử dụng (Khối lượng - tấn)</label>
+                                <input type="number" id="usageLiquidWeight" min="0" value="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Thông tin bổ sung</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Code/NCC</label>
+                                <input type="text" id="supplierCode">
+                            </div>
+                            <div class="form-group">
+                                <label>Số lô</label>
+                                <input type="text" id="batchNumber" placeholder="Nhập số lô">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Ngày công thức</label>
+                                <input type="date" id="formulaDate">
+                            </div>
+                            <div class="form-group">
+                                <label>Ngày sản xuất</label>
+                                <input type="date" id="productionDate">
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Ghi chú</label>
+                            <textarea id="notes" rows="3" placeholder="Ghi chú thêm..."></textarea>
                         </div>
                     </div>
 
                     <div class="form-actions">
                         <button type="button" id="cancelBtn" class="btn-secondary">Hủy</button>
-                        <button type="submit" class="btn-primary">Lưu giao dịch</button>
+                        <button type="submit" class="btn-primary">Lưu data</button>
                     </div>
                 </form>
             </div>
@@ -84,14 +209,16 @@
 
         <!-- Bộ lọc báo cáo -->
         <div class="report-filter">
-            <h3>Xem báo cáo</h3>
+            <h3>XEM BÁO CÁO THEO NGÀY</h3>
             <div class="filter-controls">
-                <select id="reportMaterial">
-                    <option value="">Chọn nguyên liệu</option>
+                <label>Chọn ngày làm việc:</label>
+                <select id="reportDay">
+                    <option value="">Chọn ngày</option>
+                    <?php for($i=1; $i<=31; $i++): ?>
+                    <option value="<?php echo sprintf('%02d', $i); ?>">Ngày <?php echo sprintf('%02d', $i); ?></option>
+                    <?php endfor; ?>
                 </select>
-                <input type="date" id="reportDate">
-                <button id="generateReport" class="btn-primary">Xem báo cáo</button>
-                <button id="showAll" class="btn-secondary">Hiển thị tất cả</button>
+                <button id="loadSheetData" class="btn-primary">Tải data từ Sheet</button>
             </div>
         </div>
 
@@ -101,35 +228,30 @@
                 <thead>
                     <tr>
                         <th>Ngày nhập</th>
+                        <th>Loại</th>
                         <th>Tên nguyên liệu</th>
-                        <th>Vị trí</th>
-                        <th>Tồn đầu (Bao)</th>
-                        <th>Tồn đầu (KL)</th>
-                        <th>Nhập (Bao)</th>
-                        <th>Nhập (KL)</th>
-                        <th>Sử dụng (Bao)</th>
-                        <th>Sử dụng (KL)</th>
-                        <th>Tồn cuối (Bao)</th>
-                        <th>Tồn cuối (KL)</th>
-                        <th>Trung bình</th>
+                        <th>Vị trí/Silo</th>
+                        <th>Nhập (Bao/Lít)</th>
+                        <th>Nhập (KL-tấn)</th>
+                        <th>Sử dụng (Bao/Lít)</th>
+                        <th>Sử dụng (KL-tấn)</th>
+                        <th>Tồn cuối (KL-tấn)</th>
                         <th>Tuổi lưu kho</th>
                         <th>Code/NCC</th>
-                        <th>Ngày công thức</th>
-                        <th>Ngày sản xuất</th>
+                        <th>Số lô</th>
+                        <th>Ghi chú</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
                     <!-- Dữ liệu sẽ được thêm ở đây -->
                 </tbody>
-                <tfoot id="tableFooter">
-                    <!-- Tổng hợp sẽ được thêm ở đây -->
-                </tfoot>
             </table>
         </div>
     </div>
 
     <script src="data/materials.js"></script>
     <script src="data/locks.js"></script>
+    <script src="data/liquids.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
