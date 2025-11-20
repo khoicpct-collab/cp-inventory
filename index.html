@@ -3,237 +3,537 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CP Inventory - Quản lý kho hàng</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Chương Trình Quản Lý Kho Nguyên Liệu C.P.</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a6d38;
+            --secondary-color: #2e8b57;
+            --accent-color: #f8c300;
+            --light-color: #f5f5f5;
+            --dark-color: #333;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 80px 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 109, 56, 0.7), rgba(46, 139, 87, 0.7));
+            z-index: 1;
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        header p {
+            font-size: 1.4rem;
+            position: relative;
+            z-index: 2;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .input-section {
+            flex: 1;
+            background-color: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .report-section {
+            flex: 2;
+            background-color: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            min-height: 500px;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+            font-size: 1.4rem;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 109, 56, 0.2);
+            outline: none;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .input-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: var(--dark-color);
+        }
+        
+        .btn-accent:hover {
+            background-color: #e6b800;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        /* Tab Styles */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            margin-right: 5px;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-color: #ddd;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Footer Styles */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            header p {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .input-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            header p {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-boxes"></i> CP INVENTORY</h1>
-            <div class="header-info">
-                <div class="date-selector">
-                    <label for="sheet-select">Chọn ngày:</label>
-                    <select id="sheet-select">
-                        <!-- Options sẽ được tạo động bằng JavaScript -->
-                    </select>
+            <h1>Chương Trình Quản Lý Kho Nguyên Liệu C.P.</h1>
+            <p>Công ty cổ phần chăn nuôi CP Việt Nam</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">Nhập Liệu Nguyên Liệu</h2>
+                
+                <div class="tabs">
+                    <div class="tab active" data-tab="general">Nguyên liệu thường</div>
+                    <div class="tab" data-tab="silo">Silo (U6-V13)</div>
+                    <div class="tab" data-tab="liquid">Chất lỏng (X6-Y13)</div>
                 </div>
-                <div class="connection-status">
-                    <span id="connection-status">Đang kết nối...</span>
-                    <div id="status-indicator" class="status-indicator"></div>
+                
+                <div class="tab-content active" id="general-tab">
+                    <div class="form-group">
+                        <label for="lot">Lô (Lot)</label>
+                        <input type="text" id="lot" class="form-control" placeholder="Nhập mã lô...">
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="material">Nguyên liệu</label>
+                            <input type="text" id="material" class="form-control" placeholder="Nhập tên nguyên liệu...">
+                        </div>
+                        <div class="form-group">
+                            <label for="bags">Số bao</label>
+                            <input type="number" id="bags" class="form-control" placeholder="Số lượng bao...">
+                        </div>
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="weight">Số kg</label>
+                            <input type="number" id="weight" class="form-control" placeholder="Khối lượng...">
+                        </div>
+                        <div class="form-group">
+                            <label for="input-date">Ngày nhập</label>
+                            <input type="date" id="input-date" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="ages">Tuổi</label>
+                            <input type="number" id="ages" class="form-control" placeholder="Tuổi nguyên liệu...">
+                        </div>
+                        <div class="form-group">
+                            <label for="supplier">NCC/Công thức</label>
+                            <input type="text" id="supplier" class="form-control" placeholder="Nhà cung cấp...">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="silo-tab">
+                    <div class="form-group">
+                        <label for="silo-lot">Lô Silo</label>
+                        <input type="text" id="silo-lot" class="form-control" placeholder="Nhập mã lô Silo...">
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="silo-material">Nguyên liệu Silo</label>
+                            <input type="text" id="silo-material" class="form-control" placeholder="Nhập tên nguyên liệu...">
+                        </div>
+                        <div class="form-group">
+                            <label for="silo-weight">Số kg</label>
+                            <input type="number" id="silo-weight" class="form-control" placeholder="Khối lượng...">
+                        </div>
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="silo-date">Ngày nhập</label>
+                            <input type="date" id="silo-date" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="silo-ages">Tuổi</label>
+                            <input type="number" id="silo-ages" class="form-control" placeholder="Tuổi nguyên liệu...">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="liquid-tab">
+                    <div class="form-group">
+                        <label for="liquid-lot">Lô Chất lỏng</label>
+                        <input type="text" id="liquid-lot" class="form-control" placeholder="Nhập mã lô chất lỏng...">
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="liquid-material">Chất lỏng</label>
+                            <input type="text" id="liquid-material" class="form-control" placeholder="Nhập tên chất lỏng...">
+                        </div>
+                        <div class="form-group">
+                            <label for="liquid-weight">Số kg</label>
+                            <input type="number" id="liquid-weight" class="form-control" placeholder="Khối lượng...">
+                        </div>
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="liquid-date">Ngày nhập</label>
+                            <input type="date" id="liquid-date" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="liquid-ages">Tuổi</label>
+                            <input type="number" id="liquid-ages" class="form-control" placeholder="Tuổi chất lỏng...">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn" id="add-material-btn">
+                        <i class="fas fa-plus"></i> Thêm Nguyên Liệu
+                    </button>
+                    <button class="btn btn-accent" id="clear-form-btn">
+                        <i class="fas fa-eraser"></i> Xóa Form
+                    </button>
                 </div>
             </div>
-        </header>
-
-        <main>
-            <!-- Tổng quan -->
-            <section class="summary-section">
-                <h2><i class="fas fa-chart-pie"></i> Tổng quan kho hàng</h2>
-                <div class="summary-cards">
-                    <div class="card">
-                        <div class="card-icon import">
-                            <i class="fas fa-arrow-down"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Tổng nhập</h3>
-                            <p id="total-import">0 tấn</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon export">
-                            <i class="fas fa-arrow-up"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Tổng xuất</h3>
-                            <p id="total-export">0 tấn</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon inventory">
-                            <i class="fas fa-box"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Tồn kho</h3>
-                            <p id="total-inventory">0 tấn</p>
-                        </div>
-                    </div>
+            
+            <div class="report-section">
+                <h2 class="section-title">Báo Cáo Quản Lý Nguyên Liệu</h2>
+                
+                <div class="btn-group">
+                    <button class="btn" id="view-report-btn">
+                        <i class="fas fa-chart-bar"></i> Xem Báo Cáo
+                    </button>
+                    <button class="btn btn-accent" id="export-excel-btn">
+                        <i class="fas fa-file-excel"></i> Xuất Phiếu Quản Lý (.xls)
+                    </button>
                 </div>
-            </section>
-
-            <!-- Silo và Chất lỏng -->
-            <section class="storage-section">
-                <h2><i class="fas fa-industry"></i> Silo & Chất lỏng</h2>
-                <div class="storage-cards">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-warehouse"></i> Silo</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="storage-info">
-                                <div class="info-item">
-                                    <span class="info-label">Ngày nhập:</span>
-                                    <span id="silo-import-date" class="info-value">-</span>
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">Tồn kho:</span>
-                                    <span id="silo-inventory" class="info-value">0 tấn</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-tint"></i> Chất lỏng</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="storage-info">
-                                <div class="info-item">
-                                    <span class="info-label">Ngày nhập:</span>
-                                    <span id="liquid-import-date" class="info-value">-</span>
-                                </div>
-                                <div class="info-item">
-                                    <span class="info-label">Tồn kho:</span>
-                                    <span id="liquid-inventory" class="info-value">0 tấn</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                
+                <div class="table-container">
+                    <table id="material-table">
+                        <thead>
+                            <tr>
+                                <th>Nguyên liệu</th>
+                                <th>Số bao</th>
+                                <th>Số kg</th>
+                                <th>Ngày nhập</th>
+                                <th>Tuổi</th>
+                                <th>NCC/Công thức</th>
+                                <th>Loại</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dữ liệu mẫu -->
+                            <tr>
+                                <td>WG</td>
+                                <td>-</td>
+                                <td>38,455</td>
+                                <td>4/6/25</td>
+                                <td>94</td>
+                                <td>0</td>
+                                <td>Thường</td>
+                            </tr>
+                            <tr>
+                                <td>WG</td>
+                                <td>-</td>
+                                <td>62,190</td>
+                                <td>5/6/25</td>
+                                <td>93</td>
+                                <td>0</td>
+                                <td>Thường</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2"><strong>TỔNG</strong></td>
+                                <td><strong>100,645</strong></td>
+                                <td colspan="4"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
-            </section>
-
-            <!-- Thêm dữ liệu mới -->
-            <section class="add-data-section">
-                <h2><i class="fas fa-plus-circle"></i> Thêm dữ liệu mới</h2>
-                <div class="tabs">
-                    <button class="tab-button active" data-tab="import">Nhập hàng</button>
-                    <button class="tab-button" data-tab="export">Xuất hàng</button>
-                </div>
-                <div class="tab-content">
-                    <div id="import-tab" class="tab-pane active">
-                        <form id="import-form" class="data-form">
-                            <div class="form-group">
-                                <label for="import-lock">Loại khoá:</label>
-                                <select id="import-lock" required>
-                                    <!-- Options sẽ được tạo động từ locks.js -->
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="import-material">Nguyên liệu:</label>
-                                <select id="import-material" required>
-                                    <!-- Options sẽ được tạo động từ materials.js -->
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="import-quantity">Số lượng (tấn):</label>
-                                <input type="number" id="import-quantity" step="0.01" min="0" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="import-date">Ngày nhập:</label>
-                                <input type="date" id="import-date" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Lưu nhập hàng
-                            </button>
-                        </form>
-                    </div>
-                    <div id="export-tab" class="tab-pane">
-                        <form id="export-form" class="data-form">
-                            <div class="form-group">
-                                <label for="export-lock">Loại khoá:</label>
-                                <select id="export-lock" required>
-                                    <!-- Options sẽ được tạo động từ locks.js -->
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="export-material">Nguyên liệu:</label>
-                                <select id="export-material" required>
-                                    <!-- Options sẽ được tạo động từ materials.js -->
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="export-quantity">Số lượng (tấn):</label>
-                                <input type="number" id="export-quantity" step="0.01" min="0" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="export-date">Ngày xuất:</label>
-                                <input type="date" id="export-date" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Lưu xuất hàng
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Thông tin tuổi lưu kho -->
-            <section class="age-section">
-                <h2><i class="fas fa-calendar-alt"></i> Thông tin tuổi lưu kho</h2>
-                <div class="age-cards">
-                    <div class="age-card">
-                        <div class="age-header">
-                            <h3>0-30 ngày</h3>
-                        </div>
-                        <div class="age-body">
-                            <div class="age-value" id="age-0-30-tons">0 tấn</div>
-                            <div class="age-percent" id="age-0-30-percent">0%</div>
-                        </div>
-                    </div>
-                    <div class="age-card">
-                        <div class="age-header">
-                            <h3>31-60 ngày</h3>
-                        </div>
-                        <div class="age-body">
-                            <div class="age-value" id="age-31-60-tons">0 tấn</div>
-                            <div class="age-percent" id="age-31-60-percent">0%</div>
-                        </div>
-                    </div>
-                    <div class="age-card">
-                        <div class="age-header">
-                            <h3>Trên 61 ngày</h3>
-                        </div>
-                        <div class="age-body">
-                            <div class="age-value" id="age-61-tons">0 tấn</div>
-                            <div class="age-percent" id="age-61-percent">0%</div>
-                        </div>
-                    </div>
-                    <div class="age-card total">
-                        <div class="age-header">
-                            <h3>Tổng cộng</h3>
-                        </div>
-                        <div class="age-body">
-                            <div class="age-value" id="age-total-tons">0 tấn</div>
-                            <div class="age-percent" id="age-total-percent">100%</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
+            </div>
+        </div>
+        
         <footer>
-            <p>CP Inventory Management System &copy; 2023</p>
+            <p>Công ty cổ phần chăn nuôi CP Việt Nam - Chi nhánh SXKD thức ăn thủy sản Cần Thơ</p>
+            <p>&copy; 2023 - Chương Trình Quản Lý Kho Nguyên Liệu</p>
         </footer>
     </div>
 
-    <!-- Modal thông báo -->
-    <div id="notification-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-title">Thông báo</h3>
-                <span class="close">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p id="modal-message"></p>
-            </div>
-            <div class="modal-footer">
-                <button id="modal-confirm" class="btn btn-primary">Xác nhận</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="locks.js"></script>
-    <script src="materials.js"></script>
-    <script src="app.js"></script>
+    <script>
+        // Xử lý tab chuyển đổi
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Xóa active class từ tất cả các tab và nội dung
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Thêm active class vào tab được click
+                tab.classList.add('active');
+                
+                // Hiển thị nội dung tab tương ứng
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Xử lý nút thêm nguyên liệu
+        document.getElementById('add-material-btn').addEventListener('click', () => {
+            alert('Đã thêm nguyên liệu vào hệ thống!');
+            // Ở đây sẽ là code để thêm dữ liệu vào bảng
+        });
+        
+        // Xử lý nút xóa form
+        document.getElementById('clear-form-btn').addEventListener('click', () => {
+            document.querySelectorAll('.form-control').forEach(input => {
+                if (input.type === 'text' || input.type === 'number') {
+                    input.value = '';
+                }
+            });
+        });
+        
+        // Xử lý nút xem báo cáo
+        document.getElementById('view-report-btn').addEventListener('click', () => {
+            alert('Đang tải báo cáo...');
+            // Ở đây sẽ là code để tải và hiển thị báo cáo
+        });
+        
+        // Xử lý nút xuất Excel
+        document.getElementById('export-excel-btn').addEventListener('click', () => {
+            // Tạo workbook và worksheet
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.table_to_sheet(document.getElementById('material-table'));
+            
+            // Thêm worksheet vào workbook
+            XLSX.utils.book_append_sheet(wb, ws, "Quản lý nguyên liệu");
+            
+            // Xuất file
+            XLSX.writeFile(wb, "Phieu_Quan_Ly_Nguyen_Lieu.xlsx");
+        });
+    </script>
 </body>
 </html>
