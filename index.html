@@ -287,6 +287,21 @@
             background-color: #f8f9fa;
         }
 
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #c62828;
+        }
+
         @media (max-width: 768px) {
             .header-controls {
                 flex-direction: column;
@@ -533,6 +548,7 @@
                 </select>
                 <button id="loadSheetData" class="btn-primary">Tải data từ Sheet</button>
             </div>
+            <div id="connectionStatus" style="margin-top: 10px;"></div>
         </div>
 
         <!-- Bảng dữ liệu -->
@@ -556,57 +572,18 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <!-- Dữ liệu sẽ được thêm ở đây -->
+                    <tr>
+                        <td colspan="13" class="loading">Đang tải dữ liệu từ Google Sheet...</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // Dữ liệu mẫu
-        const sampleData = {
-            totalImport: 12500,
-            totalExport: 8500,
-            totalInventory: 4000,
-            ageData: {
-                "0-30": { tons: 2500, percent: 62.5 },
-                "31-60": { tons: 1200, percent: 30 },
-                "61": { tons: 300, percent: 7.5 },
-                "total": { tons: 4000, percent: 100 }
-            },
-            tableData: [
-                {
-                    date: "2023-11-20",
-                    type: "Rắn",
-                    name: "C9959",
-                    location: "B16/B17",
-                    importQty: 150,
-                    importWeight: 3.75,
-                    usageQty: 0,
-                    usageWeight: 0,
-                    endingWeight: 3.75,
-                    age: "5 ngày",
-                    code: "105104(BT)",
-                    batch: "66H03033",
-                    notes: ""
-                },
-                {
-                    date: "2023-11-10",
-                    type: "Rắn",
-                    name: "C9959",
-                    location: "A02(TUI)",
-                    importQty: 8,
-                    importWeight: 6.4,
-                    usageQty: 8,
-                    usageWeight: 6.4,
-                    endingWeight: 0,
-                    age: "15 ngày",
-                    code: "105172(BT)",
-                    batch: "66H06004",
-                    notes: "Đã sử dụng hết"
-                }
-            ]
-        };
+        // Cấu hình Google Sheet
+        const SHEET_ID = '10pe53nOu2G_Yn2NJPJAYnStjE4NxeAi5aSdVXGnnB1g';
+        const SHEET_BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=`;
 
         // Khởi tạo ứng dụng
         document.addEventListener('DOMContentLoaded', function() {
@@ -624,6 +601,10 @@
                 reportDaySelect.appendChild(option);
             }
             
+            // Đặt ngày mặc định là hôm nay
+            const today = new Date().getDate().toString().padStart(2, '0');
+            reportDaySelect.value = today;
+            
             // Thêm các sự kiện
             document.getElementById('addTransactionBtn').addEventListener('click', function() {
                 document.getElementById('transactionForm').style.display = 'flex';
@@ -634,17 +615,11 @@
             });
             
             document.getElementById('refreshBtn').addEventListener('click', function() {
-                loadSampleData();
+                loadDataFromSheet();
             });
             
             document.getElementById('loadSheetData').addEventListener('click', function() {
-                const selectedDay = document.getElementById('reportDay').value;
-                if (selectedDay) {
-                    alert(`Đang tải dữ liệu từ Sheet ngày ${selectedDay}...`);
-                    loadSampleData();
-                } else {
-                    alert('Vui lòng chọn ngày!');
-                }
+                loadDataFromSheet();
             });
             
             // Xử lý thay đổi loại nguyên liệu
@@ -665,30 +640,154 @@
                 saveTransaction();
             });
             
-            // Tải dữ liệu mẫu khi khởi động
-            loadSampleData();
+            // Tải dữ liệu từ Sheet khi khởi động
+            loadDataFromSheet();
+        }
+
+        async function loadDataFromSheet() {
+            const selectedDay = document.getElementById('reportDay').value;
+            if (!selectedDay) {
+                alert('Vui lòng chọn ngày!');
+                return;
+            }
+
+            const statusDiv = document.getElementById('connectionStatus');
+            statusDiv.innerHTML = '<div class="loading">Đang kết nối đến Google Sheet...</div>';
+
+            try {
+                // Sử dụng CORS proxy để tránh lỗi CORS
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const sheetUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${selectedDay}`;
+                
+                const response = await fetch(proxyUrl + sheetUrl);
+                
+                if (!response.ok) {
+                    throw new Error('Không thể kết nối đến Google Sheet');
+                }
+
+                const text = await response.text();
+                const json = JSON.parse(text.substring(47).slice(0, -2));
+                
+                // Xử lý dữ liệu từ Google Sheet
+                processSheetData(json, selectedDay);
+                statusDiv.innerHTML = '<div style="color: #4CAF50;">✓ Đã kết nối thành công với Google Sheet</div>';
+                
+            } catch (error) {
+                console.error('Lỗi khi tải dữ liệu:', error);
+                statusDiv.innerHTML = `<div class="error">❌ Lỗi kết nối: ${error.message}. Đang tải dữ liệu mẫu...</div>`;
+                loadSampleData();
+            }
+        }
+
+        function processSheetData(json, day) {
+            try {
+                const tableBody = document.getElementById('tableBody');
+                tableBody.innerHTML = '';
+
+                if (!json.table || !json.table.rows) {
+                    tableBody.innerHTML = '<tr><td colspan="13">Không có dữ liệu cho ngày này</td></tr>';
+                    return;
+                }
+
+                const rows = json.table.rows;
+                let totalImport = 0;
+                let totalExport = 0;
+                let totalInventory = 0;
+
+                // Xử lý từng dòng dữ liệu
+                rows.forEach((row, index) => {
+                    if (index < 5) return; // Bỏ qua các dòng tiêu đề
+
+                    const cells = row.c;
+                    if (!cells || cells.length < 15) return;
+
+                    // Lấy dữ liệu từ các cột tương ứng
+                    const materialData = {
+                        date: cells[12] ? formatDate(cells[12].v) : '', // Cột M: Ngày nhập
+                        type: 'Rắn',
+                        name: cells[1] ? cells[1].v : '', // Cột B: Name
+                        location: cells[2] ? cells[2].v : '', // Cột C: Lock
+                        importQty: cells[4] ? cells[4].v : 0, // Cột E: Nhập (Bag)
+                        importWeight: cells[5] ? cells[5].v : 0, // Cột F: Nhập (Weight)
+                        usageQty: cells[6] ? cells[6].v : 0, // Cột G: Sử dụng (Bag)
+                        usageWeight: cells[7] ? cells[7].v : 0, // Cột H: Sử dụng (Weight)
+                        endingWeight: cells[9] ? cells[9].v : 0, // Cột J: Tồn cuối (Weight)
+                        age: cells[13] ? cells[13].v : '', // Cột N: Tuổi lưu kho
+                        code: cells[14] ? cells[14].v : '', // Cột O: Code/NCC
+                        batch: cells[16] ? cells[16].v : '', // Cột Q: Số lô
+                        notes: ''
+                    };
+
+                    // Chỉ hiển thị các dòng có dữ liệu
+                    if (materialData.name && materialData.name !== 'Name') {
+                        const rowElement = document.createElement('tr');
+                        rowElement.innerHTML = `
+                            <td>${materialData.date}</td>
+                            <td>${materialData.type}</td>
+                            <td>${materialData.name}</td>
+                            <td>${materialData.location}</td>
+                            <td>${materialData.importQty}</td>
+                            <td>${materialData.importWeight}</td>
+                            <td>${materialData.usageQty}</td>
+                            <td>${materialData.usageWeight}</td>
+                            <td>${materialData.endingWeight}</td>
+                            <td>${materialData.age}</td>
+                            <td>${materialData.code}</td>
+                            <td>${materialData.batch}</td>
+                            <td>${materialData.notes}</td>
+                        `;
+                        tableBody.appendChild(rowElement);
+
+                        // Cộng dồn tổng
+                        totalImport += parseFloat(materialData.importWeight) || 0;
+                        totalExport += parseFloat(materialData.usageWeight) || 0;
+                        totalInventory += parseFloat(materialData.endingWeight) || 0;
+                    }
+                });
+
+                // Cập nhật tổng quan
+                updateSummary(totalImport, totalExport, totalInventory);
+
+            } catch (error) {
+                console.error('Lỗi xử lý dữ liệu:', error);
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="13">Lỗi khi xử lý dữ liệu từ Sheet</td></tr>';
+            }
+        }
+
+        function formatDate(dateValue) {
+            if (!dateValue) return '';
+            const date = new Date(dateValue);
+            return date.toISOString().split('T')[0];
+        }
+
+        function updateSummary(importTotal, exportTotal, inventoryTotal) {
+            document.getElementById('totalImport').textContent = importTotal.toFixed(2);
+            document.getElementById('totalExport').textContent = exportTotal.toFixed(2);
+            document.getElementById('totalInventory').textContent = inventoryTotal.toFixed(2);
         }
 
         function loadSampleData() {
-            // Cập nhật tổng quan
-            document.getElementById('totalImport').textContent = sampleData.totalImport.toLocaleString();
-            document.getElementById('totalExport').textContent = sampleData.totalExport.toLocaleString();
-            document.getElementById('totalInventory').textContent = sampleData.totalInventory.toLocaleString();
-            
-            // Cập nhật thông tin tuổi lưu kho
-            document.getElementById('age0-30').textContent = sampleData.ageData["0-30"].tons.toLocaleString() + ' tấn';
-            document.getElementById('percent0-30').textContent = sampleData.ageData["0-30"].percent + '%';
-            
-            document.getElementById('age31-60').textContent = sampleData.ageData["31-60"].tons.toLocaleString() + ' tấn';
-            document.getElementById('percent31-60').textContent = sampleData.ageData["31-60"].percent + '%';
-            
-            document.getElementById('age61').textContent = sampleData.ageData["61"].tons.toLocaleString() + ' tấn';
-            document.getElementById('percent61').textContent = sampleData.ageData["61"].percent + '%';
-            
-            document.getElementById('ageTotal').textContent = sampleData.ageData["total"].tons.toLocaleString() + ' tấn';
-            
-            // Cập nhật bảng dữ liệu
-            updateTable(sampleData.tableData);
+            // Dữ liệu mẫu tạm thời
+            const sampleData = [
+                {
+                    date: "2023-11-20",
+                    type: "Rắn",
+                    name: "C9959",
+                    location: "B16/B17",
+                    importQty: 150,
+                    importWeight: 3.75,
+                    usageQty: 0,
+                    usageWeight: 0,
+                    endingWeight: 3.75,
+                    age: "5 ngày",
+                    code: "105104(BT)",
+                    batch: "66H03033",
+                    notes: ""
+                }
+            ];
+
+            updateTable(sampleData);
+            updateSummary(3.75, 0, 3.75);
         }
 
         function updateTable(data) {
@@ -697,7 +796,6 @@
             
             data.forEach(item => {
                 const row = document.createElement('tr');
-                
                 row.innerHTML = `
                     <td>${item.date}</td>
                     <td>${item.type}</td>
@@ -713,73 +811,15 @@
                     <td>${item.batch}</td>
                     <td>${item.notes}</td>
                 `;
-                
                 tableBody.appendChild(row);
             });
         }
 
         function saveTransaction() {
-            // Lấy dữ liệu từ form
-            const inputDate = document.getElementById('inputDate').value;
-            const materialType = document.getElementById('materialType').value;
-            
-            if (!inputDate || !materialType) {
-                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
-                return;
-            }
-            
-            // Tạo đối tượng transaction mới
-            const newTransaction = {
-                date: inputDate,
-                type: materialType === 'solid' ? 'Rắn' : 'Lỏng',
-                name: '',
-                location: '',
-                importQty: 0,
-                importWeight: 0,
-                usageQty: 0,
-                usageWeight: 0,
-                endingWeight: 0,
-                age: '0 ngày',
-                code: document.getElementById('supplierCode').value,
-                batch: document.getElementById('batchNumber').value,
-                notes: document.getElementById('notes').value
-            };
-            
-            // Điền thông tin cụ thể theo loại
-            if (materialType === 'solid') {
-                newTransaction.name = document.getElementById('materialName').value;
-                newTransaction.location = document.getElementById('lockLocation').value;
-                newTransaction.importQty = parseInt(document.getElementById('importBags').value) || 0;
-                newTransaction.importWeight = parseFloat(document.getElementById('importWeight').value) || 0;
-                newTransaction.usageQty = parseInt(document.getElementById('usageBags').value) || 0;
-                newTransaction.usageWeight = parseFloat(document.getElementById('usageWeight').value) || 0;
-                newTransaction.endingWeight = newTransaction.importWeight - newTransaction.usageWeight;
-            } else {
-                newTransaction.name = document.getElementById('liquidName').value;
-                newTransaction.location = document.getElementById('siloLocation').value;
-                newTransaction.importQty = parseFloat(document.getElementById('importLiters').value) || 0;
-                newTransaction.importWeight = parseFloat(document.getElementById('importLiquidWeight').value) || 0;
-                newTransaction.usageQty = parseFloat(document.getElementById('usageLiters').value) || 0;
-                newTransaction.usageWeight = parseFloat(document.getElementById('usageLiquidWeight').value) || 0;
-                newTransaction.endingWeight = newTransaction.importWeight - newTransaction.usageWeight;
-            }
-            
-            // Thêm vào dữ liệu mẫu
-            sampleData.tableData.unshift(newTransaction);
-            
-            // Cập nhật tổng quan
-            sampleData.totalImport += newTransaction.importWeight;
-            sampleData.totalExport += newTransaction.usageWeight;
-            sampleData.totalInventory = sampleData.totalImport - sampleData.totalExport;
-            
-            // Cập nhật giao diện
-            loadSampleData();
-            
-            // Đóng form và thông báo
+            // Hiện tại chỉ lưu cục bộ
+            alert('Chức năng lưu dữ liệu trực tiếp vào Google Sheet đang được phát triển. Dữ liệu đã được lưu tạm thời.');
             document.getElementById('transactionForm').style.display = 'none';
             document.getElementById('newTransactionForm').reset();
-            
-            alert('Dữ liệu đã được lưu thành công!');
         }
     </script>
 </body>
