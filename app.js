@@ -1,257 +1,387 @@
-// Dữ liệu mẫu từ file Excel của bạn
-let inventoryData = {
-    materials: [
-        { id: 1, code: "RBF,P", name: "RBF,P" },
-        { id: 2, code: "PMBM", name: "PMBM" },
-        { id: 3, code: "FM60", name: "FM60" },
-        { id: 4, code: "FM65%", name: "FM65%" },
-        { id: 5, code: "TAP", name: "TAP" },
-        { id: 6, code: "RBS", name: "RBS" }
-    ],
-    locations: [
-        { id: 1, code: "C06", materialId: 1 },
-        { id: 2, code: "A09", materialId: 1 },
-        { id: 3, code: "A03", materialId: 1 },
-        { id: 4, code: "C01", materialId: 2 },
-        { id: 5, code: "B04", materialId: 2 },
-        { id: 6, code: "B01", materialId: 3 },
-        { id: 7, code: "B07", materialId: 3 }
-    ],
-    transactions: [
-        {
-            id: 1,
-            locationId: 1,
-            materialId: 1,
-            openingBags: 110,
-            openingWeight: 5345,
-            receiveBags: 0,
-            receiveWeight: 0,
-            usageBags: 0,
-            usageWeight: 0,
-            supplierCode: "10102122922",
-            inputDate: "2025-11-04",
-            truckNumber: ""
-        },
-        {
-            id: 2,
-            locationId: 2,
-            materialId: 1,
-            openingBags: 721,
-            openingWeight: 32116,
-            receiveBags: 0,
-            receiveWeight: 0,
-            usageBags: 0,
-            usageWeight: 0,
-            supplierCode: "10102122959", 
-            inputDate: "2025-11-04",
-            truckNumber: ""
+// app.js - Tích hợp Google Sheets
+const API_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+
+// Global variables
+let materials = [];
+let stockData = [];
+let categories = [];
+
+// API Service Class
+class GoogleSheetsAPI {
+    static async request(endpoint, data = null) {
+        try {
+            const url = new URL(API_URL);
+            
+            if (data && Object.keys(data).length > 0) {
+                // GET request với parameters
+                Object.keys(data).forEach(key => {
+                    url.searchParams.set(key, data[key]);
+                });
+            }
+            
+            url.searchParams.set('method', endpoint);
+            
+            console.log('API Request:', url.toString());
+            const response = await fetch(url);
+            const result = await response.json();
+            
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('API Error:', error);
+            throw error;
         }
-    ]
-};
-
-// Lưu dữ liệu vào localStorage
-function saveData() {
-    localStorage.setItem('cpInventoryData', JSON.stringify(inventoryData));
-}
-
-// Load dữ liệu từ localStorage
-function loadData() {
-    const saved = localStorage.getItem('cpInventoryData');
-    if (saved) {
-        inventoryData = JSON.parse(saved);
     }
-    displayData();
-    updateStats();
+
+    // Material methods
+    static async getMaterials() {
+        return await this.request('getMaterials');
+    }
+    
+    static async addMaterial(data) {
+        return await this.request('addMaterial', data);
+    }
+
+    // Stock methods
+    static async getStock(materialId = null) {
+        const params = {};
+        if (materialId) params.materialId = materialId;
+        return await this.request('getStock', params);
+    }
+    
+    static async addStock(data) {
+        return await this.request('addStock', data);
+    }
+
+    // Category methods
+    static async getCategories() {
+        return await this.request('getCategories');
+    }
 }
 
-// Hiển thị dữ liệu
-function displayData() {
-    const container = document.getElementById('materialsContainer');
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const sortBy = document.getElementById('sortSelect').value;
-    const supplierFilter = document.getElementById('supplierFilter').value;
+// Initialize application
+document.addEventListener('DOMContentLoaded', function() {
+    initApp();
+});
 
-    let filteredMaterials = inventoryData.materials.filter(material => {
-        const materialTransactions = inventoryData.transactions.filter(t => t.materialId === material.id);
-        return materialTransactions.some(t => 
-            material.name.toLowerCase().includes(searchTerm) ||
-            material.code.toLowerCase().includes(searchTerm) ||
-            inventoryData.locations.find(l => l.id === t.locationId)?.code.toLowerCase().includes(searchTerm) ||
-            t.supplierCode.toLowerCase().includes(searchTerm)
-        );
+async function initApp() {
+    showLoading(true);
+    try {
+        await loadAllData();
+        setupEventListeners();
+    } catch (error) {
+        console.error('Khởi tạo ứng dụng thất bại:', error);
+        showError('Không thể kết nối đến database. Vui lòng kiểm tra kết nối.');
+    }
+    showLoading(false);
+}
+
+// Load all data from Google Sheets
+async function loadAllData() {
+    try {
+        console.log('Đang tải dữ liệu từ Google Sheets...');
+        
+        const [materialsResult, stockResult, categoriesResult] = await Promise.all([
+            GoogleSheetsAPI.getMaterials(),
+            GoogleSheetsAPI.getStock(),
+            GoogleSheetsAPI.getCategories()
+        ]);
+
+        materials = materialsResult.materials || [];
+        stockData = stockResult.stock || [];
+        categories = categoriesResult.categories || [];
+
+        console.log('Dữ liệu đã tải:', {
+            materials: materials.length,
+            stock: stockData.length,
+            categories: categories.length
+        });
+
+        updateDashboard();
+        renderMaterials();
+        populateFilters();
+
+    } catch (error) {
+        console.error('Lỗi tải dữ liệu:', error);
+        // Fallback to sample data
+        loadSampleData();
+        showError('Đang sử dụng dữ liệu mẫu. Vui lòng kiểm tra kết nối Google Sheets.');
+    }
+}
+
+// Sample data fallback
+function loadSampleData() {
+    materials = [
+        { ID: 1, Name: 'RBF,P', Code: 'RBF001', Category: 'protein', Description: 'Nguyên liệu A', Active: true },
+        { ID: 2, Name: 'PMBM', Code: 'PMB001', Category: 'protein', Description: 'Protein từ thịt và xương', Active: true },
+        { ID: 3, Name: 'FM60', Code: 'FM6001', Category: 'plant', Description: 'Bột cá 60% protein', Active: true }
+    ];
+
+    stockData = [
+        { ID: 1, MaterialID: 1, LOC: 'C06', Bags: 110, Weight: 5345, InputDate: '2025-11-04', SupplierCode: '10102122922', TruckNumber: '', Age: 0 },
+        { ID: 2, MaterialID: 1, LOC: 'A09', Bags: 721, Weight: 32116, InputDate: '2025-11-04', SupplierCode: '10102122959', TruckNumber: '', Age: 0 },
+        { ID: 3, MaterialID: 2, LOC: 'C01', Bags: 539, Weight: 29499, InputDate: '2025-10-24', SupplierCode: '10102122269(US)', TruckNumber: '', Age: 11 }
+    ];
+
+    categories = [
+        { ID: 1, Name: 'Protein động vật', Color: '#e74c3c' },
+        { ID: 2, Name: 'Nguyên liệu thực vật', Color: '#2ecc71' },
+        { ID: 3, Name: 'Phụ gia', Color: '#3498db' }
+    ];
+}
+
+// Update dashboard statistics
+function updateDashboard() {
+    const totalMaterials = materials.filter(m => m.Active).length;
+    const totalLocations = new Set(stockData.map(item => item.LOC)).size;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const todayTransactions = stockData.filter(item => item.InputDate === today).length;
+    
+    const totalStock = stockData.reduce((sum, item) => sum + (parseFloat(item.Weight) || 0), 0);
+
+    document.getElementById('totalMaterials').textContent = totalMaterials;
+    document.getElementById('totalLocations').textContent = totalLocations;
+    document.getElementById('todayTransactions').textContent = todayTransactions;
+    document.getElementById('totalStock').textContent = totalStock.toLocaleString('vi-VN') + ' kg';
+}
+
+// Render materials to the container
+function renderMaterials() {
+    const container = document.getElementById('materialsContainer');
+    if (!container) return;
+
+    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+    const sortBy = document.getElementById('sortSelect')?.value || 'name';
+    const supplierFilter = document.getElementById('supplierFilter')?.value || '';
+
+    // Filter materials
+    let filteredMaterials = materials.filter(material => {
+        if (!material.Active) return false;
+        
+        const matchesSearch = material.Name.toLowerCase().includes(searchTerm) || 
+                             material.Code.toLowerCase().includes(searchTerm) ||
+                             material.Description.toLowerCase().includes(searchTerm);
+        
+        const matchesSupplier = !supplierFilter || 
+                               stockData.some(item => 
+                                   item.MaterialID == material.ID && 
+                                   item.SupplierCode === supplierFilter
+                               );
+        
+        return matchesSearch && matchesSupplier;
     });
 
-    // Sắp xếp
-    if (sortBy === 'name') {
-        filteredMaterials.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortBy === 'date') {
-        // Sắp xếp theo ngày giao dịch mới nhất
-        filteredMaterials.sort((a, b) => {
-            const aLatest = Math.max(...inventoryData.transactions.filter(t => t.materialId === a.id).map(t => new Date(t.inputDate)));
-            const bLatest = Math.max(...inventoryData.transactions.filter(t => t.materialId === b.id).map(t => new Date(t.inputDate)));
-            return bLatest - aLatest;
-        });
-    }
+    // Sort materials
+    filteredMaterials.sort((a, b) => {
+        switch (sortBy) {
+            case 'name':
+                return a.Name.localeCompare(b.Name);
+            case 'date':
+                const aStock = getMaterialStock(a.ID);
+                const bStock = getMaterialStock(b.ID);
+                const aLatest = aStock.length > 0 ? new Date(aStock[aStock.length - 1].InputDate) : new Date(0);
+                const bLatest = bStock.length > 0 ? new Date(bStock[bStock.length - 1].InputDate) : new Date(0);
+                return bLatest - aLatest;
+            case 'location':
+                const aLoc = getMaterialStock(a.ID)[0]?.LOC || '';
+                const bLoc = getMaterialStock(b.ID)[0]?.LOC || '';
+                return aLoc.localeCompare(bLoc);
+            default:
+                return 0;
+        }
+    });
 
+    // Render HTML
     container.innerHTML = filteredMaterials.map(material => {
-        const materialLocations = inventoryData.locations.filter(l => l.materialId === material.id);
-        
+        const materialStock = getMaterialStock(material.ID);
+        const totalBags = materialStock.reduce((sum, item) => sum + (parseInt(item.Bags) || 0), 0);
+        const totalWeight = materialStock.reduce((sum, item) => sum + (parseFloat(item.Weight) || 0), 0);
+
         return `
-            <div class="card material-card mb-3">
-                <div class="card-header bg-light">
+            <div class="card material-card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-box"></i> ${material.name} 
-                        <small class="text-muted">(${material.code})</small>
+                        <i class="fas fa-box"></i> ${material.Name}
+                        <small class="text-muted">${material.Code}</small>
                     </h5>
+                    <div>
+                        <span class="badge bg-primary me-2">${materialStock.length} lô</span>
+                        <span class="badge bg-success">${totalBags} bao</span>
+                    </div>
                 </div>
                 <div class="card-body">
-                    ${materialLocations.map(location => {
-                        const locationTransactions = inventoryData.transactions
-                            .filter(t => t.locationId === location.id)
-                            .filter(t => !supplierFilter || t.supplierCode === supplierFilter)
-                            .sort((a, b) => new Date(b.inputDate) - new Date(a.inputDate));
-                        
-                        if (locationTransactions.length === 0) return '';
-                        
-                        const latestTransaction = locationTransactions[0];
-                        const closingBags = latestTransaction.openingBags + latestTransaction.receiveBags - latestTransaction.usageBags;
-                        const closingWeight = latestTransaction.openingWeight + latestTransaction.receiveWeight - latestTransaction.usageWeight;
-                        
-                        return `
-                            <div class="location-section">
-                                <h6><i class="fas fa-map-marker-alt text-primary"></i> Vị trí: ${location.code}</h6>
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-hover">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Ngày</th>
-                                                <th>Tồn đầu</th>
-                                                <th>Nhập</th>
-                                                <th>Xuất</th>
-                                                <th>Tồn cuối</th>
-                                                <th>Tuổi</th>
-                                                <th>NCC</th>
-                                                <th>Xe</th>
+                    <p class="card-text">${material.Description}</p>
+                    
+                    <div class="location-section">
+                        <h6><i class="fas fa-map-marker-alt"></i> Chi tiết các lô:</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>LOC</th>
+                                        <th>Số bao</th>
+                                        <th>Trọng lượng (kg)</th>
+                                        <th>Ngày nhập</th>
+                                        <th>Tuổi</th>
+                                        <th>Mã NCC</th>
+                                        <th>Số xe</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${materialStock.map(item => {
+                                        const age = item.Age || calculateAge(item.InputDate);
+                                        const ageClass = getAgeClass(age);
+                                        return `
+                                            <tr class="transaction-row">
+                                                <td><strong>${item.LOC}</strong></td>
+                                                <td>${item.Bags}</td>
+                                                <td>${parseFloat(item.Weight).toLocaleString('vi-VN')}</td>
+                                                <td>${formatDate(item.InputDate)}</td>
+                                                <td><span class="badge bg-${ageClass}">${age} ngày</span></td>
+                                                <td>${item.SupplierCode || '-'}</td>
+                                                <td>${item.TruckNumber || '-'}</td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${locationTransactions.map(transaction => {
-                                                const ageDays = Math.floor((new Date() - new Date(transaction.inputDate)) / (1000 * 60 * 60 * 24));
-                                                const closeBags = transaction.openingBags + transaction.receiveBags - transaction.usageBags;
-                                                const closeWeight = transaction.openingWeight + transaction.receiveWeight - transaction.usageWeight;
-                                                
-                                                return `
-                                                    <tr class="transaction-row">
-                                                        <td>${transaction.inputDate}</td>
-                                                        <td>${transaction.openingBags}bao<br><small>${transaction.openingWeight}kg</small></td>
-                                                        <td class="text-success">${transaction.receiveBags}bao<br><small>${transaction.receiveWeight}kg</small></td>
-                                                        <td class="text-danger">${transaction.usageBags}bao<br><small>${transaction.usageWeight}kg</small></td>
-                                                        <td class="fw-bold">${closeBags}bao<br><small>${closeWeight}kg</small></td>
-                                                        <td><span class="badge ${ageDays > 30 ? 'bg-warning' : 'bg-info'}">${ageDays} ngày</span></td>
-                                                        <td><small>${transaction.supplierCode}</small></td>
-                                                        <td><small>${transaction.truckNumber || '-'}</small></td>
-                                                    </tr>
-                                                `;
-                                            }).join('')}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
-    }).join('') || '<div class="alert alert-info">Không tìm thấy dữ liệu phù hợp</div>';
+    }).join('') || '<div class="text-center text-muted">Không tìm thấy nguyên liệu nào.</div>';
 }
 
-// Cập nhật thống kê
-function updateStats() {
-    document.getElementById('totalMaterials').textContent = inventoryData.materials.length;
-    document.getElementById('totalLocations').textContent = inventoryData.locations.length;
-    
-    const today = new Date().toISOString().split('T')[0];
-    const todayTransactions = inventoryData.transactions.filter(t => t.inputDate === today).length;
-    document.getElementById('todayTransactions').textContent = todayTransactions;
-    
-    const totalStock = inventoryData.transactions.reduce((sum, transaction) => {
-        const closingWeight = transaction.openingWeight + transaction.receiveWeight - transaction.usageWeight;
-        return sum + closingWeight;
-    }, 0);
-    document.getElementById('totalStock').textContent = totalStock.toLocaleString() + ' kg';
-    
-    // Cập nhật dropdown materials
-    const materialSelect = document.getElementById('materialSelect');
-    materialSelect.innerHTML = '<option value="">-- Chọn nguyên liệu --</option>' +
-        inventoryData.materials.map(m => `<option value="${m.id}">${m.name} (${m.code})</option>`).join('');
-    
-    // Cập nhật dropdown suppliers
-    const supplierFilter = document.getElementById('supplierFilter');
-    const suppliers = [...new Set(inventoryData.transactions.map(t => t.supplierCode).filter(s => s))];
-    supplierFilter.innerHTML = '<option value="">Tất cả NCC</option>' +
-        suppliers.map(s => `<option value="${s}">${s}</option>`).join('');
+// Get stock for a specific material
+function getMaterialStock(materialId) {
+    return stockData
+        .filter(item => item.MaterialID == materialId)
+        .sort((a, b) => new Date(a.InputDate) - new Date(b.InputDate)); // Cũ nhất lên đầu
 }
 
-// Thêm giao dịch mới
-function addTransaction() {
-    const materialId = parseInt(document.getElementById('materialSelect').value);
+// Populate filters and selects
+function populateFilters() {
+    populateMaterialSelect();
+    populateSupplierFilter();
+}
+
+function populateMaterialSelect() {
+    const select = document.getElementById('materialSelect');
+    if (!select) return;
+
+    select.innerHTML = '<option value="">-- Chọn nguyên liệu --</option>' +
+        materials
+            .filter(m => m.Active)
+            .map(material => 
+                `<option value="${material.ID}">${material.Name} (${material.Code})</option>`
+            ).join('');
+}
+
+function populateSupplierFilter() {
+    const select = document.getElementById('supplierFilter');
+    if (!select) return;
+
+    const suppliers = [...new Set(stockData.map(item => item.SupplierCode).filter(Boolean))];
+    
+    select.innerHTML = '<option value="">Tất cả NCC</option>' +
+        suppliers.map(supplier => 
+            `<option value="${supplier}">${supplier}</option>`
+        ).join('');
+}
+
+// Add new transaction
+async function addTransaction() {
+    const materialId = document.getElementById('materialSelect').value;
     const locationCode = document.getElementById('locationCode').value.trim();
     const receiveBags = parseInt(document.getElementById('receiveBags').value) || 0;
     const receiveWeight = parseFloat(document.getElementById('receiveWeight').value) || 0;
-    const usageBags = parseInt(document.getElementById('usageBags').value) || 0;
-    const usageWeight = parseFloat(document.getElementById('usageWeight').value) || 0;
     const supplierCode = document.getElementById('supplierCode').value.trim();
     const truckNumber = document.getElementById('truckNumber').value.trim();
 
-    if (!materialId || !locationCode) {
-        alert('Vui lòng chọn nguyên liệu và nhập vị trí!');
+    // Validation
+    if (!materialId) {
+        alert('Vui lòng chọn nguyên liệu');
         return;
     }
 
-    // Tìm hoặc tạo location mới
-    let location = inventoryData.locations.find(l => l.code === locationCode && l.materialId === materialId);
-    if (!location) {
-        location = {
-            id: Math.max(...inventoryData.locations.map(l => l.id), 0) + 1,
-            code: locationCode,
-            materialId: materialId
-        };
-        inventoryData.locations.push(location);
+    if (!locationCode) {
+        alert('Vui lòng nhập vị trí LOC');
+        return;
     }
 
-    // Tìm transaction gần nhất để lấy closing balance làm opening balance mới
-    const latestTransaction = inventoryData.transactions
-        .filter(t => t.locationId === location.id)
-        .sort((a, b) => new Date(b.inputDate) - new Date(a.inputDate))[0];
+    if (receiveBags === 0 && receiveWeight === 0) {
+        alert('Vui lòng nhập số bao hoặc trọng lượng nhập kho');
+        return;
+    }
 
-    const openingBags = latestTransaction ? (latestTransaction.openingBags + latestTransaction.receiveBags - latestTransaction.usageBags) : 0;
-    const openingWeight = latestTransaction ? (latestTransaction.openingWeight + latestTransaction.receiveWeight - latestTransaction.usageWeight) : 0;
+    const material = materials.find(m => m.ID == materialId);
+    if (!material) {
+        alert('Nguyên liệu không tồn tại');
+        return;
+    }
 
-    const newTransaction = {
-        id: Math.max(...inventoryData.transactions.map(t => t.id), 0) + 1,
-        locationId: location.id,
+    const transactionData = {
         materialId: materialId,
-        openingBags: openingBags,
-        openingWeight: openingWeight,
-        receiveBags: receiveBags,
-        receiveWeight: receiveWeight,
-        usageBags: usageBags,
-        usageWeight: usageWeight,
+        loc: locationCode,
+        bags: receiveBags,
+        weight: receiveWeight,
+        inputDate: new Date().toISOString().split('T')[0], // Today's date
         supplierCode: supplierCode,
         truckNumber: truckNumber,
-        inputDate: new Date().toISOString().split('T')[0]
+        formulaDate: '' // Có thể thêm trường này sau
     };
 
-    inventoryData.transactions.push(newTransaction);
-    saveData();
-    displayData();
-    updateStats();
-    clearForm();
-    
-    alert('✅ Đã thêm giao dịch thành công!');
+    try {
+        showLoading(true);
+        
+        const result = await GoogleSheetsAPI.addStock(transactionData);
+        
+        // Add to local data for immediate UI update
+        const newStockItem = {
+            ...transactionData,
+            ID: stockData.length + 1,
+            Age: 0
+        };
+        stockData.push(newStockItem);
+        
+        // Update UI
+        updateDashboard();
+        renderMaterials();
+        clearForm();
+        
+        showLoading(false);
+        showSuccess(`✅ Đã thêm lô ${locationCode} cho ${material.Name} thành công!`);
+        
+    } catch (error) {
+        showLoading(false);
+        showError('❌ Lỗi khi thêm giao dịch: ' + error.message);
+    }
 }
 
-// Xóa form
+// Utility functions
+function calculateAge(inputDate) {
+    const today = new Date();
+    const input = new Date(inputDate);
+    const diffTime = Math.abs(today - input);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+function getAgeClass(age) {
+    if (age <= 7) return 'success';
+    if (age <= 14) return 'warning';
+    return 'danger';
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN');
+}
+
 function clearForm() {
     document.getElementById('locationCode').value = '';
     document.getElementById('receiveBags').value = '0';
@@ -262,10 +392,42 @@ function clearForm() {
     document.getElementById('truckNumber').value = '';
 }
 
-// Event listeners
-document.getElementById('searchInput').addEventListener('input', displayData);
-document.getElementById('sortSelect').addEventListener('change', displayData);
-document.getElementById('supplierFilter').addEventListener('change', displayData);
+function showLoading(show) {
+    // Implement loading indicator if needed
+    if (show) {
+        document.body.style.opacity = '0.7';
+    } else {
+        document.body.style.opacity = '1';
+    }
+}
 
-// Khởi chạy khi trang load
-window.addEventListener('DOMContentLoaded', loadData);
+function showSuccess(message) {
+    alert(message);
+}
+
+function showError(message) {
+    alert(message);
+}
+
+// Event listeners
+function setupEventListeners() {
+    // Search and filter events
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const supplierFilter = document.getElementById('supplierFilter');
+    
+    if (searchInput) searchInput.addEventListener('input', renderMaterials);
+    if (sortSelect) sortSelect.addEventListener('change', renderMaterials);
+    if (supplierFilter) supplierFilter.addEventListener('change', renderMaterials);
+    
+    // Refresh button
+    const refreshBtn = document.querySelector('button[onclick="loadData()"]');
+    if (refreshBtn) {
+        refreshBtn.onclick = loadAllData;
+    }
+}
+
+// Global function for refresh
+function loadData() {
+    loadAllData();
+}
