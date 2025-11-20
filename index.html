@@ -25,14 +25,18 @@
         }
 
         .main-header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
             color: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
+            min-height: 180px;
         }
 
         .main-header h1 {
@@ -40,6 +44,7 @@
             margin-bottom: 15px;
             text-align: left;
             font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
         }
 
         .header-controls {
@@ -95,6 +100,8 @@
             border-radius: 8px;
             text-align: center;
             min-width: 120px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .summary-label {
@@ -111,49 +118,51 @@
 
         .age-inventory-panel {
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .age-inventory-panel h3 {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             color: #1e3c72;
-            border-bottom: 2px solid #eaeaea;
-            padding-bottom: 10px;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 6px;
+            font-size: 15px;
         }
 
         .age-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 10px;
         }
 
         .age-item {
             background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 6px;
             text-align: center;
-            border-left: 4px solid #4CAF50;
+            border-left: 3px solid #4CAF50;
         }
 
         .age-days {
             display: block;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
+            font-size: 13px;
         }
 
         .age-tonnage {
             display: block;
-            font-size: 18px;
+            font-size: 14px;
             color: #1e3c72;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .age-percentage {
             display: block;
-            font-size: 14px;
+            font-size: 12px;
             color: #6c757d;
         }
 
@@ -172,7 +181,7 @@
 
         .form-content {
             background-color: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 10px;
             width: 90%;
             max-width: 800px;
@@ -188,23 +197,23 @@
         }
 
         .form-section {
-            margin-bottom: 25px;
-            padding: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
             background-color: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #4CAF50;
+            border-radius: 6px;
+            border-left: 3px solid #4CAF50;
         }
 
         .form-section h3 {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: #1e3c72;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .form-row {
             display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .form-group {
@@ -219,46 +228,48 @@
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
+            font-size: 14px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 4px;
+            font-size: 14px;
         }
 
         .form-actions {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .report-filter {
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .report-filter h3 {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: #1e3c72;
+            font-size: 16px;
         }
 
         .filter-controls {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .table-container {
             background-color: white;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 20px;
@@ -272,9 +283,10 @@
         }
 
         th, td {
-            padding: 12px 15px;
+            padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid #eaeaea;
+            font-size: 14px;
         }
 
         th {
@@ -289,17 +301,18 @@
 
         .loading {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             color: #666;
         }
 
         .error {
             background-color: #ffebee;
             color: #c62828;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 10px 0;
-            border-left: 4px solid #c62828;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            border-left: 3px solid #c62828;
+            font-size: 14px;
         }
 
         @media (max-width: 768px) {
@@ -355,7 +368,7 @@
             </div>
         </header>
 
-        <!-- Age Inventory Info -->
+        <!-- Age Inventory Info - Đã được làm gọn hơn -->
         <div class="age-inventory-panel">
             <h3>THÔNG TIN TUỔI LƯU KHO</h3>
             <div class="age-grid">
@@ -416,7 +429,6 @@
                                     <option value="C9960">C9960</option>
                                     <option value="C9961">C9961</option>
                                 </select>
-                                <input type="text" id="customMaterial" placeholder="Hoặc nhập tên mới" style="margin-top: 5px; display: none;">
                             </div>
                             <div class="form-group">
                                 <label>Vị trí kho *</label>
@@ -465,11 +477,7 @@
                                     <option value="dau_ca_bien">Dầu cá biển</option>
                                     <option value="dau_nanh">Dầu nành</option>
                                     <option value="dich_ca">Dịch cá</option>
-                                    <option value="nuoc_mam">Nước mắm</option>
-                                    <option value="mam_tom">Mắm tôm</option>
-                                    <option value="custom">Khác (nhập tay)</option>
                                 </select>
-                                <input type="text" id="customLiquid" placeholder="Nhập tên chất lỏng" style="margin-top: 5px; display: none;">
                             </div>
                             <div class="form-group">
                                 <label>Silo/Vị trí</label>
@@ -526,7 +534,7 @@
 
                         <div class="form-group full-width">
                             <label>Ghi chú</label>
-                            <textarea id="notes" rows="3" placeholder="Ghi chú thêm..."></textarea>
+                            <textarea id="notes" rows="2" placeholder="Ghi chú thêm..."></textarea>
                         </div>
                     </div>
 
@@ -581,9 +589,8 @@
     </div>
 
     <script>
-        // Cấu hình Google Sheet
-        const SHEET_ID = '10pe53nOu2G_Yn2NJPJAYnStjE4NxeAi5aSdVXGnnB1g';
-        const SHEET_BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=`;
+        // URL Apps Script của bạn
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby22vJkdZdDUGz_CimlDqgbEXhpsQlSZr8BZHgA7vZKv4hYtq16M0DI9axosfc8_8PEJA/exec';
 
         // Khởi tạo ứng dụng
         document.addEventListener('DOMContentLoaded', function() {
@@ -615,11 +622,11 @@
             });
             
             document.getElementById('refreshBtn').addEventListener('click', function() {
-                loadDataFromSheet();
+                loadDataFromAppsScript();
             });
             
             document.getElementById('loadSheetData').addEventListener('click', function() {
-                loadDataFromSheet();
+                loadDataFromAppsScript();
             });
             
             // Xử lý thay đổi loại nguyên liệu
@@ -640,11 +647,11 @@
                 saveTransaction();
             });
             
-            // Tải dữ liệu từ Sheet khi khởi động
-            loadDataFromSheet();
+            // Tải dữ liệu từ Apps Script khi khởi động
+            loadDataFromAppsScript();
         }
 
-        async function loadDataFromSheet() {
+        async function loadDataFromAppsScript() {
             const selectedDay = document.getElementById('reportDay').value;
             if (!selectedDay) {
                 alert('Vui lòng chọn ngày!');
@@ -652,24 +659,18 @@
             }
 
             const statusDiv = document.getElementById('connectionStatus');
-            statusDiv.innerHTML = '<div class="loading">Đang kết nối đến Google Sheet...</div>';
+            statusDiv.innerHTML = '<div class="loading">Đang kết nối đến Google Sheet qua Apps Script...</div>';
 
             try {
-                // Sử dụng CORS proxy để tránh lỗi CORS
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                const sheetUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${selectedDay}`;
+                const response = await fetch(`${APPS_SCRIPT_URL}?sheet=${selectedDay}`);
+                const data = await response.json();
                 
-                const response = await fetch(proxyUrl + sheetUrl);
-                
-                if (!response.ok) {
-                    throw new Error('Không thể kết nối đến Google Sheet');
+                if (data.error) {
+                    throw new Error(data.error);
                 }
-
-                const text = await response.text();
-                const json = JSON.parse(text.substring(47).slice(0, -2));
                 
-                // Xử lý dữ liệu từ Google Sheet
-                processSheetData(json, selectedDay);
+                // Xử lý dữ liệu từ Apps Script
+                processAppsScriptData(data, selectedDay);
                 statusDiv.innerHTML = '<div style="color: #4CAF50;">✓ Đã kết nối thành công với Google Sheet</div>';
                 
             } catch (error) {
@@ -679,91 +680,81 @@
             }
         }
 
-        function processSheetData(json, day) {
+        function processAppsScriptData(data, day) {
             try {
-                const tableBody = document.getElementById('tableBody');
-                tableBody.innerHTML = '';
-
-                if (!json.table || !json.table.rows) {
-                    tableBody.innerHTML = '<tr><td colspan="13">Không có dữ liệu cho ngày này</td></tr>';
-                    return;
-                }
-
-                const rows = json.table.rows;
-                let totalImport = 0;
-                let totalExport = 0;
-                let totalInventory = 0;
-
-                // Xử lý từng dòng dữ liệu
-                rows.forEach((row, index) => {
-                    if (index < 5) return; // Bỏ qua các dòng tiêu đề
-
-                    const cells = row.c;
-                    if (!cells || cells.length < 15) return;
-
-                    // Lấy dữ liệu từ các cột tương ứng
-                    const materialData = {
-                        date: cells[12] ? formatDate(cells[12].v) : '', // Cột M: Ngày nhập
-                        type: 'Rắn',
-                        name: cells[1] ? cells[1].v : '', // Cột B: Name
-                        location: cells[2] ? cells[2].v : '', // Cột C: Lock
-                        importQty: cells[4] ? cells[4].v : 0, // Cột E: Nhập (Bag)
-                        importWeight: cells[5] ? cells[5].v : 0, // Cột F: Nhập (Weight)
-                        usageQty: cells[6] ? cells[6].v : 0, // Cột G: Sử dụng (Bag)
-                        usageWeight: cells[7] ? cells[7].v : 0, // Cột H: Sử dụng (Weight)
-                        endingWeight: cells[9] ? cells[9].v : 0, // Cột J: Tồn cuối (Weight)
-                        age: cells[13] ? cells[13].v : '', // Cột N: Tuổi lưu kho
-                        code: cells[14] ? cells[14].v : '', // Cột O: Code/NCC
-                        batch: cells[16] ? cells[16].v : '', // Cột Q: Số lô
-                        notes: ''
-                    };
-
-                    // Chỉ hiển thị các dòng có dữ liệu
-                    if (materialData.name && materialData.name !== 'Name') {
-                        const rowElement = document.createElement('tr');
-                        rowElement.innerHTML = `
-                            <td>${materialData.date}</td>
-                            <td>${materialData.type}</td>
-                            <td>${materialData.name}</td>
-                            <td>${materialData.location}</td>
-                            <td>${materialData.importQty}</td>
-                            <td>${materialData.importWeight}</td>
-                            <td>${materialData.usageQty}</td>
-                            <td>${materialData.usageWeight}</td>
-                            <td>${materialData.endingWeight}</td>
-                            <td>${materialData.age}</td>
-                            <td>${materialData.code}</td>
-                            <td>${materialData.batch}</td>
-                            <td>${materialData.notes}</td>
-                        `;
-                        tableBody.appendChild(rowElement);
-
-                        // Cộng dồn tổng
-                        totalImport += parseFloat(materialData.importWeight) || 0;
-                        totalExport += parseFloat(materialData.usageWeight) || 0;
-                        totalInventory += parseFloat(materialData.endingWeight) || 0;
-                    }
-                });
-
                 // Cập nhật tổng quan
-                updateSummary(totalImport, totalExport, totalInventory);
-
+                if (data.summary) {
+                    document.getElementById('totalImport').textContent = data.summary.totalImport || 0;
+                    document.getElementById('totalExport').textContent = data.summary.totalExport || 0;
+                    document.getElementById('totalInventory').textContent = data.summary.totalInventory || 0;
+                }
+                
+                // Cập nhật thông tin tuổi lưu kho
+                if (data.ageInventory) {
+                    document.getElementById('age0-30').textContent = (data.ageInventory['0-30']?.tons || 0) + ' tấn';
+                    document.getElementById('percent0-30').textContent = (data.ageInventory['0-30']?.percent || 0) + '%';
+                    
+                    document.getElementById('age31-60').textContent = (data.ageInventory['31-60']?.tons || 0) + ' tấn';
+                    document.getElementById('percent31-60').textContent = (data.ageInventory['31-60']?.percent || 0) + '%';
+                    
+                    document.getElementById('age61').textContent = (data.ageInventory['61']?.tons || 0) + ' tấn';
+                    document.getElementById('percent61').textContent = (data.ageInventory['61']?.percent || 0) + '%';
+                    
+                    document.getElementById('ageTotal').textContent = (data.ageInventory['total']?.tons || 0) + ' tấn';
+                }
+                
+                // Cập nhật bảng dữ liệu từ rawData
+                if (data.rawData && Array.isArray(data.rawData)) {
+                    updateTableFromRawData(data.rawData);
+                } else {
+                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="13">Không có dữ liệu cho ngày này</td></tr>';
+                }
+                
             } catch (error) {
                 console.error('Lỗi xử lý dữ liệu:', error);
                 document.getElementById('tableBody').innerHTML = '<tr><td colspan="13">Lỗi khi xử lý dữ liệu từ Sheet</td></tr>';
             }
         }
 
-        function formatDate(dateValue) {
-            if (!dateValue) return '';
-            const date = new Date(dateValue);
-            return date.toISOString().split('T')[0];
+        function updateTableFromRawData(rawData) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            // Bỏ qua hàng tiêu đề (hàng 0-5)
+            for (let i = 6; i < rawData.length; i++) {
+                const row = rawData[i];
+                // Kiểm tra xem dòng có dữ liệu không
+                if (row[1] && row[1] !== 'Name' && row[1] !== '') {
+                    const rowElement = document.createElement('tr');
+                    rowElement.innerHTML = `
+                        <td>${formatDate(row[12])}</td>
+                        <td>Rắn</td>
+                        <td>${row[1] || ''}</td>
+                        <td>${row[2] || ''}</td>
+                        <td>${row[4] || 0}</td>
+                        <td>${row[5] || 0}</td>
+                        <td>${row[6] || 0}</td>
+                        <td>${row[7] || 0}</td>
+                        <td>${row[9] || 0}</td>
+                        <td>${row[13] || ''}</td>
+                        <td>${row[14] || ''}</td>
+                        <td>${row[16] || ''}</td>
+                        <td>${row[17] || ''}</td>
+                    `;
+                    tableBody.appendChild(rowElement);
+                }
+            }
+
+            if (tableBody.children.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="13">Không có dữ liệu cho ngày này</td></tr>';
+            }
         }
 
-        function updateSummary(importTotal, exportTotal, inventoryTotal) {
-            document.getElementById('totalImport').textContent = importTotal.toFixed(2);
-            document.getElementById('totalExport').textContent = exportTotal.toFixed(2);
-            document.getElementById('totalInventory').textContent = inventoryTotal.toFixed(2);
+        function formatDate(dateValue) {
+            if (!dateValue) return '';
+            if (typeof dateValue === 'string') return dateValue.split(' ')[0];
+            const date = new Date(dateValue);
+            return isNaN(date) ? '' : date.toISOString().split('T')[0];
         }
 
         function loadSampleData() {
@@ -786,37 +777,17 @@
                 }
             ];
 
-            updateTable(sampleData);
+            // Cập nhật giao diện với dữ liệu mẫu
             updateSummary(3.75, 0, 3.75);
         }
 
-        function updateTable(data) {
-            const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = '';
-            
-            data.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.date}</td>
-                    <td>${item.type}</td>
-                    <td>${item.name}</td>
-                    <td>${item.location}</td>
-                    <td>${item.importQty}</td>
-                    <td>${item.importWeight}</td>
-                    <td>${item.usageQty}</td>
-                    <td>${item.usageWeight}</td>
-                    <td>${item.endingWeight}</td>
-                    <td>${item.age}</td>
-                    <td>${item.code}</td>
-                    <td>${item.batch}</td>
-                    <td>${item.notes}</td>
-                `;
-                tableBody.appendChild(row);
-            });
+        function updateSummary(importTotal, exportTotal, inventoryTotal) {
+            document.getElementById('totalImport').textContent = importTotal;
+            document.getElementById('totalExport').textContent = exportTotal;
+            document.getElementById('totalInventory').textContent = inventoryTotal;
         }
 
         function saveTransaction() {
-            // Hiện tại chỉ lưu cục bộ
             alert('Chức năng lưu dữ liệu trực tiếp vào Google Sheet đang được phát triển. Dữ liệu đã được lưu tạm thời.');
             document.getElementById('transactionForm').style.display = 'none';
             document.getElementById('newTransactionForm').reset();
