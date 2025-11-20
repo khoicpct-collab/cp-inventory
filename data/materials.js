@@ -1,0 +1,20 @@
+const MATERIALS = [
+    "BA 193", "BDG (local)", "BDG", "BIOFIL", "BIOFIL YELLOW 2%", "Natuphos",
+    "Leader Yellow", "CANOLA", "DFM", "SBM", "DDGS", "DDGS (US)", "PM (Arg)",
+    "PM (Bra)", "FM65 #1", "FM65 #2", "FM 65 (wait)", "FM60 #3", "FM60", "FM",
+    "FO", "FSH", "FO45", "FSH (thai)", "FSH (oman)", "FSH", "FW (rumani)",
+    "FW (Bun)", "FSH (wait)", "FSH (indi)", "Soybean oil", "PKE (ind) #2", "LS",
+    "PKE (ind) #3", "PM65 (VN)", "PM65 (us)", "PM65 (wait)", "PM (wait)",
+    "PKE (ind)", "PkE (local)", "PM65 (Austr)", "PMBM", "PMBM (bra)", "PMBM (wait)",
+    "PM60 (local)", "9910E Fish", "9910E Shrimp", "9910M", "C9910", "PM65",
+    "PM60 (VN)", "PM60 (wait)", "Flavour", "RBF (local)", "RBF", "RBS",
+    "RBF (nội địa) -VAT", "RBF (wait)", "SHM", "RBS (waitl)", "RBS (ind)",
+    "RBS (VNl)", "SBM (bunge)", "SBM (bra)", "SBM (Arg)", "SBM", "SBM (us)", "SP",
+    "FS", "FS (wait)", "TAP B1 bao", "TAP B1", "TAP", "TAP C1 bao", "Vedanfeed",
+    "C9981", "Salt", "FW (bra)", "Kem Wet", "Vedafeed", "WBC (wait)", "WF",
+    "WF (wait)", "FW (rusia)", "FW (ucraina)", "PM (us)", "FW (australia)", "Quantum",
+    "C9950", "C7930", "C7933", "C9953", "C5950", "C9913", "C9960", "C9910M",
+    "C7930", "C7933", "WBC", "C9920", "SP", "FS", "C4930", "CANOLA (india)",
+    "C9971", "WBF", "C3901", "C4903", "C6901", "C4931", "C5950Y", "WBC (indo)",
+    "C5981"
+];
