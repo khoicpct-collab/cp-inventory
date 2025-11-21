@@ -13,7 +13,7 @@
         }
 
         body {
-            background-color: #f5f7fa;
+            background-color: #f8f9fa;
             color: #333;
             line-height: 1.6;
         }
@@ -25,26 +25,26 @@
         }
 
         .main-header {
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
-                        url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('https://images.unsplash.com/photo-1501854140801-50d01698950b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
             background-size: cover;
             background-position: center;
             color: white;
             padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             position: relative;
             overflow: hidden;
-            min-height: 180px;
+            min-height: 200px;
         }
 
         .main-header h1 {
-            font-size: 24px;
-            margin-bottom: 15px;
-            text-align: left;
-            font-weight: 600;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         .header-controls {
@@ -52,226 +52,148 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 20px;
         }
 
         .control-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .btn-primary, .btn-secondary {
-            padding: 10px 20px;
+        .btn-primary, .btn-secondary, .btn-info, .btn-success {
+            padding: 12px 24px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         }
 
         .btn-primary:hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
         }
 
         .btn-secondary {
-            background-color: #6c757d;
+            background: linear-gradient(135deg, #6c757d, #5a6268);
             color: white;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
         }
 
         .btn-secondary:hover {
-            background-color: #5a6268;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .btn-info:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: white;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
         }
 
         .daily-summary {
             display: flex;
-            gap: 15px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .summary-box {
-            background-color: rgba(255,255,255,0.2);
-            padding: 15px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15));
+            padding: 20px;
+            border-radius: 12px;
             text-align: center;
-            min-width: 120px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.1);
+            min-width: 140px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .summary-label {
             display: block;
             font-size: 14px;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            opacity: 0.9;
         }
 
         .summary-value {
             display: block;
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
         }
 
-        .age-inventory-panel {
-            background-color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .age-inventory-panel h3 {
-            margin-bottom: 10px;
-            color: #1e3c72;
-            border-bottom: 1px solid #eaeaea;
-            padding-bottom: 6px;
-            font-size: 15px;
-        }
-
-        .age-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .age-item {
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-radius: 6px;
-            text-align: center;
-            border-left: 3px solid #4CAF50;
-        }
-
-        .age-days {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 4px;
-            font-size: 13px;
-        }
-
-        .age-tonnage {
-            display: block;
-            font-size: 14px;
-            color: #1e3c72;
-            margin-bottom: 3px;
-        }
-
-        .age-percentage {
-            display: block;
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        .form-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .form-content {
-            background-color: white;
-            padding: 25px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .form-content h2 {
-            margin-bottom: 20px;
-            color: #1e3c72;
-            text-align: center;
-        }
-
-        .form-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            border-left: 3px solid #4CAF50;
-        }
-
-        .form-section h3 {
-            margin-bottom: 12px;
-            color: #1e3c72;
-            font-size: 16px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .form-group {
-            flex: 1;
-        }
-
-        .form-group.full-width {
-            flex: 0 0 100%;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
+        /* Report Filter Styles */
         .report-filter {
-            background-color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #4CAF50;
         }
 
         .report-filter h3 {
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             color: #1e3c72;
-            font-size: 16px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .filter-controls {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             flex-wrap: wrap;
         }
 
-        .table-container {
-            background-color: white;
+        .filter-controls select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
+            font-size: 14px;
+            min-width: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-controls select:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             margin-bottom: 20px;
             overflow-x: auto;
         }
@@ -279,123 +201,333 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1000px;
+            min-width: 1200px;
         }
 
         th, td {
-            padding: 10px 12px;
+            padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #eaeaea;
             font-size: 14px;
         }
 
         th {
-            background-color: #1e3c72;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
             font-weight: 600;
+            position: sticky;
+            top: 0;
         }
 
         tr:hover {
             background-color: #f8f9fa;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
         }
 
+        /* Form Modal Styles */
+        .form-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .form-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 95%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-content h2 {
+            margin-bottom: 25px;
+            color: #1e3c72;
+            text-align: center;
+            font-size: 24px;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            outline: none;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .form-section h3 {
+            margin-bottom: 15px;
+            color: #1e3c72;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+
+        /* Status Messages */
         .loading {
             text-align: center;
-            padding: 15px;
+            padding: 20px;
             color: #666;
+            font-size: 16px;
         }
 
         .error {
-            background-color: #ffebee;
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
             color: #c62828;
-            padding: 12px;
-            border-radius: 4px;
-            margin: 8px 0;
-            border-left: 3px solid #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #c62828;
             font-size: 14px;
         }
 
         .success {
-            background-color: #e8f5e8;
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
             color: #2e7d32;
-            padding: 12px;
-            border-radius: 4px;
-            margin: 8px 0;
-            border-left: 3px solid #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #2e7d32;
             font-size: 14px;
         }
 
+        /* End of Month Styles */
         .end-of-month-alert {
-            background: linear-gradient(45deg, #ff4444, #ff6b6b);
+            background: linear-gradient(135deg, #ff4444, #cc0000);
             color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
             text-align: center;
             font-weight: bold;
-            font-size: 16px;
-            box-shadow: 0 4px 6px rgba(255, 0, 0, 0.3);
+            font-size: 18px;
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3);
             animation: pulse 2s infinite;
             border: 2px solid #ff0000;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3); }
+            50% { transform: scale(1.02); box-shadow: 0 12px 35px rgba(255, 0, 0, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3); }
         }
 
         .danger-zone {
-            background-color: #fff3f3;
+            background: linear-gradient(135deg, #fff3f3, #ffe6e6);
             border: 2px solid #ff4444;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.1);
         }
 
         .danger-zone h3 {
             color: #ff4444;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .btn-danger {
-            background-color: #ff4444;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
         }
 
         .btn-danger:hover {
-            background-color: #cc0000;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
         }
 
+        /* Age Inventory Styles */
+        .age-inventory-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #4CAF50;
+        }
+
+        .age-inventory-panel h3 {
+            margin-bottom: 15px;
+            color: #1e3c72;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .age-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .age-item {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #4CAF50;
+            transition: all 0.3s ease;
+        }
+
+        .age-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .age-days {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #1e3c72;
+        }
+
+        .age-tonnage {
+            display: block;
+            font-size: 18px;
+            color: #2a5298;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .age-percentage {
+            display: block;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        /* Export Modal Styles */
+        .export-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .export-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .export-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
             .header-controls {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
+            }
+            
+            .control-buttons {
+                justify-content: center;
             }
             
             .daily-summary {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .age-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .form-row {
-                flex-direction: column;
+                justify-content: center;
             }
             
             .filter-controls {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .age-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -412,8 +544,8 @@
             <div class="header-controls">
                 <div class="control-buttons">
                     <button id="refreshBtn" class="btn-secondary">🔄 Làm mới</button>
-                    <button id="generateReport" class="btn-primary">Xem báo cáo</button>
-                    <button id="addTransactionBtn" class="btn-primary">+ Thêm data</button>
+                    <button id="addTransactionBtn" class="btn-primary">➕ Thêm data</button>
+                    <button id="exportBtn" class="btn-info">📄 Xuất phiếu</button>
                 </div>
                 <div class="daily-summary">
                     <div class="summary-box">
@@ -432,246 +564,17 @@
             </div>
         </header>
 
-        <!-- Khu vực nguy hiểm -->
-        <div class="danger-zone">
-            <h3>⚡ QUẢN LÝ CUỐI THÁNG</h3>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button id="checkEndOfMonthBtn" class="btn-secondary">Kiểm tra ngày cuối tháng</button>
-                <button id="processEndOfMonthBtn" class="btn-primary">Xử lý cuối tháng (Copy tồn kho)</button>
-                <button id="clearDataBtn" class="btn-danger">🗑️ Xóa sạch dữ liệu tháng</button>
-            </div>
-            <div id="endOfMonthStatus" style="margin-top: 10px;"></div>
-        </div>
-
-        <!-- Age Inventory Info -->
-        <div class="age-inventory-panel">
-            <h3>THÔNG TIN TUỔI LƯU KHO</h3>
-            <div class="age-grid">
-                <div class="age-item">
-                    <span class="age-days">00-30 ngày</span>
-                    <span class="age-tonnage" id="age0-30">0 tấn</span>
-                    <span class="age-percentage" id="percent0-30">0%</span>
-                </div>
-                <div class="age-item">
-                    <span class="age-days">31-60 ngày</span>
-                    <span class="age-tonnage" id="age31-60">0 tấn</span>
-                    <span class="age-percentage" id="percent31-60">0%</span>
-                </div>
-                <div class="age-item">
-                    <span class="age-days">>61 ngày</span>
-                    <span class="age-tonnage" id="age61">0 tấn</span>
-                    <span class="age-percentage" id="percent61">0%</span>
-                </div>
-                <div class="age-item">
-                    <span class="age-days">Tổng cộng</span>
-                    <span class="age-tonnage" id="ageTotal">0 tấn</span>
-                    <span class="age-percentage">100%</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Form thêm data -->
-        <div id="transactionForm" class="form-modal" style="display: none;">
-            <div class="form-content">
-                <h2>THÊM DATA MỚI</h2>
-                <form id="newTransactionForm">
-                    <div class="form-section">
-                        <h3>Thông tin cơ bản</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Loại giao dịch *</label>
-                                <select id="transactionType" required>
-                                    <option value="import">Nhập hàng</option>
-                                    <option value="export">Xuất hàng</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Ngày nhập/xuất *</label>
-                                <input type="date" id="inputDate" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Loại nguyên liệu *</label>
-                                <select id="materialType" required>
-                                    <option value="">Chọn loại</option>
-                                    <option value="solid">Nguyên liệu rắn</option>
-                                    <option value="liquid">Chất lỏng</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Sheet ngày *</label>
-                                <select id="sheetDay" required>
-                                    <option value="">Chọn ngày</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section" id="solidSection">
-                        <h3>Nguyên liệu rắn</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Tên nguyên liệu</label>
-                                <select id="materialName">
-                                    <option value="">Chọn nguyên liệu</option>
-                                    <option value="C9959">C9959</option>
-                                    <option value="C9960">C9960</option>
-                                    <option value="C9961">C9961</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Vị trí kho *</label>
-                                <select id="lockLocation" required>
-                                    <option value="">Chọn vị trí</option>
-                                    <option value="A02">A02</option>
-                                    <option value="B09">B09</option>
-                                    <option value="B14">B14</option>
-                                    <option value="B16">B16</option>
-                                    <option value="B17">B17</option>
-                                    <option value="B18">B18</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Nhập (Bao)</label>
-                                <input type="number" id="importBags" min="0" value="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Nhập (Khối lượng - tấn)</label>
-                                <input type="number" id="importWeight" min="0" value="0" step="0.01">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Sử dụng (Bao)</label>
-                                <input type="number" id="usageBags" min="0" value="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Sử dụng (Khối lượng - tấn)</label>
-                                <input type="number" id="usageWeight" min="0" value="0" step="0.01">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section" id="liquidSection" style="display: none;">
-                        <h3>Chất lỏng - Silo</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Tên chất lỏng</label>
-                                <select id="liquidName">
-                                    <option value="">Chọn chất lỏng</option>
-                                    <option value="dau_ca_bien">Dầu cá biển</option>
-                                    <option value="dau_nanh">Dầu nành</option>
-                                    <option value="dich_ca">Dịch cá</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Silo/Vị trí</label>
-                                <input type="text" id="siloLocation" placeholder="Ví dụ: Silo A1">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Nhập (Lít)</label>
-                                <input type="number" id="importLiters" min="0" value="0" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label>Nhập (Khối lượng - tấn)</label>
-                                <input type="number" id="importLiquidWeight" min="0" value="0" step="0.01">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Sử dụng (Lít)</label>
-                                <input type="number" id="usageLiters" min="0" value="0" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label>Sử dụng (Khối lượng - tấn)</label>
-                                <input type="number" id="usageLiquidWeight" min="0" value="0" step="0.01">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h3>Thông tin bổ sung</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Code/NCC</label>
-                                <input type="text" id="supplierCode">
-                            </div>
-                            <div class="form-group">
-                                <label>Số lô</label>
-                                <input type="text" id="batchNumber" placeholder="Nhập số lô">
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Ngày công thức</label>
-                                <input type="date" id="formulaDate">
-                            </div>
-                            <div class="form-group">
-                                <label>Ngày sản xuất</label>
-                                <input type="date" id="productionDate">
-                            </div>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label>Ghi chú</label>
-                            <textarea id="notes" rows="2" placeholder="Ghi chú thêm..."></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" id="cancelBtn" class="btn-secondary">Hủy</button>
-                        <button type="submit" class="btn-primary">Lưu data</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Modal xác nhận xóa dữ liệu -->
-        <div id="clearDataModal" class="form-modal" style="display: none;">
-            <div class="form-content">
-                <h2 style="color: #ff4444;">⚠️ XÁC NHẬN XÓA DỮ LIỆU</h2>
-                <div class="form-section" style="border-left-color: #ff4444;">
-                    <h3 style="color: #ff4444;">THAO TÁC NGUY HIỂM - KHÔNG THỂ HOÀN TÁC!</h3>
-                    <p><strong>Phạm vi xóa:</strong></p>
-                    <ul style="margin-left: 20px; margin-bottom: 15px;">
-                        <li>Tất cả sheet từ 01 đến 31</li>
-                        <li>Cột B đến J (từ dòng 6 trở xuống)</li>
-                        <li>Cột M, O, Q, R (từ dòng 6 trở xuống)</li>
-                        <li>Vùng U6:V13</li>
-                        <li>Vùng X6:Y13</li>
-                    </ul>
-                    <p style="color: #ff4444; font-weight: bold;">
-                        Sau khi xóa, tồn kho cuối tháng sẽ được giữ lại và copy sang tháng mới.
-                    </p>
-                </div>
-                <div class="form-actions">
-                    <button id="confirmClearData" class="btn-danger">XÁC NHẬN XÓA</button>
-                    <button id="cancelClearData" class="btn-secondary">Hủy bỏ</button>
-                </div>
-            </div>
-        </div>
-
         <!-- Bộ lọc báo cáo -->
         <div class="report-filter">
-            <h3>XEM BÁO CÁO THEO NGÀY</h3>
+            <h3>📊 XEM BÁO CÁO THEO NGÀY</h3>
             <div class="filter-controls">
                 <label>Chọn ngày làm việc:</label>
                 <select id="reportDay">
                     <option value="">Chọn ngày</option>
                 </select>
-                <button id="loadSheetData" class="btn-primary">Tải data từ Sheet</button>
+                <button id="loadSheetData" class="btn-primary">📥 Tải data từ Sheet</button>
             </div>
-            <div id="connectionStatus" style="margin-top: 10px;"></div>
+            <div id="connectionStatus" style="margin-top: 15px;"></div>
         </div>
 
         <!-- Bảng dữ liệu -->
@@ -701,6 +604,231 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Thông tin tuổi lưu kho -->
+        <div class="age-inventory-panel">
+            <h3>📅 THÔNG TIN TUỔI LƯU KHO</h3>
+            <div class="age-grid">
+                <div class="age-item">
+                    <span class="age-days">00-30 ngày</span>
+                    <span class="age-tonnage" id="age0-30">0 tấn</span>
+                    <span class="age-percentage" id="percent0-30">0%</span>
+                </div>
+                <div class="age-item">
+                    <span class="age-days">31-60 ngày</span>
+                    <span class="age-tonnage" id="age31-60">0 tấn</span>
+                    <span class="age-percentage" id="percent31-60">0%</span>
+                </div>
+                <div class="age-item">
+                    <span class="age-days">>61 ngày</span>
+                    <span class="age-tonnage" id="age61">0 tấn</span>
+                    <span class="age-percentage" id="percent61">0%</span>
+                </div>
+                <div class="age-item">
+                    <span class="age-days">Tổng cộng</span>
+                    <span class="age-tonnage" id="ageTotal">0 tấn</span>
+                    <span class="age-percentage">100%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quản lý cuối tháng -->
+        <div class="danger-zone">
+            <h3>⚡ QUẢN LÝ CUỐI THÁNG</h3>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button id="checkEndOfMonthBtn" class="btn-secondary">📅 Kiểm tra ngày cuối tháng</button>
+                <button id="processEndOfMonthBtn" class="btn-success">🔄 Xử lý cuối tháng</button>
+                <button id="clearDataBtn" class="btn-danger">🗑️ Xóa sạch dữ liệu tháng</button>
+            </div>
+            <div id="endOfMonthStatus" style="margin-top: 15px;"></div>
+        </div>
+
+        <!-- Form thêm data mới -->
+        <div id="transactionForm" class="form-modal" style="display: none;">
+            <div class="form-content">
+                <h2>➕ THÊM DATA MỚI</h2>
+                <form id="newTransactionForm">
+                    <div class="form-section">
+                        <h3>📋 Thông tin cơ bản</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Sheet ngày làm việc *</label>
+                                <select id="sheetDay" required>
+                                    <option value="">Chọn ngày</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Ngày nhập/xuất *</label>
+                                <input type="date" id="inputDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Loại giao dịch *</label>
+                                <select id="transactionType" required>
+                                    <option value="import">Nhập hàng</option>
+                                    <option value="export">Xuất hàng</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Loại nguyên liệu *</label>
+                                <select id="materialType" required>
+                                    <option value="">Chọn loại</option>
+                                    <option value="solid">Nguyên liệu rắn</option>
+                                    <option value="liquid">Chất lỏng</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="solidSection">
+                        <h3>📦 Nguyên liệu rắn</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Tên nguyên liệu *</label>
+                                <select id="materialName" required>
+                                    <option value="">Chọn nguyên liệu</option>
+                                    <option value="C9959">C9959</option>
+                                    <option value="C9960">C9960</option>
+                                    <option value="C9961">C9961</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Vị trí kho *</label>
+                                <select id="lockLocation" required>
+                                    <option value="">Chọn vị trí</option>
+                                    <option value="A02">A02</option>
+                                    <option value="B09">B09</option>
+                                    <option value="B14">B14</option>
+                                    <option value="B16">B16</option>
+                                    <option value="B17">B17</option>
+                                    <option value="B18">B18</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Nhập (Bao)</label>
+                                <input type="number" id="importBags" min="0" value="0" step="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Nhập (Khối lượng - tấn)</label>
+                                <input type="number" id="importWeight" min="0" value="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Sử dụng (Bao)</label>
+                                <input type="number" id="usageBags" min="0" value="0" step="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Sử dụng (Khối lượng - tấn)</label>
+                                <input type="number" id="usageWeight" min="0" value="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="liquidSection" style="display: none;">
+                        <h3>🛢️ Chất lỏng - Silo</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Tên chất lỏng</label>
+                                <select id="liquidName">
+                                    <option value="">Chọn chất lỏng</option>
+                                    <option value="dau_ca_bien">Dầu cá biển</option>
+                                    <option value="dau_nanh">Dầu nành</option>
+                                    <option value="dich_ca">Dịch cá</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Silo/Vị trí</label>
+                                <input type="text" id="siloLocation" placeholder="Ví dụ: Silo A1">
+                            </div>
+                            <div class="form-group">
+                                <label>Nhập (Lít)</label>
+                                <input type="number" id="importLiters" min="0" value="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Nhập (Khối lượng - tấn)</label>
+                                <input type="number" id="importLiquidWeight" min="0" value="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Sử dụng (Lít)</label>
+                                <input type="number" id="usageLiters" min="0" value="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Sử dụng (Khối lượng - tấn)</label>
+                                <input type="number" id="usageLiquidWeight" min="0" value="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>📝 Thông tin bổ sung</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Code/NCC</label>
+                                <input type="text" id="supplierCode" placeholder="Nhập code nhà cung cấp">
+                            </div>
+                            <div class="form-group">
+                                <label>Số lô</label>
+                                <input type="text" id="batchNumber" placeholder="Nhập số lô">
+                            </div>
+                            <div class="form-group">
+                                <label>Ngày công thức</label>
+                                <input type="date" id="formulaDate">
+                            </div>
+                            <div class="form-group">
+                                <label>Ngày sản xuất</label>
+                                <input type="date" id="productionDate">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Ghi chú</label>
+                            <textarea id="notes" rows="3" placeholder="Ghi chú thêm..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="cancelBtn" class="btn-secondary">❌ Hủy</button>
+                        <button type="submit" class="btn-primary">💾 Lưu data</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal xác nhận xóa dữ liệu -->
+        <div id="clearDataModal" class="form-modal" style="display: none;">
+            <div class="form-content">
+                <h2 style="color: #ff4444;">⚠️ XÁC NHẬN XÓA DỮ LIỆU</h2>
+                <div class="form-section" style="border-left-color: #ff4444;">
+                    <h3 style="color: #ff4444;">THAO TÁC NGUY HIỂM - KHÔNG THỂ HOÀN TÁC!</h3>
+                    <p><strong>Phạm vi xóa:</strong></p>
+                    <ul style="margin-left: 20px; margin-bottom: 15px;">
+                        <li>Tất cả sheet từ 01 đến 31</li>
+                        <li>Cột B đến J (từ dòng 6 trở xuống)</li>
+                        <li>Cột M, O, Q, R (từ dòng 6 trở xuống)</li>
+                        <li>Vùng U6:V13</li>
+                        <li>Vùng X6:Y13</li>
+                    </ul>
+                    <p style="color: #ff4444; font-weight: bold;">
+                        Sau khi xóa, tồn kho cuối tháng sẽ được giữ lại và copy sang tháng mới.
+                    </p>
+                </div>
+                <div class="form-actions">
+                    <button id="confirmClearData" class="btn-danger">✅ XÁC NHẬN XÓA</button>
+                    <button id="cancelClearData" class="btn-secondary">❌ Hủy bỏ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal xuất phiếu -->
+        <div id="exportModal" class="export-modal" style="display: none;">
+            <div class="export-content">
+                <h2>📄 PHIẾU QUẢN LÝ SỐ LƯỢNG NGUYÊN LIỆU</h2>
+                <div id="exportContent" style="background: white; padding: 20px; border-radius: 10px; border: 2px solid #1e3c72;">
+                    <!-- Nội dung phiếu sẽ được điền ở đây bằng JavaScript -->
+                </div>
+                <div class="export-actions">
+                    <button id="printExport" class="btn-primary">🖨️ In phiếu</button>
+                    <button id="closeExport" class="btn-secondary">❌ Đóng</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -714,7 +842,7 @@
         });
 
         function initializeApp() {
-            // Tạo option cho ngày (báo cáo)
+            // Tạo option cho ngày
             const reportDaySelect = document.getElementById('reportDay');
             const sheetDaySelect = document.getElementById('sheetDay');
             
@@ -742,6 +870,8 @@
             // Thêm các sự kiện
             document.getElementById('addTransactionBtn').addEventListener('click', function() {
                 document.getElementById('transactionForm').style.display = 'flex';
+                // Đặt ngày hôm nay mặc định
+                document.getElementById('inputDate').valueAsDate = new Date();
             });
             
             document.getElementById('cancelBtn').addEventListener('click', function() {
@@ -784,6 +914,15 @@
                 document.getElementById('clearDataModal').style.display = 'none';
             });
             document.getElementById('confirmClearData').addEventListener('click', clearMonthData);
+
+            // Xuất phiếu
+            document.getElementById('exportBtn').addEventListener('click', exportToPDF);
+            document.getElementById('closeExport').addEventListener('click', function() {
+                document.getElementById('exportModal').style.display = 'none';
+            });
+            document.getElementById('printExport').addEventListener('click', function() {
+                window.print();
+            });
             
             // Tải dữ liệu từ Apps Script khi khởi động
             loadDataFromAppsScript();
@@ -800,10 +939,23 @@
             }
 
             const statusDiv = document.getElementById('connectionStatus');
-            statusDiv.innerHTML = '<div class="loading">Đang kết nối đến Google Sheet qua Apps Script...</div>';
+            statusDiv.innerHTML = '<div class="loading">🔄 Đang kết nối đến Google Sheet...</div>';
 
             try {
-                const response = await fetch(`${APPS_SCRIPT_URL}?sheet=${selectedDay}&apiKey=${API_KEY}`);
+                // Thêm timestamp để tránh cache
+                const timestamp = new Date().getTime();
+                const response = await fetch(`${APPS_SCRIPT_URL}?sheet=${selectedDay}&apiKey=${API_KEY}&t=${timestamp}`, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                }).catch(async () => {
+                    // Fallback: thử với method thông thường
+                    return await fetch(`${APPS_SCRIPT_URL}?sheet=${selectedDay}&apiKey=${API_KEY}&t=${timestamp}`);
+                });
+
+                if (!response || !response.ok) {
+                    throw new Error('Không thể kết nối đến server');
+                }
+
                 const data = await response.json();
                 
                 if (data.error) {
@@ -812,11 +964,12 @@
                 
                 // Xử lý dữ liệu từ Apps Script
                 processAppsScriptData(data, selectedDay);
-                statusDiv.innerHTML = '<div style="color: #4CAF50;">✓ Đã kết nối thành công với Google Sheet</div>';
+                statusDiv.innerHTML = '<div class="success">✅ Đã kết nối thành công với Google Sheet</div>';
                 
             } catch (error) {
                 console.error('Lỗi khi tải dữ liệu:', error);
-                statusDiv.innerHTML = `<div class="error">❌ Lỗi kết nối: ${error.message}. Đang tải dữ liệu mẫu...</div>`;
+                statusDiv.innerHTML = `<div class="error">❌ Lỗi kết nối: ${error.message}</div>`;
+                // Vẫn hiển thị giao diện mẫu để demo
                 loadSampleData();
             }
         }
@@ -825,36 +978,41 @@
             try {
                 // Cập nhật tổng quan
                 if (data.summary) {
-                    document.getElementById('totalImport').textContent = data.summary.totalImport || 0;
-                    document.getElementById('totalExport').textContent = data.summary.totalExport || 0;
-                    document.getElementById('totalInventory').textContent = data.summary.totalInventory || 0;
+                    document.getElementById('totalImport').textContent = formatNumber(data.summary.totalImport) || 0;
+                    document.getElementById('totalExport').textContent = formatNumber(data.summary.totalExport) || 0;
+                    document.getElementById('totalInventory').textContent = formatNumber(data.summary.totalInventory) || 0;
                 }
                 
                 // Cập nhật thông tin tuổi lưu kho
                 if (data.ageInventory) {
-                    document.getElementById('age0-30').textContent = (data.ageInventory['0-30']?.tons || 0) + ' tấn';
-                    document.getElementById('percent0-30').textContent = (data.ageInventory['0-30']?.percent || 0) + '%';
+                    document.getElementById('age0-30').textContent = formatNumber(data.ageInventory['0-30']?.tons || 0) + ' tấn';
+                    document.getElementById('percent0-30').textContent = formatNumber(data.ageInventory['0-30']?.percent || 0) + '%';
                     
-                    document.getElementById('age31-60').textContent = (data.ageInventory['31-60']?.tons || 0) + ' tấn';
-                    document.getElementById('percent31-60').textContent = (data.ageInventory['31-60']?.percent || 0) + '%';
+                    document.getElementById('age31-60').textContent = formatNumber(data.ageInventory['31-60']?.tons || 0) + ' tấn';
+                    document.getElementById('percent31-60').textContent = formatNumber(data.ageInventory['31-60']?.percent || 0) + '%';
                     
-                    document.getElementById('age61').textContent = (data.ageInventory['61']?.tons || 0) + ' tấn';
-                    document.getElementById('percent61').textContent = (data.ageInventory['61']?.percent || 0) + '%';
+                    document.getElementById('age61').textContent = formatNumber(data.ageInventory['61']?.tons || 0) + ' tấn';
+                    document.getElementById('percent61').textContent = formatNumber(data.ageInventory['61']?.percent || 0) + '%';
                     
-                    document.getElementById('ageTotal').textContent = (data.ageInventory['total']?.tons || 0) + ' tấn';
+                    document.getElementById('ageTotal').textContent = formatNumber(data.ageInventory['total']?.tons || 0) + ' tấn';
                 }
                 
                 // Cập nhật bảng dữ liệu từ rawData
                 if (data.rawData && Array.isArray(data.rawData)) {
                     updateTableFromRawData(data.rawData);
                 } else {
-                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="13">Không có dữ liệu cho ngày này</td></tr>';
+                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="13" class="loading">Không có dữ liệu cho ngày này</td></tr>';
                 }
                 
             } catch (error) {
                 console.error('Lỗi xử lý dữ liệu:', error);
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="13">Lỗi khi xử lý dữ liệu từ Sheet</td></tr>';
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="13" class="error">Lỗi khi xử lý dữ liệu từ Sheet</td></tr>';
             }
+        }
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            return parseFloat(num).toLocaleString('vi-VN');
         }
 
         function updateTableFromRawData(rawData) {
@@ -872,11 +1030,11 @@
                         <td>Rắn</td>
                         <td>${row[1] || ''}</td>
                         <td>${row[2] || ''}</td>
-                        <td>${row[4] || 0}</td>
-                        <td>${row[5] || 0}</td>
-                        <td>${row[6] || 0}</td>
-                        <td>${row[7] || 0}</td>
-                        <td>${row[9] || 0}</td>
+                        <td>${formatNumber(row[4]) || 0}</td>
+                        <td>${formatNumber(row[5]) || 0}</td>
+                        <td>${formatNumber(row[6]) || 0}</td>
+                        <td>${formatNumber(row[7]) || 0}</td>
+                        <td>${formatNumber(row[9]) || 0}</td>
                         <td>${row[13] || ''}</td>
                         <td>${row[14] || ''}</td>
                         <td>${row[16] || ''}</td>
@@ -887,7 +1045,7 @@
             }
 
             if (tableBody.children.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="13">Không có dữ liệu cho ngày này</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="13" class="loading">Không có dữ liệu cho ngày này</td></tr>';
             }
         }
 
@@ -957,7 +1115,7 @@
             // Dữ liệu mẫu tạm thời
             const sampleData = [
                 {
-                    date: "2023-11-20",
+                    date: new Date().toISOString().split('T')[0],
                     type: "Rắn",
                     name: "C9959",
                     location: "B16/B17",
@@ -986,7 +1144,7 @@
         // Các hàm quản lý cuối tháng
         async function checkEndOfMonthStatus() {
             const statusDiv = document.getElementById('endOfMonthStatus');
-            statusDiv.innerHTML = '<div class="loading">Đang kiểm tra ngày cuối tháng...</div>';
+            statusDiv.innerHTML = '<div class="loading">📅 Đang kiểm tra ngày cuối tháng...</div>';
             
             try {
                 const response = await fetch(`${APPS_SCRIPT_URL}?action=checkEndOfMonth&apiKey=${API_KEY}`);
@@ -1012,7 +1170,7 @@
 
         async function processEndOfMonth() {
             const statusDiv = document.getElementById('endOfMonthStatus');
-            statusDiv.innerHTML = '<div class="loading">Đang xử lý cuối tháng...</div>';
+            statusDiv.innerHTML = '<div class="loading">🔄 Đang xử lý cuối tháng...</div>';
             
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
@@ -1041,7 +1199,7 @@
 
         async function clearMonthData() {
             const statusDiv = document.getElementById('endOfMonthStatus');
-            statusDiv.innerHTML = '<div class="loading">Đang xóa dữ liệu tháng...</div>';
+            statusDiv.innerHTML = '<div class="loading">🗑️ Đang xóa dữ liệu tháng...</div>';
             
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
@@ -1061,11 +1219,6 @@
                     throw new Error(data.error);
                 }
                 
-                if (data.warning === 'CONFIRM_REQUIRED') {
-                    // Đã xử lý trong modal nên không cần làm gì
-                    return;
-                }
-                
                 statusDiv.innerHTML = `<div class="success">✅ ${data.message}</div>`;
                 document.getElementById('clearDataModal').style.display = 'none';
                 
@@ -1076,6 +1229,96 @@
                 console.error('Lỗi khi xóa dữ liệu:', error);
                 statusDiv.innerHTML = `<div class="error">❌ Lỗi: ${error.message}</div>`;
             }
+        }
+
+        // Xuất phiếu quản lý nguyên liệu
+        function exportToPDF() {
+            const selectedDay = document.getElementById('reportDay').value;
+            if (!selectedDay) {
+                alert('Vui lòng chọn ngày!');
+                return;
+            }
+
+            const exportContent = document.getElementById('exportContent');
+            
+            // Tạo nội dung phiếu theo mẫu ảnh
+            exportContent.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1e3c72; padding-bottom: 15px;">
+                    <h3 style="color: #1e3c72; margin-bottom: 5px;">Công ty cổ phần chăn nuôi CP Việt Nam</h3>
+                    <h4 style="color: #333; margin-bottom: 10px;">Chi nhánh SXKD thức ăn thủy sản Cần Thơ</h4>
+                    <h2 style="color: #1e3c72; margin-bottom: 10px;"><strong>PHIẾU QUẢN LÝ SỐ LƯỢNG NGUYÊN LIỆU</strong></h2>
+                    <p style="color: #333; font-size: 16px;"><strong>Lô (lot): E01 - Ngày: ${selectedDay}</strong></p>
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
+                    <thead>
+                        <tr style="background-color: #1e3c72; color: white;">
+                            <th style="border: 1px solid #333; padding: 10px; text-align: center;">Số bao (Bags)</th>
+                            <th style="border: 1px solid #333; padding: 10px; text-align: center;">Số kg (Weight)</th>
+                            <th style="border: 1px solid #333; padding: 10px; text-align: center;">Ngày nhập (Input date)</th>
+                            <th style="border: 1px solid #333; padding: 10px; text-align: center;">Tuổi (Ages)</th>
+                            <th style="border: 1px solid #333; padding: 10px; text-align: center;">NCC/công thức (Supplier/Formular)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exportTableBody">
+                        <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 30px; text-align: center;">
+                    <p style="font-size: 16px; margin-bottom: 20px;"><strong>TỔNG CỘNG</strong></p>
+                    <div style="margin-top: 40px;">
+                        <p style="font-size: 14px;">Ký tên: ………</p>
+                        <p style="font-size: 12px; color: #666; margin-top: 5px;">Người lập phiếu</p>
+                    </div>
+                </div>
+            `;
+
+            // Thêm dữ liệu từ bảng hiện tại
+            const tableBody = document.getElementById('tableBody');
+            const exportTableBody = document.getElementById('exportTableBody');
+            const rows = tableBody.querySelectorAll('tr');
+
+            let totalWeight = 0;
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 9) {
+                    const bags = cells[4].textContent || '0';
+                    const weight = cells[5].textContent || '0';
+                    const date = cells[0].textContent || '';
+                    const age = cells[9].textContent || '';
+                    const supplier = cells[10].textContent || '';
+
+                    if (weight !== '0') {
+                        const weightValue = parseFloat(weight.replace(/,/g, '')) || 0;
+                        totalWeight += weightValue;
+
+                        const newRow = document.createElement('tr');
+                        newRow.innerHTML = `
+                            <td style="border: 1px solid #333; padding: 8px; text-align: center;">${bags}</td>
+                            <td style="border: 1px solid #333; padding: 8px; text-align: center;">${weight}</td>
+                            <td style="border: 1px solid #333; padding: 8px; text-align: center;">${date}</td>
+                            <td style="border: 1px solid #333; padding: 8px; text-align: center;">${age}</td>
+                            <td style="border: 1px solid #333; padding: 8px; text-align: center;">${supplier}</td>
+                        `;
+                        exportTableBody.appendChild(newRow);
+                    }
+                }
+            });
+
+            // Thêm hàng tổng cộng
+            const totalRow = document.createElement('tr');
+            totalRow.style.backgroundColor = '#f0f0f0';
+            totalRow.innerHTML = `
+                <td style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;" colspan="1">TỔNG</td>
+                <td style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">${totalWeight.toLocaleString('vi-VN')}</td>
+                <td style="border: 1px solid #333; padding: 10px; text-align: center;" colspan="3"></td>
+            `;
+            exportTableBody.appendChild(totalRow);
+
+            // Hiển thị modal
+            document.getElementById('exportModal').style.display = 'flex';
         }
     </script>
 </body>
