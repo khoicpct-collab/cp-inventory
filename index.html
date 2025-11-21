@@ -315,6 +315,65 @@
             font-size: 14px;
         }
 
+        .success {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            border-left: 3px solid #2e7d32;
+            font-size: 14px;
+        }
+
+        .end-of-month-alert {
+            background: linear-gradient(45deg, #ff4444, #ff6b6b);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(255, 0, 0, 0.3);
+            animation: pulse 2s infinite;
+            border: 2px solid #ff0000;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .danger-zone {
+            background-color: #fff3f3;
+            border: 2px solid #ff4444;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .danger-zone h3 {
+            color: #ff4444;
+            margin-bottom: 10px;
+        }
+
+        .btn-danger {
+            background-color: #ff4444;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #cc0000;
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 768px) {
             .header-controls {
                 flex-direction: column;
@@ -343,6 +402,11 @@
 </head>
 <body>
     <div class="container">
+        <!-- Cảnh báo cuối tháng -->
+        <div id="endOfMonthAlert" class="end-of-month-alert" style="display: none;">
+            ⚠️ CẢNH BÁO: HÔM NAY LÀ NGÀY 31 - VUI LÒNG XỬ LÝ CUỐI THÁNG! ⚠️
+        </div>
+
         <header class="main-header">
             <h1>QUẢN LÝ KHO NGUYÊN LIỆU C.P.CT</h1>
             <div class="header-controls">
@@ -368,7 +432,18 @@
             </div>
         </header>
 
-        <!-- Age Inventory Info - Đã được làm gọn hơn -->
+        <!-- Khu vực nguy hiểm -->
+        <div class="danger-zone">
+            <h3>⚡ QUẢN LÝ CUỐI THÁNG</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button id="checkEndOfMonthBtn" class="btn-secondary">Kiểm tra ngày cuối tháng</button>
+                <button id="processEndOfMonthBtn" class="btn-primary">Xử lý cuối tháng (Copy tồn kho)</button>
+                <button id="clearDataBtn" class="btn-danger">🗑️ Xóa sạch dữ liệu tháng</button>
+            </div>
+            <div id="endOfMonthStatus" style="margin-top: 10px;"></div>
+        </div>
+
+        <!-- Age Inventory Info -->
         <div class="age-inventory-panel">
             <h3>THÔNG TIN TUỔI LƯU KHO</h3>
             <div class="age-grid">
@@ -404,15 +479,30 @@
                         <h3>Thông tin cơ bản</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Ngày nhập *</label>
+                                <label>Loại giao dịch *</label>
+                                <select id="transactionType" required>
+                                    <option value="import">Nhập hàng</option>
+                                    <option value="export">Xuất hàng</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Ngày nhập/xuất *</label>
                                 <input type="date" id="inputDate" required>
                             </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label>Loại nguyên liệu *</label>
                                 <select id="materialType" required>
                                     <option value="">Chọn loại</option>
                                     <option value="solid">Nguyên liệu rắn</option>
                                     <option value="liquid">Chất lỏng</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Sheet ngày *</label>
+                                <select id="sheetDay" required>
+                                    <option value="">Chọn ngày</option>
                                 </select>
                             </div>
                         </div>
@@ -546,6 +636,31 @@
             </div>
         </div>
 
+        <!-- Modal xác nhận xóa dữ liệu -->
+        <div id="clearDataModal" class="form-modal" style="display: none;">
+            <div class="form-content">
+                <h2 style="color: #ff4444;">⚠️ XÁC NHẬN XÓA DỮ LIỆU</h2>
+                <div class="form-section" style="border-left-color: #ff4444;">
+                    <h3 style="color: #ff4444;">THAO TÁC NGUY HIỂM - KHÔNG THỂ HOÀN TÁC!</h3>
+                    <p><strong>Phạm vi xóa:</strong></p>
+                    <ul style="margin-left: 20px; margin-bottom: 15px;">
+                        <li>Tất cả sheet từ 01 đến 31</li>
+                        <li>Cột B đến J (từ dòng 6 trở xuống)</li>
+                        <li>Cột M, O, Q, R (từ dòng 6 trở xuống)</li>
+                        <li>Vùng U6:V13</li>
+                        <li>Vùng X6:Y13</li>
+                    </ul>
+                    <p style="color: #ff4444; font-weight: bold;">
+                        Sau khi xóa, tồn kho cuối tháng sẽ được giữ lại và copy sang tháng mới.
+                    </p>
+                </div>
+                <div class="form-actions">
+                    <button id="confirmClearData" class="btn-danger">XÁC NHẬN XÓA</button>
+                    <button id="cancelClearData" class="btn-secondary">Hủy bỏ</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Bộ lọc báo cáo -->
         <div class="report-filter">
             <h3>XEM BÁO CÁO THEO NGÀY</h3>
@@ -590,7 +705,8 @@
 
     <script>
         // URL Apps Script của bạn
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby22vJkdZdDUGz_CimlDqgbEXhpsQlSZr8BZHgA7vZKv4hYtq16M0DI9axosfc8_8PEJA/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw4ucVjaTUqn9A8DFH2dKZXPXahrFR9-hjT0nY8i-_4vYvl2oyc6lK9Y54U1XYoHOHorA/exec';
+        const API_KEY = 'cp-inventory-2024-secret-key';
 
         // Khởi tạo ứng dụng
         document.addEventListener('DOMContentLoaded', function() {
@@ -598,19 +714,30 @@
         });
 
         function initializeApp() {
-            // Tạo option cho ngày
+            // Tạo option cho ngày (báo cáo)
             const reportDaySelect = document.getElementById('reportDay');
+            const sheetDaySelect = document.getElementById('sheetDay');
+            
             for (let i = 1; i <= 31; i++) {
                 const day = i.toString().padStart(2, '0');
-                const option = document.createElement('option');
-                option.value = day;
-                option.textContent = `Ngày ${day}`;
-                reportDaySelect.appendChild(option);
+                
+                // Option cho báo cáo
+                const reportOption = document.createElement('option');
+                reportOption.value = day;
+                reportOption.textContent = `Ngày ${day}`;
+                reportDaySelect.appendChild(reportOption);
+                
+                // Option cho form
+                const sheetOption = document.createElement('option');
+                sheetOption.value = day;
+                sheetOption.textContent = `Ngày ${day}`;
+                sheetDaySelect.appendChild(sheetOption);
             }
             
             // Đặt ngày mặc định là hôm nay
             const today = new Date().getDate().toString().padStart(2, '0');
             reportDaySelect.value = today;
+            sheetDaySelect.value = today;
             
             // Thêm các sự kiện
             document.getElementById('addTransactionBtn').addEventListener('click', function() {
@@ -647,8 +774,22 @@
                 saveTransaction();
             });
             
+            // Các hàm quản lý cuối tháng
+            document.getElementById('checkEndOfMonthBtn').addEventListener('click', checkEndOfMonthStatus);
+            document.getElementById('processEndOfMonthBtn').addEventListener('click', processEndOfMonth);
+            document.getElementById('clearDataBtn').addEventListener('click', function() {
+                document.getElementById('clearDataModal').style.display = 'flex';
+            });
+            document.getElementById('cancelClearData').addEventListener('click', function() {
+                document.getElementById('clearDataModal').style.display = 'none';
+            });
+            document.getElementById('confirmClearData').addEventListener('click', clearMonthData);
+            
             // Tải dữ liệu từ Apps Script khi khởi động
             loadDataFromAppsScript();
+            
+            // Kiểm tra cuối tháng khi khởi động
+            setTimeout(checkEndOfMonthStatus, 2000);
         }
 
         async function loadDataFromAppsScript() {
@@ -662,7 +803,7 @@
             statusDiv.innerHTML = '<div class="loading">Đang kết nối đến Google Sheet qua Apps Script...</div>';
 
             try {
-                const response = await fetch(`${APPS_SCRIPT_URL}?sheet=${selectedDay}`);
+                const response = await fetch(`${APPS_SCRIPT_URL}?sheet=${selectedDay}&apiKey=${API_KEY}`);
                 const data = await response.json();
                 
                 if (data.error) {
@@ -757,6 +898,61 @@
             return isNaN(date) ? '' : date.toISOString().split('T')[0];
         }
 
+        async function saveTransaction() {
+            const formData = {
+                apiKey: API_KEY,
+                action: 'addTransaction',
+                sheet: document.getElementById('sheetDay').value,
+                transactionType: document.getElementById('transactionType').value,
+                inputDate: document.getElementById('inputDate').value,
+                materialType: document.getElementById('materialType').value,
+                lockLocation: document.getElementById('lockLocation').value,
+                materialName: document.getElementById('materialName').value,
+                importBags: document.getElementById('importBags').value,
+                importWeight: document.getElementById('importWeight').value,
+                usageBags: document.getElementById('usageBags').value,
+                usageWeight: document.getElementById('usageWeight').value,
+                liquidName: document.getElementById('liquidName').value,
+                siloLocation: document.getElementById('siloLocation').value,
+                importLiters: document.getElementById('importLiters').value,
+                importLiquidWeight: document.getElementById('importLiquidWeight').value,
+                usageLiters: document.getElementById('usageLiters').value,
+                usageLiquidWeight: document.getElementById('usageLiquidWeight').value,
+                supplierCode: document.getElementById('supplierCode').value,
+                batchNumber: document.getElementById('batchNumber').value,
+                formulaDate: document.getElementById('formulaDate').value,
+                productionDate: document.getElementById('productionDate').value,
+                notes: document.getElementById('notes').value
+            };
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                alert('✅ Data đã được lưu thành công vào Google Sheet!');
+                document.getElementById('transactionForm').style.display = 'none';
+                document.getElementById('newTransactionForm').reset();
+                
+                // Làm mới dữ liệu
+                loadDataFromAppsScript();
+                
+            } catch (error) {
+                console.error('Lỗi khi lưu dữ liệu:', error);
+                alert('❌ Lỗi khi lưu dữ liệu: ' + error.message);
+            }
+        }
+
         function loadSampleData() {
             // Dữ liệu mẫu tạm thời
             const sampleData = [
@@ -787,10 +983,99 @@
             document.getElementById('totalInventory').textContent = inventoryTotal;
         }
 
-        function saveTransaction() {
-            alert('Chức năng lưu dữ liệu trực tiếp vào Google Sheet đang được phát triển. Dữ liệu đã được lưu tạm thời.');
-            document.getElementById('transactionForm').style.display = 'none';
-            document.getElementById('newTransactionForm').reset();
+        // Các hàm quản lý cuối tháng
+        async function checkEndOfMonthStatus() {
+            const statusDiv = document.getElementById('endOfMonthStatus');
+            statusDiv.innerHTML = '<div class="loading">Đang kiểm tra ngày cuối tháng...</div>';
+            
+            try {
+                const response = await fetch(`${APPS_SCRIPT_URL}?action=checkEndOfMonth&apiKey=${API_KEY}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                if (data.isEndOfMonth) {
+                    document.getElementById('endOfMonthAlert').style.display = 'block';
+                    statusDiv.innerHTML = `<div class="error">${data.message}</div>`;
+                } else {
+                    document.getElementById('endOfMonthAlert').style.display = 'none';
+                    statusDiv.innerHTML = `<div class="success">${data.message}</div>`;
+                }
+                
+            } catch (error) {
+                console.error('Lỗi khi kiểm tra cuối tháng:', error);
+                statusDiv.innerHTML = `<div class="error">❌ Lỗi: ${error.message}</div>`;
+            }
+        }
+
+        async function processEndOfMonth() {
+            const statusDiv = document.getElementById('endOfMonthStatus');
+            statusDiv.innerHTML = '<div class="loading">Đang xử lý cuối tháng...</div>';
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        apiKey: API_KEY,
+                        action: 'processEndOfMonth'
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                statusDiv.innerHTML = `<div class="success">✅ ${data.message}</div>`;
+                
+            } catch (error) {
+                console.error('Lỗi khi xử lý cuối tháng:', error);
+                statusDiv.innerHTML = `<div class="error">❌ Lỗi: ${error.message}</div>`;
+            }
+        }
+
+        async function clearMonthData() {
+            const statusDiv = document.getElementById('endOfMonthStatus');
+            statusDiv.innerHTML = '<div class="loading">Đang xóa dữ liệu tháng...</div>';
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        apiKey: API_KEY,
+                        action: 'clearMonthData',
+                        confirm: true
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                if (data.warning === 'CONFIRM_REQUIRED') {
+                    // Đã xử lý trong modal nên không cần làm gì
+                    return;
+                }
+                
+                statusDiv.innerHTML = `<div class="success">✅ ${data.message}</div>`;
+                document.getElementById('clearDataModal').style.display = 'none';
+                
+                // Làm mới dữ liệu hiển thị
+                loadDataFromAppsScript();
+                
+            } catch (error) {
+                console.error('Lỗi khi xóa dữ liệu:', error);
+                statusDiv.innerHTML = `<div class="error">❌ Lỗi: ${error.message}</div>`;
+            }
         }
     </script>
 </body>
