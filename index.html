@@ -69,53 +69,42 @@
             font-weight: 600;
             transition: all 0.3s ease;
             font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
         }
 
         .btn-secondary {
             background: linear-gradient(135deg, #6c757d, #5a6268);
             color: white;
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
         }
 
         .btn-secondary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
         }
 
         .btn-info {
             background: linear-gradient(135deg, #17a2b8, #138496);
             color: white;
-            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
         }
 
         .btn-info:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
         }
 
         .btn-success {
             background: linear-gradient(135deg, #28a745, #218838);
             color: white;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
 
         .btn-success:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
         }
 
         .daily-summary {
@@ -125,14 +114,13 @@
         }
 
         .summary-box {
-            background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15));
+            background: rgba(255,255,255,0.25);
             padding: 20px;
             border-radius: 12px;
             text-align: center;
             min-width: 140px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .summary-label {
@@ -162,9 +150,6 @@
             margin-bottom: 15px;
             color: #1e3c72;
             font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .filter-controls {
@@ -180,12 +165,6 @@
             border-radius: 8px;
             font-size: 14px;
             min-width: 150px;
-            transition: all 0.3s ease;
-        }
-
-        .filter-controls select:focus {
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
         }
 
         /* Table Styles */
@@ -215,14 +194,10 @@
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
             font-weight: 600;
-            position: sticky;
-            top: 0;
         }
 
         tr:hover {
             background-color: #f8f9fa;
-            transform: scale(1.01);
-            transition: all 0.2s ease;
         }
 
         /* Form Modal Styles */
@@ -237,23 +212,21 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            backdrop-filter: blur(5px);
         }
 
         .form-content {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
             width: 95%;
-            max-width: 900px;
+            max-width: 1300px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            border: 1px solid #e0e0e0;
         }
 
         .form-content h2 {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             color: #1e3c72;
             text-align: center;
             font-size: 24px;
@@ -261,68 +234,43 @@
             padding-bottom: 10px;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .inventory-table-form {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-            outline: none;
-        }
-
-        .form-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
+            border-collapse: collapse;
             margin-bottom: 20px;
-            border-left: 4px solid #4CAF50;
+            font-size: 14px;
         }
 
-        .form-section h3 {
-            margin-bottom: 15px;
-            color: #1e3c72;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .inventory-table-form th {
+            background: #1e3c72;
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid #ddd;
+        }
+
+        .inventory-table-form td {
+            padding: 8px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .inventory-table-form input,
+        .inventory-table-form select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
         }
 
         .form-actions {
             display: flex;
             justify-content: flex-end;
             gap: 15px;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #eaeaea;
+            margin-top: 20px;
         }
 
         /* Status Messages */
@@ -330,27 +278,24 @@
             text-align: center;
             padding: 20px;
             color: #666;
-            font-size: 16px;
         }
 
         .error {
-            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            background: #ffebee;
             color: #c62828;
             padding: 15px;
             border-radius: 8px;
             margin: 10px 0;
             border-left: 4px solid #c62828;
-            font-size: 14px;
         }
 
         .success {
-            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            background: #e8f5e8;
             color: #2e7d32;
             padding: 15px;
             border-radius: 8px;
             margin: 10px 0;
             border-left: 4px solid #2e7d32;
-            font-size: 14px;
         }
 
         /* End of Month Styles */
@@ -363,33 +308,27 @@
             text-align: center;
             font-weight: bold;
             font-size: 18px;
-            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3);
             animation: pulse 2s infinite;
-            border: 2px solid #ff0000;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3); }
-            50% { transform: scale(1.02); box-shadow: 0 12px 35px rgba(255, 0, 0, 0.5); }
-            100% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3); }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
 
         .danger-zone {
-            background: linear-gradient(135deg, #fff3f3, #ffe6e6);
+            background: #fff3f3;
             border: 2px solid #ff4444;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.1);
         }
 
         .danger-zone h3 {
             color: #ff4444;
             margin-bottom: 15px;
             font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .btn-danger {
@@ -400,13 +339,10 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
         }
 
         .btn-danger:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
         }
 
         /* Age Inventory Styles */
@@ -423,9 +359,6 @@
             margin-bottom: 15px;
             color: #1e3c72;
             font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .age-grid {
@@ -435,17 +368,11 @@
         }
 
         .age-item {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            background: #f8f9fa;
             padding: 15px;
             border-radius: 10px;
             text-align: center;
             border-left: 4px solid #4CAF50;
-            transition: all 0.3s ease;
-        }
-
-        .age-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
 
         .age-days {
@@ -486,10 +413,10 @@
 
         .export-content {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
             width: 90%;
-            max-width: 600px;
+            max-width: 800px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
@@ -499,14 +426,13 @@
             display: flex;
             justify-content: flex-end;
             gap: 15px;
-            margin-top: 25px;
+            margin-top: 20px;
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
             .header-controls {
                 flex-direction: column;
-                align-items: stretch;
             }
             
             .control-buttons {
@@ -519,15 +445,15 @@
             
             .filter-controls {
                 flex-direction: column;
-                align-items: stretch;
             }
             
-            .form-grid {
-                grid-template-columns: 1fr;
+            .inventory-table-form {
+                font-size: 12px;
             }
             
-            .age-grid {
-                grid-template-columns: 1fr;
+            .inventory-table-form th,
+            .inventory-table-form td {
+                padding: 6px 4px;
             }
         }
     </style>
@@ -643,58 +569,63 @@
             <div id="endOfMonthStatus" style="margin-top: 15px;"></div>
         </div>
 
-        <!-- Form thêm data mới -->
+        <!-- Form thêm data mới theo mẫu INVENTORY WH -->
         <div id="transactionForm" class="form-modal" style="display: none;">
             <div class="form-content">
-                <h2>➕ THÊM DATA MỚI</h2>
-                <form id="newTransactionForm">
-                    <div class="form-section">
-                        <h3>📋 Thông tin cơ bản</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Sheet ngày làm việc *</label>
-                                <select id="sheetDay" required>
-                                    <option value="">Chọn ngày</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Ngày nhập/xuất *</label>
-                                <input type="date" id="inputDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Loại giao dịch *</label>
-                                <select id="transactionType" required>
-                                    <option value="import">Nhập hàng</option>
-                                    <option value="export">Xuất hàng</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Loại nguyên liệu *</label>
-                                <select id="materialType" required>
-                                    <option value="">Chọn loại</option>
-                                    <option value="solid">Nguyên liệu rắn</option>
-                                    <option value="liquid">Chất lỏng</option>
-                                </select>
-                            </div>
-                        </div>
+                <h2>➕ THÊM DATA MỚI - INVENTORY WH</h2>
+                
+                <div style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <label>Sheet ngày làm việc:</label>
+                        <select id="sheetDay" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">Chọn ngày</option>
+                        </select>
                     </div>
+                    <div>
+                        <label>Loại giao dịch:</label>
+                        <select id="transactionType" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="import">Nhập hàng</option>
+                            <option value="export">Xuất hàng</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Ngày nhập:</label>
+                        <input type="date" id="inputDate" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                </div>
 
-                    <div class="form-section" id="solidSection">
-                        <h3>📦 Nguyên liệu rắn</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Tên nguyên liệu *</label>
-                                <select id="materialName" required>
-                                    <option value="">Chọn nguyên liệu</option>
+                <table class="inventory-table-form">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Lock</th>
+                            <th>Ton dau (Bag)</th>
+                            <th>Ton dau (Weight)</th>
+                            <th>Nhap (Bag)</th>
+                            <th>Nhap (Weight)</th>
+                            <th>St dung (Bag)</th>
+                            <th>Su dung (Weight)</th>
+                            <th>Ton cudi (Bag)</th>
+                            <th>Ton cudi (Weight)</th>
+                            <th>Ngay nhap</th>
+                            <th>Code/NCC</th>
+                            <th>Truck</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <select id="materialName">
+                                    <option value="">Chọn</option>
                                     <option value="C9959">C9959</option>
                                     <option value="C9960">C9960</option>
                                     <option value="C9961">C9961</option>
+                                    <option value="WG">WG</option>
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Vị trí kho *</label>
-                                <select id="lockLocation" required>
-                                    <option value="">Chọn vị trí</option>
+                            </td>
+                            <td>
+                                <select id="lockLocation">
+                                    <option value="">Chọn</option>
                                     <option value="A02">A02</option>
                                     <option value="B09">B09</option>
                                     <option value="B14">B14</option>
@@ -702,92 +633,26 @@
                                     <option value="B17">B17</option>
                                     <option value="B18">B18</option>
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Nhập (Bao)</label>
-                                <input type="number" id="importBags" min="0" value="0" step="1">
-                            </div>
-                            <div class="form-group">
-                                <label>Nhập (Khối lượng - tấn)</label>
-                                <input type="number" id="importWeight" min="0" value="0" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label>Sử dụng (Bao)</label>
-                                <input type="number" id="usageBags" min="0" value="0" step="1">
-                            </div>
-                            <div class="form-group">
-                                <label>Sử dụng (Khối lượng - tấn)</label>
-                                <input type="number" id="usageWeight" min="0" value="0" step="0.01">
-                            </div>
-                        </div>
-                    </div>
+                            </td>
+                            <td><input type="number" id="tonDauBag" value="0" min="0" step="1"></td>
+                            <td><input type="number" id="tonDauWeight" value="0" min="0" step="0.01"></td>
+                            <td><input type="number" id="nhapBag" value="0" min="0" step="1"></td>
+                            <td><input type="number" id="nhapWeight" value="0" min="0" step="0.01"></td>
+                            <td><input type="number" id="suDungBag" value="0" min="0" step="1"></td>
+                            <td><input type="number" id="suDungWeight" value="0" min="0" step="0.01"></td>
+                            <td><input type="number" id="tonCuoiBag" value="0" min="0" step="1" readonly></td>
+                            <td><input type="number" id="tonCuoiWeight" value="0" min="0" step="0.01" readonly></td>
+                            <td><input type="date" id="ngayNhap"></td>
+                            <td><input type="text" id="supplierCode" placeholder="Code/NCC"></td>
+                            <td><input type="text" id="truck" placeholder="Truck"></td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                    <div class="form-section" id="liquidSection" style="display: none;">
-                        <h3>🛢️ Chất lỏng - Silo</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Tên chất lỏng</label>
-                                <select id="liquidName">
-                                    <option value="">Chọn chất lỏng</option>
-                                    <option value="dau_ca_bien">Dầu cá biển</option>
-                                    <option value="dau_nanh">Dầu nành</option>
-                                    <option value="dich_ca">Dịch cá</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Silo/Vị trí</label>
-                                <input type="text" id="siloLocation" placeholder="Ví dụ: Silo A1">
-                            </div>
-                            <div class="form-group">
-                                <label>Nhập (Lít)</label>
-                                <input type="number" id="importLiters" min="0" value="0" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label>Nhập (Khối lượng - tấn)</label>
-                                <input type="number" id="importLiquidWeight" min="0" value="0" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label>Sử dụng (Lít)</label>
-                                <input type="number" id="usageLiters" min="0" value="0" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label>Sử dụng (Khối lượng - tấn)</label>
-                                <input type="number" id="usageLiquidWeight" min="0" value="0" step="0.01">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h3>📝 Thông tin bổ sung</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Code/NCC</label>
-                                <input type="text" id="supplierCode" placeholder="Nhập code nhà cung cấp">
-                            </div>
-                            <div class="form-group">
-                                <label>Số lô</label>
-                                <input type="text" id="batchNumber" placeholder="Nhập số lô">
-                            </div>
-                            <div class="form-group">
-                                <label>Ngày công thức</label>
-                                <input type="date" id="formulaDate">
-                            </div>
-                            <div class="form-group">
-                                <label>Ngày sản xuất</label>
-                                <input type="date" id="productionDate">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Ghi chú</label>
-                            <textarea id="notes" rows="3" placeholder="Ghi chú thêm..."></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" id="cancelBtn" class="btn-secondary">❌ Hủy</button>
-                        <button type="submit" class="btn-primary">💾 Lưu data</button>
-                    </div>
-                </form>
+                <div class="form-actions">
+                    <button type="button" id="cancelBtn" class="btn-secondary">❌ Hủy</button>
+                    <button type="button" id="saveBtn" class="btn-primary">💾 Lưu data</button>
+                </div>
             </div>
         </div>
 
@@ -795,8 +660,8 @@
         <div id="clearDataModal" class="form-modal" style="display: none;">
             <div class="form-content">
                 <h2 style="color: #ff4444;">⚠️ XÁC NHẬN XÓA DỮ LIỆU</h2>
-                <div class="form-section" style="border-left-color: #ff4444;">
-                    <h3 style="color: #ff4444;">THAO TÁC NGUY HIỂM - KHÔNG THỂ HOÀN TÁC!</h3>
+                <div style="background: #fff3f3; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ff4444;">
+                    <h3 style="color: #ff4444; margin-bottom: 10px;">THAO TÁC NGUY HIỂM - KHÔNG THỂ HOÀN TÁC!</h3>
                     <p><strong>Phạm vi xóa:</strong></p>
                     <ul style="margin-left: 20px; margin-bottom: 15px;">
                         <li>Tất cả sheet từ 01 đến 31</li>
@@ -820,7 +685,7 @@
         <div id="exportModal" class="export-modal" style="display: none;">
             <div class="export-content">
                 <h2>📄 PHIẾU QUẢN LÝ SỐ LƯỢNG NGUYÊN LIỆU</h2>
-                <div id="exportContent" style="background: white; padding: 20px; border-radius: 10px; border: 2px solid #1e3c72;">
+                <div id="exportContent" style="background: white; padding: 25px; border: 2px solid #1e3c72; border-radius: 10px; font-family: Arial, sans-serif;">
                     <!-- Nội dung phiếu sẽ được điền ở đây bằng JavaScript -->
                 </div>
                 <div class="export-actions">
@@ -871,11 +736,19 @@
             document.getElementById('addTransactionBtn').addEventListener('click', function() {
                 document.getElementById('transactionForm').style.display = 'flex';
                 // Đặt ngày hôm nay mặc định
-                document.getElementById('inputDate').valueAsDate = new Date();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('inputDate').value = today;
+                document.getElementById('ngayNhap').value = today;
+                // Tính toán tự động tồn cuối
+                calculateTonCuoi();
             });
             
             document.getElementById('cancelBtn').addEventListener('click', function() {
                 document.getElementById('transactionForm').style.display = 'none';
+            });
+            
+            document.getElementById('saveBtn').addEventListener('click', function() {
+                saveTransaction();
             });
             
             document.getElementById('refreshBtn').addEventListener('click', function() {
@@ -886,23 +759,13 @@
                 loadDataFromAppsScript();
             });
             
-            // Xử lý thay đổi loại nguyên liệu
-            document.getElementById('materialType').addEventListener('change', function() {
-                const type = this.value;
-                if (type === 'solid') {
-                    document.getElementById('solidSection').style.display = 'block';
-                    document.getElementById('liquidSection').style.display = 'none';
-                } else if (type === 'liquid') {
-                    document.getElementById('solidSection').style.display = 'none';
-                    document.getElementById('liquidSection').style.display = 'block';
-                }
-            });
-            
-            // Xử lý form submit
-            document.getElementById('newTransactionForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                saveTransaction();
-            });
+            // Tính toán tự động khi nhập số liệu
+            document.getElementById('tonDauBag').addEventListener('input', calculateTonCuoi);
+            document.getElementById('tonDauWeight').addEventListener('input', calculateTonCuoi);
+            document.getElementById('nhapBag').addEventListener('input', calculateTonCuoi);
+            document.getElementById('nhapWeight').addEventListener('input', calculateTonCuoi);
+            document.getElementById('suDungBag').addEventListener('input', calculateTonCuoi);
+            document.getElementById('suDungWeight').addEventListener('input', calculateTonCuoi);
             
             // Các hàm quản lý cuối tháng
             document.getElementById('checkEndOfMonthBtn').addEventListener('click', checkEndOfMonthStatus);
@@ -921,7 +784,29 @@
                 document.getElementById('exportModal').style.display = 'none';
             });
             document.getElementById('printExport').addEventListener('click', function() {
-                window.print();
+                const exportContent = document.getElementById('exportContent').innerHTML;
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>In phiếu</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; margin: 20px; }
+                                @media print {
+                                    body { margin: 0; }
+                                    button { display: none; }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            ${exportContent}
+                            <script>
+                                window.print();
+                            <\/script>
+                        </body>
+                    </html>
+                `);
+                printWindow.document.close();
             });
             
             // Tải dữ liệu từ Apps Script khi khởi động
@@ -929,6 +814,22 @@
             
             // Kiểm tra cuối tháng khi khởi động
             setTimeout(checkEndOfMonthStatus, 2000);
+        }
+
+        // Hàm tính toán tồn cuối tự động
+        function calculateTonCuoi() {
+            const tonDauBag = parseFloat(document.getElementById('tonDauBag').value) || 0;
+            const nhapBag = parseFloat(document.getElementById('nhapBag').value) || 0;
+            const suDungBag = parseFloat(document.getElementById('suDungBag').value) || 0;
+            const tonDauWeight = parseFloat(document.getElementById('tonDauWeight').value) || 0;
+            const nhapWeight = parseFloat(document.getElementById('nhapWeight').value) || 0;
+            const suDungWeight = parseFloat(document.getElementById('suDungWeight').value) || 0;
+            
+            const tonCuoiBag = tonDauBag + nhapBag - suDungBag;
+            const tonCuoiWeight = tonDauWeight + nhapWeight - suDungWeight;
+            
+            document.getElementById('tonCuoiBag').value = tonCuoiBag > 0 ? tonCuoiBag.toFixed(0) : 0;
+            document.getElementById('tonCuoiWeight').value = tonCuoiWeight > 0 ? tonCuoiWeight.toFixed(2) : 0;
         }
 
         async function loadDataFromAppsScript() {
@@ -942,18 +843,14 @@
             statusDiv.innerHTML = '<div class="loading">🔄 Đang kết nối đến Google Sheet...</div>';
 
             try {
-                // Thêm timestamp để tránh cache
+                // Sửa lỗi kết nối bằng cách thử cả GET và POST
                 const timestamp = new Date().getTime();
-                const response = await fetch(`${APPS_SCRIPT_URL}?sheet=${selectedDay}&apiKey=${API_KEY}&t=${timestamp}`, {
-                    method: 'GET',
-                    mode: 'no-cors'
-                }).catch(async () => {
-                    // Fallback: thử với method thông thường
-                    return await fetch(`${APPS_SCRIPT_URL}?sheet=${selectedDay}&apiKey=${API_KEY}&t=${timestamp}`);
-                });
-
-                if (!response || !response.ok) {
-                    throw new Error('Không thể kết nối đến server');
+                
+                // Sử dụng fetch với mode 'no-cors' để tránh lỗi CORS
+                const response = await fetch(`${APPS_SCRIPT_URL}?sheet=${selectedDay}&apiKey=${API_KEY}&t=${timestamp}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -1011,8 +908,8 @@
         }
 
         function formatNumber(num) {
-            if (!num) return '0';
-            return parseFloat(num).toLocaleString('vi-VN');
+            if (!num || isNaN(num)) return '0';
+            return parseFloat(num).toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
         function updateTableFromRawData(rawData) {
@@ -1022,7 +919,7 @@
             // Bỏ qua hàng tiêu đề (hàng 0-5)
             for (let i = 6; i < rawData.length; i++) {
                 const row = rawData[i];
-                // Kiểm tra xem dòng có dữ liệu không
+                // Kiểm tra xem dòng có dữ liệu không (cột Name có giá trị)
                 if (row[1] && row[1] !== 'Name' && row[1] !== '') {
                     const rowElement = document.createElement('tr');
                     rowElement.innerHTML = `
@@ -1063,25 +960,26 @@
                 sheet: document.getElementById('sheetDay').value,
                 transactionType: document.getElementById('transactionType').value,
                 inputDate: document.getElementById('inputDate').value,
-                materialType: document.getElementById('materialType').value,
-                lockLocation: document.getElementById('lockLocation').value,
                 materialName: document.getElementById('materialName').value,
-                importBags: document.getElementById('importBags').value,
-                importWeight: document.getElementById('importWeight').value,
-                usageBags: document.getElementById('usageBags').value,
-                usageWeight: document.getElementById('usageWeight').value,
-                liquidName: document.getElementById('liquidName').value,
-                siloLocation: document.getElementById('siloLocation').value,
-                importLiters: document.getElementById('importLiters').value,
-                importLiquidWeight: document.getElementById('importLiquidWeight').value,
-                usageLiters: document.getElementById('usageLiters').value,
-                usageLiquidWeight: document.getElementById('usageLiquidWeight').value,
+                lockLocation: document.getElementById('lockLocation').value,
+                tonDauBag: document.getElementById('tonDauBag').value,
+                tonDauWeight: document.getElementById('tonDauWeight').value,
+                nhapBag: document.getElementById('nhapBag').value,
+                nhapWeight: document.getElementById('nhapWeight').value,
+                suDungBag: document.getElementById('suDungBag').value,
+                suDungWeight: document.getElementById('suDungWeight').value,
+                tonCuoiBag: document.getElementById('tonCuoiBag').value,
+                tonCuoiWeight: document.getElementById('tonCuoiWeight').value,
+                ngayNhap: document.getElementById('ngayNhap').value,
                 supplierCode: document.getElementById('supplierCode').value,
-                batchNumber: document.getElementById('batchNumber').value,
-                formulaDate: document.getElementById('formulaDate').value,
-                productionDate: document.getElementById('productionDate').value,
-                notes: document.getElementById('notes').value
+                truck: document.getElementById('truck').value
             };
+
+            // Validate required fields
+            if (!formData.materialName || !formData.lockLocation) {
+                alert('Vui lòng nhập đầy đủ thông tin Name và Lock!');
+                return;
+            }
 
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
@@ -1100,7 +998,11 @@
                 
                 alert('✅ Data đã được lưu thành công vào Google Sheet!');
                 document.getElementById('transactionForm').style.display = 'none';
-                document.getElementById('newTransactionForm').reset();
+                document.getElementById('transactionForm').querySelectorAll('input, select').forEach(element => {
+                    if (element.type !== 'button') {
+                        element.value = '';
+                    }
+                });
                 
                 // Làm mới dữ liệu
                 loadDataFromAppsScript();
@@ -1241,13 +1143,14 @@
 
             const exportContent = document.getElementById('exportContent');
             
-            // Tạo nội dung phiếu theo mẫu ảnh
+            // Tạo nội dung phiếu theo mẫu
             exportContent.innerHTML = `
                 <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1e3c72; padding-bottom: 15px;">
                     <h3 style="color: #1e3c72; margin-bottom: 5px;">Công ty cổ phần chăn nuôi CP Việt Nam</h3>
                     <h4 style="color: #333; margin-bottom: 10px;">Chi nhánh SXKD thức ăn thủy sản Cần Thơ</h4>
                     <h2 style="color: #1e3c72; margin-bottom: 10px;"><strong>PHIẾU QUẢN LÝ SỐ LƯỢNG NGUYÊN LIỆU</strong></h2>
-                    <p style="color: #333; font-size: 16px;"><strong>Lô (lot): E01 - Ngày: ${selectedDay}</strong></p>
+                    <p style="color: #333; font-size: 16px;"><strong>(RAW MATERIAL CONTROL)</strong></p>
+                    <p style="color: #333; font-size: 16px; margin-top: 10px;"><strong>Lô (lot): E01 - Ngày: ${selectedDay}</strong></p>
                 </div>
                 
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
@@ -1284,13 +1187,14 @@
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
                 if (cells.length >= 9) {
+                    const materialName = cells[2].textContent || '';
                     const bags = cells[4].textContent || '0';
                     const weight = cells[5].textContent || '0';
                     const date = cells[0].textContent || '';
                     const age = cells[9].textContent || '';
                     const supplier = cells[10].textContent || '';
 
-                    if (weight !== '0') {
+                    if (materialName && weight !== '0') {
                         const weightValue = parseFloat(weight.replace(/,/g, '')) || 0;
                         totalWeight += weightValue;
 
