@@ -7,7 +7,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
         body { background: #f0f2f5; color: #333; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1800px; margin: 0 auto; padding: 20px; }
         
         .header { 
             background: linear-gradient(135deg, #1e3c72, #2a5298);
@@ -21,6 +21,8 @@
         .btn-primary { background: #4CAF50; color: white; }
         .btn-secondary { background: #6c757d; color: white; }
         .btn-danger { background: #dc3545; color: white; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-info { background: #17a2b8; color: white; }
         
         .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
@@ -42,6 +44,22 @@
         .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .status.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         .status.loading { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .status.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #ddd; }
+        .tab { padding: 10px 20px; cursor: pointer; border-radius: 5px 5px 0 0; }
+        .tab.active { background: #1e3c72; color: white; }
+        
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .summary-card { background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #1e3c72; }
+        
+        .small-input { width: 80px !important; }
+        .medium-input { width: 120px !important; }
+        
+        .age-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        .age-0-30 { background: #28a745; color: white; }
+        .age-31-60 { background: #ffc107; color: #333; }
+        .age-61 { background: #dc3545; color: white; }
     </style>
 </head>
 <body>
@@ -52,39 +70,158 @@
             <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
                 <button class="btn btn-primary" onclick="showAddForm()">+ Thêm Data</button>
                 <button class="btn btn-secondary" onclick="loadData()">🔄 Làm mới</button>
+                <button class="btn btn-info" onclick="showLabelModal()">🏷️ Phiếu dán đầu lô</button>
+                <button class="btn btn-warning" onclick="showSiloModal()">🏭 Nhập/Xuất Silo</button>
+                <button class="btn btn-info" onclick="showLiquidModal()">🌊 Nguyên liệu lỏng</button>
                 <button class="btn btn-primary" onclick="exportToPDF()">📄 Xuất Phiếu</button>
                 <button class="btn btn-danger" onclick="showClearModal()">🗑️ Xóa Data Tháng</button>
+                <button class="btn btn-secondary" onclick="backupData()">💾 Sao lưu PC</button>
             </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('daily')">📊 Theo dõi hàng ngày</div>
+            <div class="tab" onclick="switchTab('summary')">📈 Tổng hợp & Báo cáo</div>
+            <div class="tab" onclick="switchTab('aging')">📅 Tuổi lưu kho</div>
+            <div class="tab" onclick="switchTab('supplier')">🏢 Supplier</div>
         </div>
 
         <!-- Controls -->
-        <div class="card">
-            <h3>📊 XEM BÁO CÁO THEO NGÀY</h3>
-            <div style="display: flex; gap: 15px; align-items: center; margin-top: 15px; flex-wrap: wrap;">
-                <select id="daySelect" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; min-width: 150px;">
-                    <option value="">Chọn ngày</option>
-                </select>
-                <button class="btn btn-primary" onclick="loadData()">📥 Tải Data</button>
-                <button class="btn btn-secondary" onclick="checkEndOfMonth()">📅 Kiểm tra cuối tháng</button>
+        <div id="dailyTab" class="tab-content">
+            <div class="card">
+                <h3>📊 XEM BÁO CÁO THEO NGÀY</h3>
+                <div style="display: flex; gap: 15px; align-items: center; margin-top: 15px; flex-wrap: wrap;">
+                    <select id="daySelect" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; min-width: 150px;">
+                        <option value="">Chọn ngày</option>
+                    </select>
+                    <select id="materialGroupFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; min-width: 150px;">
+                        <option value="">Tất cả nhóm</option>
+                        <option value="bao">Bao (25/40/50kg)</option>
+                        <option value="bigbag">Bigbag (700-1000kg)</option>
+                        <option value="liquid">Lỏng</option>
+                        <option value="bulk">Xá đổ đống</option>
+                    </select>
+                    <select id="locationFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; min-width: 150px;">
+                        <option value="">Tất cả vị trí</option>
+                        <option value="kho1">Kho 1</option>
+                        <option value="kho2">Kho 2 (ngoài)</option>
+                        <option value="cold">Kho lạnh</option>
+                        <option value="silo">Silo</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="loadData()">📥 Tải Data</button>
+                    <button class="btn btn-secondary" onclick="checkEndOfMonth()">📅 Kiểm tra cuối tháng</button>
+                    <button class="btn btn-warning" onclick="autoCopyOpeningStock()">📋 Copy tồn đầu tự động</button>
+                </div>
+                <div id="status"></div>
             </div>
-            <div id="status"></div>
+
+            <!-- Summary Cards -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h4>📦 Tổng tồn kho</h4>
+                    <div id="totalStock" style="font-size: 24px; font-weight: bold;">0 kg</div>
+                    <div id="totalBags">0 bao</div>
+                </div>
+                <div class="summary-card">
+                    <h4>📥 Tổng nhập</h4>
+                    <div id="totalImport" style="font-size: 24px; font-weight: bold;">0 kg</div>
+                    <div id="totalImportBags">0 bao</div>
+                </div>
+                <div class="summary-card">
+                    <h4>📤 Tổng xuất</h4>
+                    <div id="totalExport" style="font-size: 24px; font-weight: bold;">0 kg</div>
+                    <div id="totalExportBags">0 bao</div>
+                </div>
+                <div class="summary-card">
+                    <h4>⚖️ Trung bình</h4>
+                    <div id="avgWeightPerBag" style="font-size: 24px; font-weight: bold;">0 kg/bao</div>
+                    <div id="avgAge">0 ngày</div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3>📋 CHI TIẾT NGUYÊN LIỆU</h3>
+                    <div>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleCalculations()">🧮 Hiện/Ẩn công thức</button>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th><th>Lock</th><th>Khu vực</th><th>Nhóm</th>
+                                <th>Ton dau (Bag)</th><th>Ton dau (Weight)</th>
+                                <th>Nhap (Bag)</th><th>Nhap (Weight)</th>
+                                <th>Ngay nhap</th><th>Supplier</th><th>Tuổi</th>
+                                <th>St dung (Bag)</th><th>Su dung (Weight)</th>
+                                <th>Ton cudi (Bag)</th><th>Ton cudi (Weight)</th>
+                                <th>Trung bình (kg/bao)</th>
+                                <th>Tuổi lưu kho</th>
+                                <th>Code/NCC</th><th>Truck</th><th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataBody">
+                            <tr><td colspan="20" style="text-align: center; padding: 20px;">Chọn ngày và tải data để xem thông tin</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <!-- Data Table -->
-        <div class="card">
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th><th>Lock</th><th>Ton dau (Bag)</th><th>Ton dau (Weight)</th>
-                            <th>Nhap (Bag)</th><th>Nhap (Weight)</th><th>St dung (Bag)</th><th>Su dung (Weight)</th>
-                            <th>Ton cudi (Bag)</th><th>Ton cudi (Weight)</th><th>Ngay nhap</th><th>Code/NCC</th><th>Truck</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dataBody">
-                        <tr><td colspan="13" style="text-align: center; padding: 20px;">Chọn ngày và tải data để xem thông tin</td></tr>
-                    </tbody>
-                </table>
+        <!-- Summary Tab -->
+        <div id="summaryTab" class="tab-content" style="display: none;">
+            <div class="card">
+                <h3>📈 BÁO CÁO TỔNG HỢP THÁNG</h3>
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <select id="monthSelect" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; min-width: 150px;">
+                        <option value="1">Tháng 1</option>
+                        <option value="2">Tháng 2</option>
+                        <!-- Thêm các tháng khác -->
+                    </select>
+                    <button class="btn btn-primary" onclick="loadMonthlyReport()">Tải báo cáo</button>
+                </div>
+                <div id="monthlyReport"></div>
+            </div>
+        </div>
+
+        <!-- Aging Tab -->
+        <div id="agingTab" class="tab-content" style="display: none;">
+            <div class="card">
+                <h3>📅 BẢNG TUỔI LƯU KHO</h3>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h4><span class="age-badge age-0-30">0-30 ngày</span></h4>
+                        <div id="age0_30" style="font-size: 24px; font-weight: bold;">0 kg</div>
+                        <div id="age0_30_percent">0%</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4><span class="age-badge age-31-60">31-60 ngày</span></h4>
+                        <div id="age31_60" style="font-size: 24px; font-weight: bold;">0 kg</div>
+                        <div id="age31_60_percent">0%</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4><span class="age-badge age-61">>61 ngày</span></h4>
+                        <div id="age61" style="font-size: 24px; font-weight: bold;">0 kg</div>
+                        <div id="age61_percent">0%</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <canvas id="agingChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Supplier Tab -->
+        <div id="supplierTab" class="tab-content" style="display: none;">
+            <div class="card">
+                <h3>🏢 QUẢN LÝ SUPPLIER</h3>
+                <div style="margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="showAddSupplierModal()">+ Thêm Supplier</button>
+                </div>
+                <div id="supplierList"></div>
             </div>
         </div>
 
@@ -93,16 +230,36 @@
             <div class="modal-content">
                 <h2>➕ THÊM DATA MỚI - INVENTORY WH</h2>
                 
-                <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-                    <div class="form-group" style="flex: 1;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div class="form-group">
                         <label>Sheet ngày:</label>
                         <select id="formSheetDay">
                             <option value="">Chọn ngày</option>
                         </select>
                     </div>
-                    <div class="form-group" style="flex: 1;">
+                    <div class="form-group">
                         <label>Ngày nhập:</label>
                         <input type="date" id="formNgayNhap">
+                    </div>
+                    <div class="form-group">
+                        <label>Khu vực:</label>
+                        <select id="formKhuVuc">
+                            <option value="">Chọn khu vực</option>
+                            <option value="kho1">Kho 1</option>
+                            <option value="kho2">Kho 2 (ngoài)</option>
+                            <option value="cold">Kho lạnh</option>
+                            <option value="silo">Silo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nhóm nguyên liệu:</label>
+                        <select id="formNhom">
+                            <option value="">Chọn nhóm</option>
+                            <option value="bao">Bao (25/40/50kg)</option>
+                            <option value="bigbag">Bigbag (700-1000kg)</option>
+                            <option value="liquid">Lỏng</option>
+                            <option value="bulk">Xá đổ đống</option>
+                        </select>
                     </div>
                 </div>
 
@@ -111,7 +268,8 @@
                         <tr>
                             <th>Name</th><th>Lock</th><th>Ton dau (Bag)</th><th>Ton dau (Weight)</th>
                             <th>Nhap (Bag)</th><th>Nhap (Weight)</th><th>St dung (Bag)</th><th>Su dung (Weight)</th>
-                            <th>Ton cudi (Bag)</th><th>Ton cudi (Weight)</th><th>Code/NCC</th><th>Truck</th>
+                            <th>Ton cudi (Bag)</th><th>Ton cudi (Weight)</th><th>Trung bình (kg/bao)</th>
+                            <th>Ngay nhap</th><th>Supplier</th><th>Code/NCC</th><th>Truck</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -119,40 +277,155 @@
                             <td>
                                 <select id="formMaterial">
                                     <option value="">Chọn nguyên liệu</option>
-                                    <option value="C9959">C9959</option>
-                                    <option value="C9960">C9960</option>
-                                    <option value="C9961">C9961</option>
-                                    <option value="WG">WG</option>
+                                    <!-- Sẽ được load từ Google Sheets -->
                                 </select>
                             </td>
                             <td>
                                 <select id="formLock">
                                     <option value="">Chọn vị trí</option>
-                                    <option value="A02">A02</option>
-                                    <option value="B09">B09</option>
-                                    <option value="B14">B14</option>
-                                    <option value="B16">B16</option>
-                                    <option value="B17">B17</option>
-                                    <option value="B18">B18</option>
+                                    <!-- Vị trí sẽ được load động -->
                                 </select>
                             </td>
-                            <td><input type="number" id="formTonDauBag" value="0" style="width: 80px;"></td>
-                            <td><input type="number" id="formTonDauWeight" value="0" step="0.01" style="width: 80px;"></td>
-                            <td><input type="number" id="formNhapBag" value="0" style="width: 80px;"></td>
-                            <td><input type="number" id="formNhapWeight" value="0" step="0.01" style="width: 80px;"></td>
-                            <td><input type="number" id="formSuDungBag" value="0" style="width: 80px;"></td>
-                            <td><input type="number" id="formSuDungWeight" value="0" step="0.01" style="width: 80px;"></td>
-                            <td><input type="number" id="formTonCuoiBag" value="0" readonly style="width: 80px;"></td>
-                            <td><input type="number" id="formTonCuoiWeight" value="0" step="0.01" readonly style="width: 80px;"></td>
-                            <td><input type="text" id="formCodeNCC" placeholder="Code/NCC"></td>
-                            <td><input type="text" id="formTruck" placeholder="Truck"></td>
+                            <td><input type="number" id="formTonDauBag" value="0" class="small-input" onchange="calculateAvg()"></td>
+                            <td><input type="number" id="formTonDauWeight" value="0" step="0.01" class="small-input" onchange="calculateAvg()"></td>
+                            <td><input type="number" id="formNhapBag" value="0" class="small-input" onchange="calculateTonCuoi()"></td>
+                            <td><input type="number" id="formNhapWeight" value="0" step="0.01" class="small-input" onchange="calculateTonCuoi()"></td>
+                            <td><input type="number" id="formSuDungBag" value="0" class="small-input" onchange="calculateTonCuoi()"></td>
+                            <td><input type="number" id="formSuDungWeight" value="0" step="0.01" class="small-input" onchange="calculateTonCuoi()"></td>
+                            <td><input type="number" id="formTonCuoiBag" value="0" readonly class="small-input"></td>
+                            <td><input type="number" id="formTonCuoiWeight" value="0" step="0.01" readonly class="small-input"></td>
+                            <td><input type="number" id="formAvgWeight" value="0" step="0.01" readonly class="small-input"></td>
+                            <td><input type="date" id="formNgayNhapDetail"></td>
+                            <td>
+                                <select id="formSupplier">
+                                    <option value="">Chọn supplier</option>
+                                </select>
+                            </td>
+                            <td><input type="text" id="formCodeNCC" placeholder="Code/NCC" class="medium-input"></td>
+                            <td><input type="text" id="formTruck" placeholder="Truck" class="medium-input"></td>
                         </tr>
                     </tbody>
                 </table>
 
+                <div style="margin-top: 20px;">
+                    <h4>Supplier mới (nếu chưa có):</h4>
+                    <div style="display: flex; gap: 15px;">
+                        <input type="text" id="newSupplierName" placeholder="Tên supplier mới" style="flex: 2;">
+                        <input type="text" id="newSupplierCode" placeholder="Mã code" style="flex: 1;">
+                        <button class="btn btn-secondary" onclick="addNewSupplier()">Thêm</button>
+                    </div>
+                </div>
+
                 <div style="text-align: right; margin-top: 20px;">
                     <button class="btn btn-secondary" onclick="hideAddForm()">❌ Hủy</button>
                     <button class="btn btn-primary" onclick="saveData()">💾 Lưu Data</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Label Modal -->
+        <div id="labelModal" class="modal">
+            <div class="modal-content">
+                <h2>🏷️ PHIẾU DÁN ĐẦU LÔ</h2>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+                    <div>
+                        <div class="form-group">
+                            <label>Nhập mã lô:</label>
+                            <input type="text" id="lotCode" placeholder="Nhập mã lô..." onkeyup="searchLotInfo()">
+                        </div>
+                        <div id="lotInfo" style="margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; min-height: 200px;">
+                            <p>Thông tin lô sẽ hiển thị ở đây...</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>Thông tin format (A5):</h4>
+                        <div style="border: 2px solid #000; padding: 15px; font-size: 12px; background: #fff; min-height: 250px;">
+                            <div id="labelPreview">
+                                <div style="text-align: center; font-weight: bold; margin-bottom: 10px;">PHIẾU NHẬN DIỆN LÔ</div>
+                                <div><strong>Mã lô:</strong> <span id="previewLotCode">-</span></div>
+                                <div><strong>Nguyên liệu:</strong> <span id="previewMaterial">-</span></div>
+                                <div><strong>Supplier:</strong> <span id="previewSupplier">-</span></div>
+                                <div><strong>Ngày nhập:</strong> <span id="previewDate">-</span></div>
+                                <div><strong>SL:</strong> <span id="previewQuantity">-</span></div>
+                                <div><strong>Vị trí:</strong> <span id="previewLocation">-</span></div>
+                                <div><strong>Tuổi:</strong> <span id="previewAge">-</span> ngày</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button class="btn btn-primary" onclick="printLabel()">🖨️ In phiếu A5</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="hideLabelModal()">Đóng</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Silo Modal -->
+        <div id="siloModal" class="modal">
+            <div class="modal-content">
+                <h2>🏭 THEO DÕI SILO (6 BỒN)</h2>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
+                    <div class="card">
+                        <h4>Silo 01</h4>
+                        <div class="form-group">
+                            <label>Nguyên liệu:</label>
+                            <select id="silo1_material">
+                                <option value="dau_nanh">Đậu nành</option>
+                                <option value="lua_mi">Lúa mì</option>
+                                <option value="cam_mi_tho">Cám mì thô</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mức hiện tại (tấn):</label>
+                            <input type="number" id="silo1_current" value="0" step="0.1" max="300">
+                        </div>
+                        <div class="form-group">
+                            <label>Nhập thêm (tấn):</label>
+                            <input type="number" id="silo1_in" value="0" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Xuất (tấn):</label>
+                            <input type="number" id="silo1_out" value="0" step="0.1">
+                        </div>
+                        <div><strong>Tổng:</strong> <span id="silo1_total">0</span> tấn</div>
+                    </div>
+                    <!-- Thêm Silo 02-06 tương tự -->
+                </div>
+                <div style="text-align: right;">
+                    <button class="btn btn-secondary" onclick="hideSiloModal()">Đóng</button>
+                    <button class="btn btn-primary" onclick="saveSiloData()">Lưu Silo</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liquid Modal -->
+        <div id="liquidModal" class="modal">
+            <div class="modal-content">
+                <h2>🌊 NGUYÊN LIỆU LỎNG</h2>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div class="card">
+                        <h4>Bồn FS (9 tấn)</h4>
+                        <input type="text" id="fs_material" placeholder="Nguyên liệu">
+                        <input type="number" id="fs_weight" placeholder="Khối lượng (kg)" step="0.1">
+                    </div>
+                    <div class="card">
+                        <h4>F1 (10 bồn x 10 tấn)</h4>
+                        <!-- 10 bồn nhỏ -->
+                    </div>
+                    <div class="card">
+                        <h4>TANK1-4 (Dịch cá/Mắm tôm)</h4>
+                        <!-- 4 tank -->
+                    </div>
+                    <div class="card">
+                        <h4>T1-T10 (Dầu cá/Nành)</h4>
+                        <!-- 10 tank -->
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="hideLiquidModal()">Đóng</button>
+                    <button class="btn btn-primary" onclick="saveLiquidData()">Lưu</button>
                 </div>
             </div>
         </div>
@@ -164,6 +437,11 @@
                 <div class="status error">
                     <p><strong>THAO TÁC NGUY HIỂM - KHÔNG THỂ HOÀN TÁC!</strong></p>
                     <p>Sẽ xóa toàn bộ dữ liệu từ sheet 01 đến 31 (từ dòng 10 trở xuống)</p>
+                    <p>Tự động backup và copy tồn cuối tháng trước sang tháng mới</p>
+                </div>
+                <div class="form-group">
+                    <label>Nhập "CONFIRM" để xác nhận:</label>
+                    <input type="text" id="confirmDelete" placeholder="Nhập CONFIRM">
                 </div>
                 <div style="text-align: right; margin-top: 20px;">
                     <button class="btn btn-secondary" onclick="hideClearModal()">❌ Hủy bỏ</button>
@@ -174,50 +452,116 @@
     </div>
 
     <script>
-        // Configuration - SỬ DỤNG URL MỚI CỦA BẠN
+        // Configuration
         const CONFIG = {
             APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxFCcmyg4tXUMHp-WKEgNpkLbekbZ3tBIhlKAbLuY2QvW1nfcWM5oN8KkcFfwwo3mQDaQ/exec',
             API_KEY: 'cp-inventory-2024-secret-key'
         };
 
+        // Global variables
+        let currentData = [];
+        let agingChart = null;
+
         // Khởi tạo
         document.addEventListener('DOMContentLoaded', function() {
             initDays();
             setupCalculations();
-            // Set today's date
+            initMaterials();
+            initLocations();
+            initSuppliers();
             document.getElementById('formNgayNhap').valueAsDate = new Date();
+            document.getElementById('formNgayNhapDetail').valueAsDate = new Date();
         });
 
         function initDays() {
-            const daySelect = document.getElementById('daySelect');
-            const formSheetDay = document.getElementById('formSheetDay');
+            const selects = ['daySelect', 'formSheetDay'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">Chọn ngày</option>';
+                for (let i = 1; i <= 31; i++) {
+                    const day = i.toString().padStart(2, '0');
+                    const option = document.createElement('option');
+                    option.value = day;
+                    option.textContent = `Ngày ${day}`;
+                    select.appendChild(option);
+                }
+                const today = new Date().getDate().toString().padStart(2, '0');
+                select.value = today;
+            });
+        }
+
+        function initMaterials() {
+            const materialSelect = document.getElementById('formMaterial');
+            // Có thể load từ Google Sheets hoặc dùng mảng tĩnh
+            const materials = [
+                'C9959', 'C9960', 'C9961', 'WG', 
+                'Đậu nành', 'Lúa mì', 'Cám mì thô',
+                'Dịch cá', 'Mắm tôm', 'Dầu cá', 'Dầu nành',
+                // ... thêm 100+ nguyên liệu
+            ];
             
-            for (let i = 1; i <= 31; i++) {
-                const day = i.toString().padStart(2, '0');
-                
-                const option1 = document.createElement('option');
-                option1.value = day;
-                option1.textContent = `Ngày ${day}`;
-                daySelect.appendChild(option1);
-                
-                const option2 = document.createElement('option');
-                option2.value = day;
-                option2.textContent = `Ngày ${day}`;
-                formSheetDay.appendChild(option2);
+            materials.forEach(mat => {
+                const option = document.createElement('option');
+                option.value = mat;
+                option.textContent = mat;
+                materialSelect.appendChild(option);
+            });
+        }
+
+        function initLocations() {
+            const lockSelect = document.getElementById('formLock');
+            const locations = {
+                'kho1': ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09', 'A10',
+                        'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', 'A18', 'A19', 'A20'],
+                'kho2': ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09', 'B10',
+                        'B11', 'B12', 'B13', 'B14', 'B15', 'B16', 'B17', 'B18'],
+                'kho3': ['C01', 'C02', 'C03', 'C04', 'C05', 'C06', 'C07', 'C08', 'C09', 'C10', 'C11'],
+                'special': ['P01', 'P02', 'E01', 'E02', 'TIN3', 'T-E1', 'T-E2', 'TTAP'],
+                'tank': ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9'],
+                'silo': ['SILO01', 'SILO02', 'SILO03', 'SILO04', 'SILO05', 'SILO06']
+            };
+            
+            for (const [area, locs] of Object.entries(locations)) {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = area.toUpperCase();
+                locs.forEach(loc => {
+                    const option = document.createElement('option');
+                    option.value = loc;
+                    option.textContent = loc;
+                    optgroup.appendChild(option);
+                });
+                lockSelect.appendChild(optgroup);
             }
+        }
+
+        function initSuppliers() {
+            const supplierSelect = document.getElementById('formSupplier');
+            // Có thể load từ Google Sheets
+            const suppliers = [
+                '105104(BT)', 'CP Feedmill', 'C.P. Intertrade',
+                'Đại lý số 1', 'Nhà cung cấp A', 'Nhà cung cấp B'
+            ];
             
-            // Set today as default
-            const today = new Date().getDate().toString().padStart(2, '0');
-            daySelect.value = today;
-            formSheetDay.value = today;
+            suppliers.forEach(sup => {
+                const option = document.createElement('option');
+                option.value = sup;
+                option.textContent = sup;
+                supplierSelect.appendChild(option);
+            });
         }
 
         function setupCalculations() {
-            // Tự động tính tồn cuối
-            const calcFields = ['formTonDauBag', 'formTonDauWeight', 'formNhapBag', 'formNhapWeight', 'formSuDungBag', 'formSuDungWeight'];
+            const calcFields = ['formTonDauBag', 'formTonDauWeight', 'formNhapBag', 'formNhapWeight', 
+                               'formSuDungBag', 'formSuDungWeight', 'formNgayNhapDetail'];
             calcFields.forEach(id => {
-                document.getElementById(id).addEventListener('input', calculateTonCuoi);
+                document.getElementById(id).addEventListener('input', calculateAll);
             });
+        }
+
+        function calculateAll() {
+            calculateTonCuoi();
+            calculateAvg();
+            calculateAge();
         }
 
         function calculateTonCuoi() {
@@ -235,30 +579,40 @@
             document.getElementById('formTonCuoiWeight').value = tonCuoiWeight > 0 ? tonCuoiWeight.toFixed(2) : 0;
         }
 
-        // Hiển thị/ẩn modal
-        function showAddForm() { 
-            document.getElementById('addModal').style.display = 'flex'; 
-            // Reset form
-            document.getElementById('formNgayNhap').valueAsDate = new Date();
+        function calculateAvg() {
+            const tonDauBag = parseFloat(document.getElementById('formTonDauBag').value) || 0;
+            const tonDauWeight = parseFloat(document.getElementById('formTonDauWeight').value) || 0;
+            
+            if (tonDauBag > 0) {
+                const avg = tonDauWeight / tonDauBag;
+                document.getElementById('formAvgWeight').value = avg.toFixed(2);
+            }
         }
-        
-        function hideAddForm() { 
-            document.getElementById('addModal').style.display = 'none'; 
-            // Reset form values
-            document.getElementById('formMaterial').value = '';
-            document.getElementById('formLock').value = '';
-            document.getElementById('formTonDauBag').value = '0';
-            document.getElementById('formTonDauWeight').value = '0';
-            document.getElementById('formNhapBag').value = '0';
-            document.getElementById('formNhapWeight').value = '0';
-            document.getElementById('formSuDungBag').value = '0';
-            document.getElementById('formSuDungWeight').value = '0';
-            document.getElementById('formCodeNCC').value = '';
-            document.getElementById('formTruck').value = '';
+
+        function calculateAge() {
+            const ngayNhap = document.getElementById('formNgayNhapDetail').value;
+            if (ngayNhap) {
+                const today = new Date();
+                const nhapDate = new Date(ngayNhap);
+                const diffTime = Math.abs(today - nhapDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                return diffDays;
+            }
+            return 0;
         }
-        
-        function showClearModal() { document.getElementById('clearModal').style.display = 'flex'; }
-        function hideClearModal() { document.getElementById('clearModal').style.display = 'none'; }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + 'Tab').style.display = 'block';
+            event.target.classList.add('active');
+        }
 
         // Load data từ Google Sheets
         async function loadData() {
@@ -284,13 +638,15 @@
                     throw new Error(data.error);
                 }
                 
-                displayData(data.data);
+                currentData = data.data;
+                displayData(currentData);
+                calculateSummaries(currentData);
+                calculateAgingReport(currentData);
                 showStatus(`✅ Đã tải ${data.lastRow} dòng dữ liệu từ sheet ${day}`, 'success');
                 
             } catch (error) {
                 console.error('Lỗi:', error);
                 showStatus('❌ Lỗi kết nối: ' + error.message, 'error');
-                // Hiển thị dữ liệu mẫu
                 displaySampleData();
             }
         }
@@ -300,30 +656,47 @@
             tbody.innerHTML = '';
 
             if (!data || data.length <= 10) {
-                tbody.innerHTML = '<tr><td colspan="13" style="text-align: center; padding: 20px;">Không có dữ liệu</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="20" style="text-align: center; padding: 20px;">Không có dữ liệu</td></tr>';
                 return;
             }
 
-            // Hiển thị từ dòng 10 trở đi (bỏ qua header)
             let hasData = false;
             for (let i = 10; i < data.length; i++) {
                 const row = data[i];
-                if (row[1] && row[1] !== '') { // Cột B (Name) có dữ liệu
+                if (row[1] && row[1] !== '') {
                     const tr = document.createElement('tr');
+                    
+                    // Tính toán các giá trị
+                    const tonCuoiBag = (parseInt(row[3]) || 0) + (parseInt(row[5]) || 0) - (parseInt(row[7]) || 0);
+                    const tonCuoiWeight = (parseFloat(row[4]) || 0) + (parseFloat(row[6]) || 0) - (parseFloat(row[8]) || 0);
+                    const avgWeight = (parseFloat(row[4]) || 0) / ((parseInt(row[3]) || 1));
+                    const age = calculateStockAge(row[11]);
+                    const ageBadge = getAgeBadge(age);
+                    
                     tr.innerHTML = `
                         <td>${row[1] || ''}</td>
                         <td>${row[2] || ''}</td>
+                        <td>${getAreaFromLocation(row[2])}</td>
+                        <td>${getMaterialGroup(row[1])}</td>
                         <td>${row[3] || 0}</td>
                         <td>${formatNumber(row[4]) || 0}</td>
                         <td>${row[5] || 0}</td>
                         <td>${formatNumber(row[6]) || 0}</td>
-                        <td>${row[7] || 0}</td>
-                        <td>${formatNumber(row[8]) || 0}</td>
-                        <td>${row[9] || 0}</td>
-                        <td>${formatNumber(row[10]) || 0}</td>
                         <td>${formatDate(row[11])}</td>
                         <td>${row[12] || ''}</td>
+                        <td><span class="${ageBadge}">${age}</span></td>
+                        <td>${row[7] || 0}</td>
+                        <td>${formatNumber(row[8]) || 0}</td>
+                        <td>${tonCuoiBag}</td>
+                        <td>${formatNumber(tonCuoiWeight)}</td>
+                        <td>${avgWeight.toFixed(2)}</td>
+                        <td>${age} ngày</td>
                         <td>${row[13] || ''}</td>
+                        <td>${row[14] || ''}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="editRow(${i})">✏️</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteRow(${i})">🗑️</button>
+                        </td>
                     `;
                     tbody.appendChild(tr);
                     hasData = true;
@@ -331,8 +704,136 @@
             }
 
             if (!hasData) {
-                tbody.innerHTML = '<tr><td colspan="13" style="text-align: center; padding: 20px;">Không có dữ liệu</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="20" style="text-align: center; padding: 20px;">Không có dữ liệu</td></tr>';
             }
+        }
+
+        function getAreaFromLocation(location) {
+            if (!location) return '';
+            if (location.startsWith('A')) return 'Kho 1';
+            if (location.startsWith('B')) return 'Kho 2';
+            if (location.startsWith('C')) return 'Kho lạnh';
+            if (location.startsWith('SILO')) return 'Silo';
+            if (location.startsWith('T')) return 'Tank';
+            return 'Khác';
+        }
+
+        function getMaterialGroup(material) {
+            if (!material) return '';
+            const liquid = ['Dịch cá', 'Mắm tôm', 'Dầu cá', 'Dầu nành', 'Nước mắm'];
+            const bigbag = ['Cám mì thô', 'Bột cá'];
+            const bulk = ['Đậu nành', 'Lúa mì'];
+            
+            if (liquid.includes(material)) return 'Lỏng';
+            if (bigbag.includes(material)) return 'Bigbag';
+            if (bulk.includes(material)) return 'Xá đổ đống';
+            return 'Bao';
+        }
+
+        function calculateStockAge(dateString) {
+            if (!dateString) return 0;
+            const today = new Date();
+            const stockDate = new Date(dateString);
+            const diffTime = Math.abs(today - stockDate);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        function getAgeBadge(age) {
+            if (age <= 30) return 'age-badge age-0-30';
+            if (age <= 60) return 'age-badge age-31-60';
+            return 'age-badge age-61';
+        }
+
+        function calculateSummaries(data) {
+            let totalStock = 0;
+            let totalImport = 0;
+            let totalExport = 0;
+            let totalBags = 0;
+            let totalImportBags = 0;
+            let totalExportBags = 0;
+            
+            for (let i = 10; i < data.length; i++) {
+                const row = data[i];
+                if (row[1]) {
+                    totalStock += parseFloat(row[4]) || 0;
+                    totalImport += parseFloat(row[6]) || 0;
+                    totalExport += parseFloat(row[8]) || 0;
+                    totalBags += parseInt(row[3]) || 0;
+                    totalImportBags += parseInt(row[5]) || 0;
+                    totalExportBags += parseInt(row[7]) || 0;
+                }
+            }
+            
+            document.getElementById('totalStock').textContent = totalStock.toFixed(2) + ' kg';
+            document.getElementById('totalImport').textContent = totalImport.toFixed(2) + ' kg';
+            document.getElementById('totalExport').textContent = totalExport.toFixed(2) + ' kg';
+            document.getElementById('totalBags').textContent = totalBags + ' bao';
+            document.getElementById('totalImportBags').textContent = totalImportBags + ' bao';
+            document.getElementById('totalExportBags').textContent = totalExportBags + ' bao';
+            
+            const avgWeightPerBag = totalBags > 0 ? totalStock / totalBags : 0;
+            document.getElementById('avgWeightPerBag').textContent = avgWeightPerBag.toFixed(2) + ' kg/bao';
+        }
+
+        function calculateAgingReport(data) {
+            let age0_30 = 0;
+            let age31_60 = 0;
+            let age61 = 0;
+            let totalWeight = 0;
+            
+            for (let i = 10; i < data.length; i++) {
+                const row = data[i];
+                if (row[1] && row[11]) {
+                    const weight = parseFloat(row[4]) || 0;
+                    const age = calculateStockAge(row[11]);
+                    totalWeight += weight;
+                    
+                    if (age <= 30) age0_30 += weight;
+                    else if (age <= 60) age31_60 += weight;
+                    else age61 += weight;
+                }
+            }
+            
+            const percent0_30 = totalWeight > 0 ? ((age0_30 / totalWeight) * 100).toFixed(1) : 0;
+            const percent31_60 = totalWeight > 0 ? ((age31_60 / totalWeight) * 100).toFixed(1) : 0;
+            const percent61 = totalWeight > 0 ? ((age61 / totalWeight) * 100).toFixed(1) : 0;
+            
+            document.getElementById('age0_30').textContent = age0_30.toFixed(2) + ' kg';
+            document.getElementById('age0_30_percent').textContent = percent0_30 + '%';
+            document.getElementById('age31_60').textContent = age31_60.toFixed(2) + ' kg';
+            document.getElementById('age31_60_percent').textContent = percent31_60 + '%';
+            document.getElementById('age61').textContent = age61.toFixed(2) + ' kg';
+            document.getElementById('age61_percent').textContent = percent61 + '%';
+            
+            updateAgingChart([age0_30, age31_60, age61]);
+        }
+
+        function updateAgingChart(data) {
+            const ctx = document.getElementById('agingChart').getContext('2d');
+            
+            if (agingChart) {
+                agingChart.destroy();
+            }
+            
+            agingChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['0-30 ngày', '31-60 ngày', '>61 ngày'],
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
         }
 
         function formatNumber(num) {
@@ -340,23 +841,77 @@
             return parseFloat(num).toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        function displaySampleData() {
-            const tbody = document.getElementById('dataBody');
-            tbody.innerHTML = `
-                <tr>
-                    <td>C9959</td><td>B16</td><td>100</td><td>2.50</td>
-                    <td>50</td><td>1.25</td><td>30</td><td>0.75</td>
-                    <td>120</td><td>3.00</td><td>${new Date().toISOString().split('T')[0]}</td>
-                    <td>105104(BT)</td><td></td>
-                </tr>
-            `;
-        }
-
         function formatDate(dateValue) {
             if (!dateValue) return '';
             if (typeof dateValue === 'string') return dateValue.split(' ')[0];
             const date = new Date(dateValue);
             return isNaN(date) ? '' : date.toISOString().split('T')[0];
+        }
+
+        // Hiển thị/ẩn modal
+        function showAddForm() { 
+            document.getElementById('addModal').style.display = 'flex'; 
+            document.getElementById('formNgayNhap').valueAsDate = new Date();
+            document.getElementById('formNgayNhapDetail').valueAsDate = new Date();
+        }
+        
+        function hideAddForm() { 
+            document.getElementById('addModal').style.display = 'none'; 
+            resetForm();
+        }
+        
+        function showLabelModal() { 
+            document.getElementById('labelModal').style.display = 'flex'; 
+        }
+        
+        function hideLabelModal() { 
+            document.getElementById('labelModal').style.display = 'none'; 
+        }
+        
+        function showSiloModal() { 
+            document.getElementById('siloModal').style.display = 'flex'; 
+        }
+        
+        function hideSiloModal() { 
+            document.getElementById('siloModal').style.display = 'none'; 
+        }
+        
+        function showLiquidModal() { 
+            document.getElementById('liquidModal').style.display = 'flex'; 
+        }
+        
+        function hideLiquidModal() { 
+            document.getElementById('liquidModal').style.display = 'none'; 
+        }
+        
+        function showClearModal() { 
+            document.getElementById('clearModal').style.display = 'flex'; 
+        }
+        
+        function hideClearModal() { 
+            document.getElementById('clearModal').style.display = 'none'; 
+        }
+
+        function resetForm() {
+            const fields = [
+                'formMaterial', 'formLock', 'formKhuVuc', 'formNhom',
+                'formTonDauBag', 'formTonDauWeight', 'formNhapBag', 'formNhapWeight',
+                'formSuDungBag', 'formSuDungWeight', 'formCodeNCC', 'formTruck',
+                'formSupplier', 'newSupplierName', 'newSupplierCode'
+            ];
+            
+            fields.forEach(id => {
+                const element = document.getElementById(id);
+                if (element.type === 'select-one') {
+                    element.value = '';
+                } else {
+                    element.value = '';
+                }
+            });
+            
+            document.getElementById('formTonCuoiBag').value = '0';
+            document.getElementById('formTonCuoiWeight').value = '0';
+            document.getElementById('formAvgWeight').value = '0';
         }
 
         // Lưu data mới
@@ -367,27 +922,21 @@
                 sheet: document.getElementById('formSheetDay').value,
                 materialName: document.getElementById('formMaterial').value,
                 lockLocation: document.getElementById('formLock').value,
+                khuVuc: document.getElementById('formKhuVuc').value,
+                nhom: document.getElementById('formNhom').value,
                 tonDauBag: document.getElementById('formTonDauBag').value,
                 tonDauWeight: document.getElementById('formTonDauWeight').value,
                 nhapBag: document.getElementById('formNhapBag').value,
                 nhapWeight: document.getElementById('formNhapWeight').value,
                 suDungBag: document.getElementById('formSuDungBag').value,
                 suDungWeight: document.getElementById('formSuDungWeight').value,
-                tonCuoiBag: document.getElementById('formTonCuoiBag').value,
-                tonCuoiWeight: document.getElementById('formTonCuoiWeight').value,
-                ngayNhap: document.getElementById('formNgayNhap').value,
-                supplierCode: document.getElementById('formCodeNCC').value,
+                ngayNhap: document.getElementById('formNgayNhapDetail').value,
+                supplierCode: document.getElementById('formSupplier').value || document.getElementById('formCodeNCC').value,
                 truck: document.getElementById('formTruck').value
             };
 
-            // Validate required fields
-            if (!formData.materialName || !formData.lockLocation) {
-                alert('Vui lòng nhập đầy đủ thông tin Name và Lock!');
-                return;
-            }
-
-            if (!formData.sheet) {
-                alert('Vui lòng chọn Sheet ngày!');
+            if (!formData.materialName || !formData.lockLocation || !formData.sheet) {
+                alert('Vui lòng nhập đầy đủ thông tin bắt buộc!');
                 return;
             }
 
@@ -408,14 +957,43 @@
                 
                 showStatus('✅ Data đã được lưu thành công!', 'success');
                 hideAddForm();
-                loadData(); // Reload data
+                loadData();
                 
             } catch (error) {
                 showStatus('❌ Lỗi khi lưu: ' + error.message, 'error');
             }
         }
 
-        // Quản lý cuối tháng
+        // Tự động copy tồn đầu từ ngày trước
+        async function autoCopyOpeningStock() {
+            const day = document.getElementById('daySelect').value;
+            if (!day || day === '01') {
+                alert('Không thể copy tồn đầu cho ngày 01. Vui lòng nhập thủ công.');
+                return;
+            }
+            
+            const prevDay = (parseInt(day) - 1).toString().padStart(2, '0');
+            
+            showStatus(`Đang copy tồn cuối ngày ${prevDay} sang tồn đầu ngày ${day}...`, 'loading');
+            
+            try {
+                const url = `${CONFIG.APPS_SCRIPT_URL}?action=copyOpeningStock&prevDay=${prevDay}&currentDay=${day}&apiKey=${CONFIG.API_KEY}`;
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                showStatus(`✅ Đã copy tồn đầu từ ngày ${prevDay}`, 'success');
+                loadData();
+                
+            } catch (error) {
+                showStatus('❌ Lỗi khi copy: ' + error.message, 'error');
+            }
+        }
+
+        // Xử lý cuối tháng
         async function checkEndOfMonth() {
             showStatus('Đang kiểm tra...', 'loading');
             
@@ -425,7 +1003,8 @@
                 const data = await response.json();
                 
                 if (data.isEndOfMonth) {
-                    showStatus('⚠️ HÔM NAY LÀ NGÀY 31 - CẦN XỬ LÝ CUỐI THÁNG!', 'error');
+                    showStatus('⚠️ HÔM NAY LÀ NGÀY 31 - CẦN XỬ LÝ CUỐI THÁNG!', 'warning');
+                    showStatus('Tiến hành: 1. Sao lưu PC 2. Copy tồn cuối 3. Xóa data tháng', 'warning');
                 } else {
                     showStatus('✅ Chưa đến ngày cuối tháng', 'success');
                 }
@@ -435,10 +1014,40 @@
         }
 
         async function clearMonthData() {
-            showStatus('Đang xóa dữ liệu...', 'loading');
+            const confirm = document.getElementById('confirmDelete').value;
+            if (confirm !== 'CONFIRM') {
+                alert('Vui lòng nhập "CONFIRM" để xác nhận xóa dữ liệu!');
+                return;
+            }
+            
+            showStatus('Đang xử lý cuối tháng...', 'loading');
+            showStatus('1. Đang sao lưu dữ liệu...', 'loading');
             
             try {
-                const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
+                // Bước 1: Sao lưu
+                const backupResponse = await fetch(CONFIG.APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        apiKey: CONFIG.API_KEY,
+                        action: 'backupMonthData'
+                    })
+                });
+                
+                // Bước 2: Copy tồn cuối sang tháng mới
+                showStatus('2. Đang copy tồn cuối sang tháng mới...', 'loading');
+                const copyResponse = await fetch(CONFIG.APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        apiKey: CONFIG.API_KEY,
+                        action: 'copyClosingStockToNewMonth'
+                    })
+                });
+                
+                // Bước 3: Xóa data cũ
+                showStatus('3. Đang xóa dữ liệu tháng cũ...', 'loading');
+                const clearResponse = await fetch(CONFIG.APPS_SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -448,19 +1057,119 @@
                     })
                 });
                 
-                const result = await response.json();
+                const result = await clearResponse.json();
                 
                 if (result.error) {
                     throw new Error(result.error);
                 }
                 
-                showStatus('✅ Đã xóa dữ liệu tháng!', 'success');
+                showStatus('✅ Đã hoàn tất xử lý cuối tháng!', 'success');
                 hideClearModal();
                 loadData();
                 
             } catch (error) {
-                showStatus('❌ Lỗi khi xóa: ' + error.message, 'error');
+                showStatus('❌ Lỗi khi xử lý: ' + error.message, 'error');
             }
+        }
+
+        function backupData() {
+            showStatus('Đang sao lưu dữ liệu ra PC...', 'loading');
+            
+            // Tạo file Excel/CSV từ currentData
+            if (currentData.length > 0) {
+                const csvContent = convertToCSV(currentData);
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                
+                const today = new Date();
+                const fileName = `backup_cp_inventory_${today.getFullYear()}_${today.getMonth()+1}_${today.getDate()}.csv`;
+                
+                link.setAttribute("href", url);
+                link.setAttribute("download", fileName);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showStatus('✅ Đã sao lưu thành công!', 'success');
+            } else {
+                showStatus('Không có dữ liệu để sao lưu', 'error');
+            }
+        }
+
+        function convertToCSV(data) {
+            const headers = ['Name', 'Lock', 'Ton dau (Bag)', 'Ton dau (Weight)', 'Nhap (Bag)', 'Nhap (Weight)', 
+                           'St dung (Bag)', 'Su dung (Weight)', 'Ton cudi (Bag)', 'Ton cudi (Weight)', 
+                           'Ngay nhap', 'Code/NCC', 'Truck', 'Supplier', 'Khu vuc', 'Nhom'];
+            
+            let csv = headers.join(',') + '\n';
+            
+            for (let i = 10; i < data.length; i++) {
+                const row = data[i];
+                if (row[1]) {
+                    csv += row.slice(1, 14).map(cell => `"${cell || ''}"`).join(',') + '\n';
+                }
+            }
+            
+            return csv;
+        }
+
+        function searchLotInfo() {
+            const lotCode = document.getElementById('lotCode').value;
+            // Giả lập tìm kiếm thông tin lô
+            if (lotCode) {
+                document.getElementById('lotInfo').innerHTML = `
+                    <h4>Thông tin lô: ${lotCode}</h4>
+                    <p><strong>Nguyên liệu:</strong> C9959</p>
+                    <p><strong>Supplier:</strong> 105104(BT)</p>
+                    <p><strong>Ngày nhập:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>Số lượng:</strong> 100 bao / 2.5 tấn</p>
+                    <p><strong>Vị trí:</strong> B16</p>
+                    <p><strong>Tuổi lưu kho:</strong> 5 ngày</p>
+                `;
+                
+                // Update preview
+                document.getElementById('previewLotCode').textContent = lotCode;
+                document.getElementById('previewMaterial').textContent = 'C9959';
+                document.getElementById('previewSupplier').textContent = '105104(BT)';
+                document.getElementById('previewDate').textContent = new Date().toLocaleDateString();
+                document.getElementById('previewQuantity').textContent = '100 bao / 2.5 tấn';
+                document.getElementById('previewLocation').textContent = 'B16';
+                document.getElementById('previewAge').textContent = '5';
+            }
+        }
+
+        function printLabel() {
+            const printWindow = window.open('', '_blank');
+            const labelContent = document.getElementById('labelPreview').innerHTML;
+            
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Phiếu dán đầu lô</title>
+                        <style>
+                            @media print {
+                                @page { size: A5; margin: 10mm; }
+                                body { font-family: Arial; font-size: 12pt; }
+                                .label { border: 2px solid #000; padding: 10mm; }
+                                .title { text-align: center; font-weight: bold; font-size: 16pt; margin-bottom: 5mm; }
+                                .info { margin-bottom: 3mm; }
+                                .info strong { display: inline-block; width: 30mm; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="label">
+                            ${labelContent}
+                        </div>
+                        <script>
+                            window.onload = function() { window.print(); window.close(); }
+                        </script>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
 
         function showStatus(message, type) {
@@ -469,8 +1178,27 @@
         }
 
         function exportToPDF() {
-            alert('Chức năng xuất PDF đang được phát triển...');
-            // Có thể thêm chức năng xuất PDF ở đây
+            showStatus('Đang tạo PDF...', 'loading');
+            // Sử dụng jsPDF hoặc gọi Google Apps Script để tạo PDF
+            alert('Chức năng xuất PDF sẽ được tích hợp với Google Apps Script');
+        }
+
+        function displaySampleData() {
+            const tbody = document.getElementById('dataBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td>C9959</td><td>B16</td><td>Kho 2</td><td>Bao</td>
+                    <td>100</td><td>2.50</td><td>50</td><td>1.25</td>
+                    <td>${new Date().toISOString().split('T')[0]}</td><td>105104(BT)</td>
+                    <td><span class="age-badge age-0-30">5</span></td>
+                    <td>30</td><td>0.75</td><td>120</td><td>3.00</td>
+                    <td>25.00</td><td>5</td><td>105104(BT)</td><td></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm">✏️</button>
+                        <button class="btn btn-danger btn-sm">🗑️</button>
+                    </td>
+                </tr>
+            `;
         }
     </script>
 </body>
