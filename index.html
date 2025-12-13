@@ -4,48 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CHECKSTOCK KIEU - Hệ thống quản lý kho C.P.CT</title>
-    <!-- Các thư viện CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Toàn bộ CSS đã tích hợp ở đây */
-        :root { --primary-blue: #1a237e; --success-green: #4CAF50; --danger-red: #F44336; --warning-orange: #FF9800; --info-blue: #2196F3; }
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); }
-        .navbar-brand { font-weight: 800; font-size: 1.8rem; background: linear-gradient(135deg, var(--primary-blue), var(--info-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .stat-card { transition: all 0.3s ease; border: none; border-radius: 15px; overflow: hidden; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .stat-icon { width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-        .table-container { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
-        .table-header { background: linear-gradient(135deg, var(--primary-blue), #283593); color: white; }
-        .material-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        :root {
+            --primary-blue: #1a237e;
+            --success-green: #4CAF50;
+            --danger-red: #F44336;
+            --warning-orange: #FF9800;
+            --info-blue: #2196F3;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--info-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .table-header {
+            background: linear-gradient(135deg, var(--primary-blue), #283593);
+            color: white;
+        }
+        
+        .material-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
         .badge-bao { background: #e3f2fd; color: #1565c0; }
         .badge-liquid { background: #f3e5f5; color: #7b1fa2; }
         .badge-bulk { background: #fff3e0; color: #ef6c00; }
-        .age-indicator { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; color: white; }
+        
+        .age-indicator {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            color: white;
+        }
+        
         .age-green { background: var(--success-green); }
         .age-yellow { background: var(--warning-orange); }
         .age-red { background: var(--danger-red); }
-        .progress-thin { height: 6px; border-radius: 3px; }
         
-        /* Phân tích tuổi lưu kho */
-        .age-analysis-card { border-left: 5px solid; transition: transform 0.3s; }
-        .age-analysis-card:hover { transform: translateX(5px); }
+        .progress-thin {
+            height: 6px;
+            border-radius: 3px;
+        }
+        
+        .age-analysis-card {
+            border-left: 5px solid;
+            transition: transform 0.3s;
+        }
+        .age-analysis-card:hover {
+            transform: translateX(5px);
+        }
         .age-0-30 { border-left-color: #4CAF50; }
         .age-31-60 { border-left-color: #FF9800; }
         .age-61-plus { border-left-color: #F44336; }
         
-        /* Phiếu đầu lô - Kích thước A5 */
-        #lotTagPreview { width: 210mm; height: 148mm; padding: 15mm; background: white; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin: 0 auto; }
+        #lotTagPreview {
+            width: 210mm;
+            height: 148mm;
+            padding: 15mm;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 0 auto;
+        }
         
-        /* Định dạng số đầy đủ */
         .full-number { font-family: 'Courier New', monospace; font-weight: bold; }
         
-        /* Responsive */
-        @media print {
-            .no-print { display: none !important; }
-            #lotTagPreview { box-shadow: none; border: 1px solid #000; }
-        }
         @media (max-width: 768px) {
             .stat-icon { width: 45px; height: 45px; font-size: 18px; }
             #lotTagPreview { width: 100%; height: auto; padding: 10mm; }
@@ -53,14 +133,17 @@
     </style>
 </head>
 <body>
-    <!-- ==================== PHẦN 1: GIAO DIỆN CHÍNH ==================== -->
-    <!-- Thanh điều hướng -->
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light glass-card mx-3 mt-3">
         <div class="container-fluid">
             <a class="navbar-brand" href="#"><i class="fas fa-clipboard-check me-2"></i>CHECKSTOCK KIEU</a>
             <div class="d-flex align-items-center">
-                <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addDataModal"><i class="fas fa-plus-circle me-2"></i>Thêm Dữ Liệu</button>
-                <button class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#lotHeaderModal"><i class="fas fa-tag me-2"></i>Phiếu Đầu Lô</button>
+                <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addDataModal">
+                    <i class="fas fa-plus-circle me-2"></i>Thêm Dữ Liệu
+                </button>
+                <button class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#lotHeaderModal">
+                    <i class="fas fa-tag me-2"></i>Phiếu Đầu Lô
+                </button>
                 <div class="me-3">
                     <small class="text-muted">Kết nối:</small>
                     <div class="d-flex align-items-center">
@@ -73,116 +156,299 @@
         </div>
     </nav>
 
-    <!-- Container chính -->
+    <!-- Main Container -->
     <div class="container-fluid my-4">
         <div class="row">
-            <!-- Sidebar trái -->
+            <!-- Sidebar -->
             <div class="col-lg-3">
                 <div class="glass-card p-3 mb-4">
                     <h5 class="fw-bold mb-3"><i class="fas fa-calendar-alt me-2"></i>Chọn ngày</h5>
                     <select id="daySelect" class="form-select form-select-lg mb-3"></select>
                     <div class="d-grid gap-2">
-                        <button class="btn btn-success btn-lg" onclick="loadData()"><i class="fas fa-sync-alt me-2"></i>Tải dữ liệu</button>
-                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#autoCopyModal"><i class="fas fa-copy me-2"></i>Copy tồn đầu</button>
-                        <button class="btn btn-outline-warning" onclick="exportToExcel()"><i class="fas fa-file-excel me-2"></i>Xuất Excel</button>
+                        <button class="btn btn-success btn-lg" onclick="loadData()">
+                            <i class="fas fa-sync-alt me-2"></i>Tải dữ liệu
+                        </button>
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#autoCopyModal">
+                            <i class="fas fa-copy me-2"></i>Copy tồn đầu
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="exportToExcel()">
+                            <i class="fas fa-file-excel me-2"></i>Xuất Excel
+                        </button>
                     </div>
                 </div>
                 
-                <!-- Thống kê tổng quan (Đã thu gọn) -->
+                <!-- Quick Stats -->
                 <div class="glass-card p-3">
                     <h5 class="fw-bold mb-3"><i class="fas fa-chart-bar me-2"></i>Tổng quan</h5>
                     <div class="row g-2">
-                        <div class="col-6"><div class="stat-card p-2 bg-light"><div class="d-flex align-items-center"><div class="stat-icon bg-success text-white me-2"><i class="fas fa-boxes"></i></div><div><small class="text-muted">Tổng tồn</small><h6 class="fw-bold mb-0" id="totalStock">0 kg</h6></div></div></div></div>
-                        <div class="col-6"><div class="stat-card p-2 bg-light"><div class="d-flex align-items-center"><div class="stat-icon bg-info text-white me-2"><i class="fas fa-arrow-down"></i></div><div><small class="text-muted">Tổng nhập</small><h6 class="fw-bold mb-0" id="totalImport">0 kg</h6></div></div></div></div>
-                        <div class="col-6"><div class="stat-card p-2 bg-light"><div class="d-flex align-items-center"><div class="stat-icon bg-warning text-white me-2"><i class="fas fa-arrow-up"></i></div><div><small class="text-muted">Tổng xuất</small><h6 class="fw-bold mb-0" id="totalExport">0 kg</h6></div></div></div></div>
-                        <div class="col-6"><div class="stat-card p-2 bg-light"><div class="d-flex align-items-center"><div class="stat-icon bg-danger text-white me-2"><i class="fas fa-clock"></i></div><div><small class="text-muted">Tuổi TB</small><h6 class="fw-bold mb-0" id="avgAge">0 ngày</h6></div></div></div></div>
+                        <div class="col-6">
+                            <div class="stat-card p-2 bg-light">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-success text-white me-2">
+                                        <i class="fas fa-boxes"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted mb-0">Tổng tồn</small>
+                                        <h6 class="fw-bold mb-0" id="totalStock">0 kg</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card p-2 bg-light">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-info text-white me-2">
+                                        <i class="fas fa-arrow-down"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted mb-0">Tổng nhập</small>
+                                        <h6 class="fw-bold mb-0" id="totalImport">0 kg</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card p-2 bg-light">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-warning text-white me-2">
+                                        <i class="fas fa-arrow-up"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted mb-0">Tổng xuất</small>
+                                        <h6 class="fw-bold mb-0" id="totalExport">0 kg</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card p-2 bg-light">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-danger text-white me-2">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted mb-0">Tuổi TB</small>
+                                        <h6 class="fw-bold mb-0" id="avgAge">0 ngày</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Nội dung chính -->
+            <!-- Main Content -->
             <div class="col-lg-9">
-                <!-- Thanh lọc -->
+                <!-- Filters -->
                 <div class="glass-card p-3 mb-4">
                     <div class="row g-3">
-                        <div class="col-md-4"><label class="form-label fw-bold"><i class="fas fa-filter me-2"></i>Tìm kiếm</label><input type="text" id="searchInput" class="form-control" placeholder="Tên, vị trí, mã..."></div>
-                        <div class="col-md-4"><label class="form-label fw-bold"><i class="fas fa-box me-2"></i>Nhóm NL</label><select id="groupFilter" class="form-select"><option value="">Tất cả</option><option value="bao">Bao</option><option value="liquid">Lỏng</option><option value="bulk">Xá đổ</option></select></div>
-                        <div class="col-md-4"><label class="form-label fw-bold"><i class="fas fa-map-marker-alt me-2"></i>Vị trí</label><select id="locationFilter" class="form-select"><option value="">Tất cả</option></select></div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold"><i class="fas fa-filter me-2"></i>Tìm kiếm</label>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Tên, vị trí, mã...">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold"><i class="fas fa-box me-2"></i>Nhóm NL</label>
+                            <select id="groupFilter" class="form-select">
+                                <option value="">Tất cả</option>
+                                <option value="bao">Bao</option>
+                                <option value="liquid">Lỏng</option>
+                                <option value="bulk">Xá đổ</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold"><i class="fas fa-map-marker-alt me-2"></i>Vị trí</label>
+                            <select id="locationFilter" class="form-select">
+                                <option value="">Tất cả</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Bảng dữ liệu chính -->
+                <!-- Data Table -->
                 <div class="table-container mb-4">
-                    <div class="table-header p-3"><h5 class="mb-0"><i class="fas fa-table me-2"></i>Chi tiết nguyên liệu - <span id="currentSheet">Ngày 15</span></h5><div class="text-white"><span id="rowCount">0</span> dòng</div></div>
-                    <div class="table-responsive"><table class="table table-hover mb-0"><thead class="table-light"><tr><th class="text-center">STT</th><th>Nguyên liệu</th><th>Vị trí</th><th>Nhóm</th><th class="text-end">Tồn đầu (kg)</th><th class="text-end">Nhập (kg)</th><th class="text-end">Xuất (kg)</th><th class="text-end">Tồn cuối (kg)</th><th>Ngày nhập</th><th class="text-center">Tuổi</th><th>Nhà CC</th><th class="text-center">Thao tác</th></tr></thead><tbody id="dataTable"></tbody></table></div>
-                    <div class="p-3 border-top"><small class="text-muted"><i class="fas fa-info-circle me-1"></i>Cập nhật: <span id="lastUpdated">--:--:--</span></small></div>
+                    <div class="table-header p-3">
+                        <h5 class="mb-0"><i class="fas fa-table me-2"></i>Chi tiết nguyên liệu - <span id="currentSheet">Ngày 15</span></h5>
+                        <div class="text-white"><span id="rowCount">0</span> dòng</div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center">STT</th>
+                                    <th>Nguyên liệu</th>
+                                    <th>Vị trí</th>
+                                    <th>Nhóm</th>
+                                    <th class="text-end">Tồn đầu (kg)</th>
+                                    <th class="text-end">Nhập (kg)</th>
+                                    <th class="text-end">Xuất (kg)</th>
+                                    <th class="text-end">Tồn cuối (kg)</th>
+                                    <th>Ngày nhập</th>
+                                    <th class="text-center">Tuổi</th>
+                                    <th>Nhà CC</th>
+                                    <th class="text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTable"></tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 border-top">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Cập nhật: <span id="lastUpdated">--:--:--</span>
+                        </small>
+                    </div>
                 </div>
                 
-                <!-- ==================== PHẦN 2: PHÂN TÍCH TUỔI LƯU KHO ==================== -->
+                <!-- Inventory Age Analysis -->
                 <div class="table-container">
-                    <div class="table-header p-3"><h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Phân tích chi tiết tuổi lưu kho</h5></div>
+                    <div class="table-header p-3">
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Phân tích chi tiết tuổi lưu kho</h5>
+                    </div>
                     <div class="p-4">
                         <div class="row text-center">
-                            <div class="col-md-4 mb-3"><div class="age-analysis-card p-3 age-0-30"><h6 class="fw-bold">0-30 ngày</h6><h3 class="text-success" id="age0-30Weight">0 kg</h3><div class="progress progress-thin"><div id="age0-30Bar" class="progress-bar bg-success" style="width: 0%"></div></div><p class="mt-2 mb-0"><span id="age0-30Percent">0</span>%</p></div></div>
-                            <div class="col-md-4 mb-3"><div class="age-analysis-card p-3 age-31-60"><h6 class="fw-bold">31-60 ngày</h6><h3 class="text-warning" id="age31-60Weight">0 kg</h3><div class="progress progress-thin"><div id="age31-60Bar" class="progress-bar bg-warning" style="width: 0%"></div></div><p class="mt-2 mb-0"><span id="age31-60Percent">0</span>%</p></div></div>
-                            <div class="col-md-4 mb-3"><div class="age-analysis-card p-3 age-61-plus"><h6 class="fw-bold">Trên 60 ngày</h6><h3 class="text-danger" id="age61PlusWeight">0 kg</h3><div class="progress progress-thin"><div id="age61PlusBar" class="progress-bar bg-danger" style="width: 0%"></div></div><p class="mt-2 mb-0"><span id="age61PlusPercent">0</span>%</p></div></div>
+                            <div class="col-md-4 mb-3">
+                                <div class="age-analysis-card p-3 age-0-30">
+                                    <h6 class="fw-bold">0-30 ngày</h6>
+                                    <h3 class="text-success" id="age0-30Weight">0 kg</h3>
+                                    <div class="progress progress-thin">
+                                        <div id="age0-30Bar" class="progress-bar bg-success" style="width: 0%"></div>
+                                    </div>
+                                    <p class="mt-2 mb-0"><span id="age0-30Percent">0</span>%</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="age-analysis-card p-3 age-31-60">
+                                    <h6 class="fw-bold">31-60 ngày</h6>
+                                    <h3 class="text-warning" id="age31-60Weight">0 kg</h3>
+                                    <div class="progress progress-thin">
+                                        <div id="age31-60Bar" class="progress-bar bg-warning" style="width: 0%"></div>
+                                    </div>
+                                    <p class="mt-2 mb-0"><span id="age31-60Percent">0</span>%</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="age-analysis-card p-3 age-61-plus">
+                                    <h6 class="fw-bold">Trên 60 ngày</h6>
+                                    <h3 class="text-danger" id="age61PlusWeight">0 kg</h3>
+                                    <div class="progress progress-thin">
+                                        <div id="age61PlusBar" class="progress-bar bg-danger" style="width: 0%"></div>
+                                    </div>
+                                    <p class="mt-2 mb-0"><span id="age61PlusPercent">0</span>%</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-center mt-2"><small class="text-muted">Tổng trọng lượng đang phân tích: <span id="totalAgeWeight" class="fw-bold">0 kg</span></small></div>
+                        <div class="text-center mt-2">
+                            <small class="text-muted">
+                                Tổng trọng lượng đang phân tích: <span id="totalAgeWeight" class="fw-bold">0 kg</span>
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ==================== PHẦN 3: CÁC MODAL (POP-UP) ==================== -->
-    
-    <!-- Modal 1: Thêm dữ liệu mới -->
+    <!-- Modal: Add New Data -->
     <div class="modal fade" id="addDataModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white"><h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Thêm giao dịch</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Thêm giao dịch</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
                     <form id="newTransactionForm">
                         <div class="row g-3">
-                            <div class="col-md-6"><label class="form-label fw-bold">Loại <span class="text-danger">*</span></label><select id="transactionType" class="form-select" required><option value="">-- Chọn --</option><option value="import">Nhập kho</option><option value="export">Xuất kho</option></select></div>
-                            <div class="col-md-6"><label class="form-label fw-bold">Ngày <span class="text-danger">*</span></label><input type="date" id="transactionDate" class="form-control" required></div>
-                            <div class="col-md-6"><label class="form-label fw-bold">Tên nguyên liệu <span class="text-danger">*</span></label><input type="text" id="materialName" class="form-control" required></div>
-                            <div class="col-md-6"><label class="form-label fw-bold">Vị trí/Mã <span class="text-danger">*</span></label><input type="text" id="materialCode" class="form-control" required></div>
-                            <div class="col-md-4"><label class="form-label fw-bold">Số bao</label><input type="number" id="bagQuantity" class="form-control" placeholder="0"></div>
-                            <div class="col-md-4"><label class="form-label fw-bold">Trọng lượng (kg) <span class="text-danger">*</span></label><input type="number" step="0.01" id="weight" class="form-control" required></div>
-                            <div class="col-md-4"><label class="form-label fw-bold">Đơn vị</label><select id="unit" class="form-select"><option value="kg">Kg</option><option value="ton">Tấn</option></select></div>
-                            <div class="col-md-12"><label class="form-label fw-bold">Nhà cung cấp/Ghi chú</label><textarea id="transactionNote" class="form-control" rows="2"></textarea></div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Loại <span class="text-danger">*</span></label>
+                                <select id="transactionType" class="form-select" required>
+                                    <option value="">-- Chọn --</option>
+                                    <option value="import">Nhập kho</option>
+                                    <option value="export">Xuất kho</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Ngày <span class="text-danger">*</span></label>
+                                <input type="date" id="transactionDate" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Tên nguyên liệu <span class="text-danger">*</span></label>
+                                <input type="text" id="materialName" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Vị trí/Mã <span class="text-danger">*</span></label>
+                                <input type="text" id="materialCode" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Số bao</label>
+                                <input type="number" id="bagQuantity" class="form-control" placeholder="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Trọng lượng (kg) <span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" id="weight" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Đơn vị</label>
+                                <select id="unit" class="form-select">
+                                    <option value="kg">Kg</option>
+                                    <option value="ton">Tấn</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Nhà cung cấp/Ghi chú</label>
+                                <textarea id="transactionNote" class="form-control" rows="2"></textarea>
+                            </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-success" onclick="submitNewTransaction()"><i class="fas fa-save me-2"></i>Lưu</button>
+                    <button type="button" class="btn btn-success" onclick="submitNewTransaction()">
+                        <i class="fas fa-save me-2"></i>Lưu
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal 2: Phiếu quản lý đầu lô -->
+    <!-- Modal: Lot Header Tag -->
     <div class="modal fade" id="lotHeaderModal" tabindex="-1">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <div class="modal-header bg-info text-white"><h5 class="modal-title"><i class="fas fa-tag me-2"></i>Phiếu quản lý đầu lô</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title"><i class="fas fa-tag me-2"></i>Phiếu quản lý đầu lô</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="glass-card p-3">
                                 <h6><i class="fas fa-search me-2"></i>Tìm & Chọn Lô</h6>
-                                <div class="mb-3"><label class="form-label">Nhập Mã Lô</label><input type="text" id="lotSearchInput" class="form-control" placeholder="VD: LH-001"></div>
-                                <div class="mb-3"><label class="form-label">Hoặc chọn từ danh sách</label><select id="lotSelect" class="form-select"></select></div>
-                                <div class="mb-3"><label class="form-label">Người lập</label><select id="preparerSelect" class="form-select"><option value="Nguyễn Văn A">Nguyễn Văn A</option><option value="Trần Thị B">Trần Thị B</option></select></div>
-                                <button class="btn btn-primary w-100 mb-2" onclick="searchLot()"><i class="fas fa-search me-2"></i>Tìm</button>
+                                <div class="mb-3">
+                                    <label class="form-label">Nhập Mã Lô</label>
+                                    <input type="text" id="lotSearchInput" class="form-control" placeholder="VD: LH-001">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Hoặc chọn từ danh sách</label>
+                                    <select id="lotSelect" class="form-select" onchange="loadLotDetails(this.value)">
+                                        <option value="">-- Chọn lô --</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Người lập</label>
+                                    <select id="preparerSelect" class="form-select">
+                                        <option value="Nguyễn Văn A">Nguyễn Văn A</option>
+                                        <option value="Trần Thị B">Trần Thị B</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary w-100 mb-2" onclick="searchLot()">
+                                    <i class="fas fa-search me-2"></i>Tìm
+                                </button>
                             </div>
                         </div>
                         <div class="col-md-8">
                             <div class="glass-card p-3">
                                 <h6><i class="fas fa-eye me-2"></i>Xem trước (Khổ A5)</h6>
-                                <!-- PHIẾU XEM TRƯỚC - THIẾT KẾ CÂN ĐỐI -->
                                 <div id="lotTagPreview">
                                     <div class="text-center mb-3">
                                         <h4 class="fw-bold" style="color: #1a237e;">PHIẾU QUẢN LÝ ĐẦU LÔ</h4>
@@ -214,11 +480,16 @@
                                     </div>
                                     <div class="text-center mt-4"><small class="text-muted">Phiếu được dán tại vị trí đầu lô hàng để dễ kiểm đếm</small></div>
                                 </div>
-                                <!-- NÚT XUẤT -->
                                 <div class="d-flex justify-content-center gap-2 mt-3">
-                                    <button class="btn btn-success" onclick="exportLotTagPDF()"><i class="fas fa-file-pdf me-2"></i>Xuất PDF</button>
-                                    <button class="btn btn-warning" onclick="exportLotTagImage()"><i class="fas fa-image me-2"></i>Xuất Ảnh</button>
-                                    <button class="btn btn-outline-primary" onclick="printLotTag()"><i class="fas fa-print me-2"></i>In</button>
+                                    <button class="btn btn-success" onclick="exportLotTagPDF()">
+                                        <i class="fas fa-file-pdf me-2"></i>Xuất PDF
+                                    </button>
+                                    <button class="btn btn-warning" onclick="exportLotTagImage()">
+                                        <i class="fas fa-image me-2"></i>Xuất Ảnh
+                                    </button>
+                                    <button class="btn btn-outline-primary" onclick="printLotTag()">
+                                        <i class="fas fa-print me-2"></i>In
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -228,61 +499,88 @@
         </div>
     </div>
 
-    <!-- Modal 3: Copy tồn đầu -->
+    <!-- Modal: Copy Opening Stock -->
     <div class="modal fade" id="autoCopyModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white"><h5 class="modal-title"><i class="fas fa-copy me-2"></i>Copy tồn đầu</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-copy me-2"></i>Copy tồn đầu</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
-                    <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Copy "Tồn cuối" của ngày trước sang "Tồn đầu" của ngày sau.</div>
-                    <div class="row g-3">
-                        <div class="col-md-6"><label class="form-label">Ngày nguồn</label><select id="copyFrom" class="form-select"></select></div>
-                        <div class="col-md-6"><label class="form-label">Ngày đích</label><select id="copyTo" class="form-select"></select></div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Copy "Tồn cuối" của ngày trước sang "Tồn đầu" của ngày sau.
                     </div>
-                    <div class="alert alert-warning mt-3"><i class="fas fa-exclamation-triangle me-2"></i>Lưu ý: Thao tác này sẽ ghi đè dữ liệu!</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Ngày nguồn</label>
+                            <select id="copyFrom" class="form-select"></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ngày đích</label>
+                            <select id="copyTo" class="form-select"></select>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Lưu ý: Thao tác này sẽ ghi đè dữ liệu!
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary" onclick="performAutoCopy()"><i class="fas fa-play me-2"></i>Thực hiện</button>
+                    <button type="button" class="btn btn-primary" onclick="performAutoCopy()">
+                        <i class="fas fa-play me-2"></i>Thực hiện
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ==================== PHẦN 4: JAVASCRIPT ==================== -->
-    <!-- Các thư viện JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
-        // ========== CẤU HÌNH QUAN TRỌNG: THAY THẾ URL NÀY ==========
-        // LƯU Ý: Đây là URL triển khai (Deploy) Web App, KHÔNG PHẢI URL chỉnh sửa (edit)
-        // Bước 1: Vào Google Apps Script, chọn "Deploy" > "New deployment"
-        // Bước 2: Chọn loại "Web app", cấu hình: "Execute as me", "Who has access: Anyone"
-        // Bước 3: Copy URL có dạng: https://script.google.com/macros/s/.../exec
-        // Bước 4: Dán URL đó vào dòng dưới đây, giữa hai dấu nháy đơn ''
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw3alXf3_dxcEplgqTjnDPx1KGpq_E4SB1z4r96Jcay2eKWcfE2YVwG_jjlLF1YBlrG6Q/exec';
+        // ========== CẤU HÌNH QUAN TRỌNG ==========
+        // THAY THẾ URL NÀY BẰNG URL TRIỂN KHAI GOOGLE APPS SCRIPT CỦA BẠN
+        // URL có dạng: https://script.google.com/macros/s/.../exec
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqtp-euzrtkzpDAgEnjE4TkNe6FDcEyx-hk9dAfyy-PgN6TP-INi4zxIN42snJ8rgOJg/exec';
 
         // ========== BIẾN TOÀN CỤC ==========
         let currentData = [];
         let filteredData = [];
         let allLots = [];
 
-        // ========== KHỞI TẠO ỨNG DỤNG ==========
+        // ========== KHỞI TẠO ==========
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 CHECKSTOCK KIEU - Khởi động...');
+            
+            // Khởi tạo dropdown ngày
             initDaysDropdown();
+            
+            // Khởi tạo dropdown copy modal
             initCopyModalDropdowns();
+            
+            // Thiết lập sự kiện
             setupEventListeners();
-            // Tự động tải dữ liệu sau 1 giây
-            setTimeout(loadData, 1000);
+            
+            // Tự động tải dữ liệu
+            setTimeout(() => {
+                loadData();
+                // Đặt ngày mặc định cho form
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('transactionDate').value = today;
+            }, 500);
         });
 
+        // ========== HÀM KHỞI TẠO ==========
         function initDaysDropdown() {
             const select = document.getElementById('daySelect');
             select.innerHTML = '';
+            
             for (let i = 1; i <= 31; i++) {
                 const day = i.toString().padStart(2, '0');
                 const option = document.createElement('option');
@@ -296,7 +594,9 @@
         function initCopyModalDropdowns() {
             const from = document.getElementById('copyFrom');
             const to = document.getElementById('copyTo');
-            from.innerHTML = ''; to.innerHTML = '';
+            from.innerHTML = '';
+            to.innerHTML = '';
+            
             for (let i = 1; i <= 31; i++) {
                 const day = i.toString().padStart(2, '0');
                 [from, to].forEach(select => {
@@ -306,151 +606,239 @@
                     select.appendChild(option);
                 });
             }
-            if (from.options[14]) from.options[14].selected = true; // Ngày 15
-            if (to.options[15]) to.options[15].selected = true; // Ngày 16
+            
+            // Mặc định: copy từ 15 sang 16
+            if (from.options[14]) from.options[14].selected = true;
+            if (to.options[15]) to.options[15].selected = true;
         }
 
         function setupEventListeners() {
+            // Lọc dữ liệu
             document.getElementById('searchInput').addEventListener('input', filterData);
             document.getElementById('groupFilter').addEventListener('change', filterData);
             document.getElementById('locationFilter').addEventListener('change', filterData);
+            
             // Tự động tính trọng lượng khi nhập số bao
-            document.getElementById('bagQuantity')?.addEventListener('input', function() {
+            document.getElementById('bagQuantity').addEventListener('input', function() {
                 const bags = parseFloat(this.value) || 0;
-                document.getElementById('weight').value = (bags * 25).toFixed(2); // Giả sử 1 bao = 25kg
+                if (bags > 0) {
+                    document.getElementById('weight').value = (bags * 25).toFixed(2);
+                }
+            });
+            
+            // Khi đổi đơn vị, điều chỉnh trọng lượng
+            document.getElementById('unit').addEventListener('change', function() {
+                const weightInput = document.getElementById('weight');
+                const currentValue = parseFloat(weightInput.value) || 0;
+                
+                if (this.value === 'ton' && currentValue > 0) {
+                    // Nếu chuyển sang tấn, chia cho 1000
+                    weightInput.value = (currentValue / 1000).toFixed(3);
+                } else if (this.value === 'kg' && currentValue > 0) {
+                    // Nếu chuyển sang kg, nhân với 1000
+                    weightInput.value = (currentValue * 1000).toFixed(2);
+                }
             });
         }
 
-        // ========== TẢI DỮ LIỆU TỪ GOOGLE SHEETS ==========
+        // ========== TẢI DỮ LIỆU ==========
         async function loadData() {
             const day = document.getElementById('daySelect').value;
             document.getElementById('currentSheet').textContent = `Ngày ${day}`;
             updateStatus('Đang tải...', 'warning');
 
             try {
-                // QUAN TRỌNG: Sử dụng phương thức GET với query string
                 const url = `${APPS_SCRIPT_URL}?action=getData&sheet=${day}`;
                 console.log('📡 Gọi URL:', url);
+                
                 const response = await fetch(url);
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Lỗi HTTP: ${response.status}`);
+                }
+                
                 const result = await response.json();
-                console.log('✅ Phản hồi:', result);
-
-                if (result.error) throw new Error(result.error);
-                if (!result.data) throw new Error('Không có dữ liệu');
-
-                currentData = result.data;
+                console.log('✅ Dữ liệu nhận được:', result);
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                currentData = result.data || [];
                 filteredData = [...currentData];
+                
                 renderTable();
                 updateStatistics();
                 updateInventoryAgeAnalysis();
                 updateLocationFilter();
                 populateLotSelect();
                 updateLastUpdated();
+                
                 updateStatus('Đã kết nối', 'success');
                 showNotification('success', `✅ Đã tải ${currentData.length} dòng từ Ngày ${day}`);
-
+                
             } catch (error) {
                 console.error('❌ Lỗi tải:', error);
                 updateStatus('Lỗi kết nối', 'danger');
                 showNotification('error', `❌ ${error.message}`);
+                
                 // Hiển thị dữ liệu mẫu nếu thất bại
-                setTimeout(displaySampleData, 500);
+                setTimeout(() => {
+                    displaySampleData();
+                }, 500);
             }
         }
 
-        // ========== HIỂN THỊ BẢNG DỮ LIỆU ==========
+        // ========== HIỂN THỊ BẢNG ==========
         function renderTable() {
             const tbody = document.getElementById('dataTable');
+            
             if (filteredData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="12" class="text-center py-5"><i class="fas fa-database fa-3x text-muted mb-3"></i><p class="text-muted">Không có dữ liệu</p></td></tr>`;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="12" class="text-center py-5">
+                            <i class="fas fa-database fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Không có dữ liệu</p>
+                        </td>
+                    </tr>
+                `;
                 document.getElementById('rowCount').textContent = '0';
                 return;
             }
-
+            
             let html = '';
             filteredData.forEach((row, index) => {
-                const [stt, name, lock, tonDauBag, tonDauWeight, nhapBag, nhapWeight, xuatBag, xuatWeight, tonCuoiBag, tonCuoiWeight, ngayNhap, code, truck, supplier] = row;
+                const [
+                    stt, name, lock, 
+                    tonDauBag, tonDauWeight, 
+                    nhapBag, nhapWeight, 
+                    xuatBag, xuatWeight, 
+                    tonCuoiBag, tonCuoiWeight,
+                    ngayNhap, code, truck, supplier
+                ] = row;
+                
                 const age = calculateAge(ngayNhap);
                 const ageClass = getAgeClass(age);
                 const groupClass = `badge-${getMaterialGroup(name)}`;
                 const groupName = getGroupName(getMaterialGroup(name));
-
+                
                 html += `
                 <tr>
-                    <td class="text-center fw-bold">${stt || index+1}</td>
-                    <td><div class="fw-bold">${name || ''}</div><small class="text-muted">${code || ''}</small></td>
+                    <td class="text-center fw-bold">${stt || index + 1}</td>
+                    <td>
+                        <div class="fw-bold">${name || ''}</div>
+                        <small class="text-muted">${code || ''}</small>
+                    </td>
                     <td><span class="badge bg-secondary">${lock || ''}</span></td>
                     <td><span class="material-badge ${groupClass}">${groupName}</span></td>
-                    <td class="text-end"><div class="fw-bold">${formatNumberFull(tonDauWeight)} kg</div><small class="text-muted">${tonDauBag || 0} bao</small></td>
-                    <td class="text-end text-success"><div class="fw-bold">${formatNumberFull(nhapWeight)} kg</div><small class="text-muted">${nhapBag || 0} bao</small></td>
-                    <td class="text-end text-danger"><div class="fw-bold">${formatNumberFull(xuatWeight)} kg</div><small class="text-muted">${xuatBag || 0} bao</small></td>
-                    <td class="text-end"><div class="fw-bold text-primary">${formatNumberFull(tonCuoiWeight)} kg</div><small class="text-muted">${tonCuoiBag || 0} bao</small></td>
+                    <td class="text-end">
+                        <div class="fw-bold">${formatNumberFull(tonDauWeight)} kg</div>
+                        <small class="text-muted">${tonDauBag || 0} bao</small>
+                    </td>
+                    <td class="text-end text-success">
+                        <div class="fw-bold">${formatNumberFull(nhapWeight)} kg</div>
+                        <small class="text-muted">${nhapBag || 0} bao</small>
+                    </td>
+                    <td class="text-end text-danger">
+                        <div class="fw-bold">${formatNumberFull(xuatWeight)} kg</div>
+                        <small class="text-muted">${xuatBag || 0} bao</small>
+                    </td>
+                    <td class="text-end">
+                        <div class="fw-bold text-primary">${formatNumberFull(tonCuoiWeight)} kg</div>
+                        <small class="text-muted">${tonCuoiBag || 0} bao</small>
+                    </td>
                     <td>${formatDate(ngayNhap)}</td>
-                    <td class="text-center"><div class="age-indicator ${ageClass}" title="${age} ngày">${age}</div></td>
-                    <td><small>${supplier || ''}</small><br><span class="badge bg-light text-dark">${truck || ''}</span></td>
                     <td class="text-center">
-                        <button class="btn btn-sm btn-outline-primary" onclick="editItem(${index})" title="Sửa"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-outline-info" onclick="createLotTagFromRow(${index})" title="Tạo phiếu"><i class="fas fa-tag"></i></button>
+                        <div class="age-indicator ${ageClass}" title="${age} ngày">${age}</div>
+                    </td>
+                    <td>
+                        <small>${supplier || ''}</small>
+                        <br>
+                        <span class="badge bg-light text-dark">${truck || ''}</span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary" onclick="editItem(${index})" title="Sửa">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" onclick="createLotTagFromRow(${index})" title="Tạo phiếu">
+                            <i class="fas fa-tag"></i>
+                        </button>
                     </td>
                 </tr>`;
             });
+            
             tbody.innerHTML = html;
             document.getElementById('rowCount').textContent = filteredData.length;
         }
 
-        // ========== CẬP NHẬT THỐNG KÊ TỔNG QUAN ==========
+        // ========== THỐNG KÊ ==========
         function updateStatistics() {
             if (currentData.length === 0) {
-                ['totalStock','totalImport','totalExport'].forEach(id => document.getElementById(id).textContent = '0 kg');
+                ['totalStock','totalImport','totalExport'].forEach(id => {
+                    document.getElementById(id).textContent = '0 kg';
+                });
                 document.getElementById('avgAge').textContent = '0 ngày';
                 return;
             }
-            let totalTonDau = 0, totalNhap = 0, totalXuat = 0, totalTonCuoi = 0, totalAge = 0, count = 0;
+            
+            let totalTonDau = 0, totalNhap = 0, totalXuat = 0, totalTonCuoi = 0;
+            let totalAge = 0, countWithDate = 0;
+            
             currentData.forEach(row => {
                 totalTonDau += parseFloat(row[4]) || 0;
                 totalNhap += parseFloat(row[6]) || 0;
                 totalXuat += parseFloat(row[8]) || 0;
                 totalTonCuoi += parseFloat(row[10]) || 0;
+                
                 const age = calculateAge(row[11]);
-                if (age > 0) { totalAge += age; count++; }
+                if (age > 0) {
+                    totalAge += age;
+                    countWithDate++;
+                }
             });
+            
             document.getElementById('totalStock').textContent = `${formatNumberFull(totalTonCuoi)} kg`;
             document.getElementById('totalImport').textContent = `${formatNumberFull(totalNhap)} kg`;
             document.getElementById('totalExport').textContent = `${formatNumberFull(totalXuat)} kg`;
-            document.getElementById('avgAge').textContent = count > 0 ? `${Math.round(totalAge/count)} ngày` : '0 ngày';
+            document.getElementById('avgAge').textContent = countWithDate > 0 ? `${Math.round(totalAge/countWithDate)} ngày` : '0 ngày';
         }
 
-        // ========== PHÂN TÍCH TUỔI LƯU KHO (TÍNH NĂNG CHÍNH) ==========
+        // ========== PHÂN TÍCH TUỔI KHO ==========
         function updateInventoryAgeAnalysis() {
             if (currentData.length === 0) {
                 resetAgeAnalysis();
                 return;
             }
+            
             let weight0_30 = 0, weight31_60 = 0, weight61_plus = 0;
+            
             currentData.forEach(row => {
-                const weight = parseFloat(row[10]) || 0; // Lấy từ cột "Ton cuoi (Weight)"
+                const weight = parseFloat(row[10]) || 0;
                 const age = calculateAge(row[11]);
+                
                 if (age <= 30) weight0_30 += weight;
                 else if (age <= 60) weight31_60 += weight;
                 else weight61_plus += weight;
             });
+            
             const totalWeight = weight0_30 + weight31_60 + weight61_plus;
             const percent0_30 = totalWeight > 0 ? ((weight0_30 / totalWeight) * 100).toFixed(1) : 0;
             const percent31_60 = totalWeight > 0 ? ((weight31_60 / totalWeight) * 100).toFixed(1) : 0;
             const percent61_plus = totalWeight > 0 ? ((weight61_plus / totalWeight) * 100).toFixed(1) : 0;
-
-            // Cập nhật giao diện
+            
+            // Cập nhật UI
             document.getElementById('age0-30Weight').textContent = `${formatNumberFull(weight0_30)} kg`;
             document.getElementById('age31-60Weight').textContent = `${formatNumberFull(weight31_60)} kg`;
             document.getElementById('age61PlusWeight').textContent = `${formatNumberFull(weight61_plus)} kg`;
+            
             document.getElementById('age0-30Percent').textContent = percent0_30;
             document.getElementById('age31-60Percent').textContent = percent31_60;
             document.getElementById('age61PlusPercent').textContent = percent61_plus;
+            
             document.getElementById('age0-30Bar').style.width = `${percent0_30}%`;
             document.getElementById('age31-60Bar').style.width = `${percent31_60}%`;
             document.getElementById('age61PlusBar').style.width = `${percent61_plus}%`;
+            
             document.getElementById('totalAgeWeight').textContent = `${formatNumberFull(totalWeight)} kg`;
         }
 
@@ -463,11 +851,175 @@
             document.getElementById('totalAgeWeight').textContent = '0 kg';
         }
 
-        // ========== TÍNH NĂNG PHIẾU QUẢN LÝ ĐẦU LÔ ==========
+        // ========== CHỨC NĂNG CHÍNH: THÊM GIAO DỊCH MỚI ==========
+        async function submitNewTransaction() {
+            console.log('🔄 Bắt đầu quy trình lưu giao dịch...');
+            
+            // 1. Lấy dữ liệu từ form
+            const transactionType = document.getElementById('transactionType').value;
+            const transactionDate = document.getElementById('transactionDate').value;
+            const materialName = document.getElementById('materialName').value.trim();
+            const materialCode = document.getElementById('materialCode').value.trim();
+            const bagQuantity = parseFloat(document.getElementById('bagQuantity').value) || 0;
+            const weightInput = parseFloat(document.getElementById('weight').value);
+            const unit = document.getElementById('unit').value;
+            const supplierNote = document.getElementById('transactionNote').value.trim();
+            
+            // 2. Kiểm tra dữ liệu
+            if (!transactionType || !transactionDate || !materialName || !materialCode) {
+                showNotification('error', '❌ Vui lòng điền đầy đủ các trường bắt buộc (*)');
+                return;
+            }
+            
+            if (!weightInput || weightInput <= 0) {
+                showNotification('error', '❌ Trọng lượng phải lớn hơn 0');
+                return;
+            }
+            
+            // 3. Chuẩn hóa đơn vị (tấn → kg)
+            let finalWeight = weightInput;
+            if (unit === 'ton') {
+                finalWeight = weightInput * 1000;
+            }
+            
+            // 4. Chuẩn bị dữ liệu gửi đi
+            const formData = {
+                action: 'addTransaction',
+                sheet: document.getElementById('daySelect').value,
+                transactionType: transactionType,
+                transactionDate: transactionDate,
+                materialName: materialName,
+                location: materialCode,
+                materialCode: materialCode,
+                bagQuantity: bagQuantity,
+                weight: finalWeight,
+                supplierNote: supplierNote,
+                truck: '',
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('📤 Dữ liệu sẽ gửi:', formData);
+            console.log('🔗 URL Script:', APPS_SCRIPT_URL);
+            
+            try {
+                // 5. Hiển thị trạng thái đang xử lý
+                showNotification('info', '⏳ Đang gửi dữ liệu đến Google Sheets...');
+                
+                // 6. Gửi request POST đến Google Apps Script
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                console.log('📨 Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Lỗi HTTP: ${response.status} - ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📥 Kết quả từ server:', result);
+                
+                if (result.success) {
+                    // 7. Thành công
+                    showNotification('success', `✅ ${result.message}`);
+                    
+                    // Đóng modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addDataModal'));
+                    if (modal) modal.hide();
+                    
+                    // Reset form
+                    document.getElementById('newTransactionForm').reset();
+                    
+                    // Tự động tải lại dữ liệu sau 2 giây
+                    setTimeout(() => {
+                        loadData();
+                        showNotification('info', '🔄 Đang cập nhật dữ liệu mới...');
+                    }, 2000);
+                    
+                } else {
+                    // Thất bại
+                    showNotification('error', `❌ Lỗi: ${result.error || 'Không thể lưu dữ liệu'}`);
+                }
+                
+            } catch (error) {
+                console.error('💥 Lỗi kết nối:', error);
+                showNotification('error', `❌ Lỗi kết nối: ${error.message}`);
+                
+                if (error.message.includes('Failed to fetch')) {
+                    showNotification('error', '❌ Không thể kết nối đến Google Script. Kiểm tra lại URL và kết nối mạng.');
+                }
+            }
+        }
+
+        // ========== CHỨC NĂNG COPY TỒN ĐẦU ==========
+        async function performAutoCopy() {
+            const fromDay = document.getElementById('copyFrom').value;
+            const toDay = document.getElementById('copyTo').value;
+            
+            if (!fromDay || !toDay) {
+                showNotification('warning', '⚠️ Vui lòng chọn cả ngày nguồn và ngày đích');
+                return;
+            }
+            
+            if (fromDay === toDay) {
+                showNotification('warning', '⚠️ Không thể copy tồn kho trong cùng một ngày');
+                return;
+            }
+            
+            if (!confirm(`Bạn có chắc chắn muốn COPY TỒN CUỐI ngày ${fromDay} sang TỒN ĐẦU ngày ${toDay}?\n\nLưu ý: Dữ liệu Tồn đầu ngày ${toDay} sẽ bị ghi đè.`)) {
+                return;
+            }
+            
+            try {
+                showNotification('info', `⏳ Đang thực hiện copy từ ngày ${fromDay} sang ${toDay}...`);
+                
+                // Gọi Google Apps Script
+                const url = `${APPS_SCRIPT_URL}?action=copyOpeningStock&fromDay=${fromDay}&toDay=${toDay}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`Lỗi HTTP: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Kết quả copy:', result);
+                
+                if (result.success) {
+                    showNotification('success', `✅ ${result.message}\nĐã cập nhật ${result.rowsUpdated || 0} dòng.`);
+                    
+                    // Đóng modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('autoCopyModal'));
+                    if (modal) modal.hide();
+                    
+                    // Nếu đang xem sheet đích, tải lại dữ liệu
+                    const currentSheet = document.getElementById('daySelect').value;
+                    if (currentSheet === toDay) {
+                        setTimeout(() => {
+                            loadData();
+                            showNotification('info', '🔄 Đang làm mới dữ liệu ngày đích...');
+                        }, 1000);
+                    }
+                    
+                } else {
+                    showNotification('error', `❌ ${result.error || 'Copy thất bại'}`);
+                }
+                
+            } catch (error) {
+                console.error('Lỗi copy:', error);
+                showNotification('error', `❌ Lỗi: ${error.message}`);
+            }
+        }
+
+        // ========== PHIẾU ĐẦU LÔ ==========
         function populateLotSelect() {
             const select = document.getElementById('lotSelect');
             select.innerHTML = '<option value="">-- Chọn lô --</option>';
             allLots = [];
+            
             currentData.forEach((row, index) => {
                 const lotId = `LH-${(index+1).toString().padStart(3, '0')}-${new Date().getFullYear()}`;
                 allLots.push({
@@ -480,6 +1032,7 @@
                     supplier: row[14],
                     bagCount: row[9]
                 });
+                
                 const option = document.createElement('option');
                 option.value = lotId;
                 option.textContent = `${lotId} - ${row[1]} (${row[2]})`;
@@ -490,6 +1043,7 @@
         function loadLotDetails(lotId) {
             const lot = allLots.find(l => l.id === lotId);
             if (!lot) return;
+            
             document.getElementById('previewLotCode').textContent = lot.id;
             document.getElementById('previewItemName').textContent = `${lot.name} (${lot.code})`;
             document.getElementById('previewLocation').textContent = lot.location;
@@ -498,6 +1052,7 @@
             document.getElementById('previewAge').textContent = `${calculateAge(lot.importDate)} ngày`;
             document.getElementById('previewSupplier').textContent = lot.supplier || 'Không xác định';
             document.getElementById('previewOrderCode').textContent = `PO-${new Date().getTime().toString().slice(-6)}`;
+            
             const today = new Date();
             document.getElementById('previewDate').textContent = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth()+1).toString().padStart(2, '0')}/${today.getFullYear()}`;
             document.getElementById('previewPreparer').textContent = document.getElementById('preparerSelect').value;
@@ -506,7 +1061,7 @@
         function createLotTagFromRow(index) {
             const row = filteredData[index];
             const lotId = `LH-${(index+1).toString().padStart(3, '0')}-${new Date().getFullYear()}`;
-            // Cập nhật preview
+            
             document.getElementById('previewLotCode').textContent = lotId;
             document.getElementById('previewItemName').textContent = `${row[1]} (${row[12]})`;
             document.getElementById('previewLocation').textContent = row[2];
@@ -515,6 +1070,7 @@
             document.getElementById('previewAge').textContent = `${calculateAge(row[11])} ngày`;
             document.getElementById('previewSupplier').textContent = row[14] || 'Không xác định';
             document.getElementById('previewOrderCode').textContent = `PO-${new Date().getTime().toString().slice(-6)}`;
+            
             // Hiển thị modal
             new bootstrap.Modal(document.getElementById('lotHeaderModal')).show();
         }
@@ -531,14 +1087,13 @@
             }
         }
 
-        // XUẤT PDF/ẢNH CHO PHIẾU ĐẦU LÔ
         async function exportLotTagPDF() {
             const element = document.getElementById('lotTagPreview');
             try {
                 const canvas = await html2canvas(element, { scale: 2 });
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
-                const imgWidth = 148; // Chiều rộng A5
+                const imgWidth = 148;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
                 pdf.save(`Phieu_Lot_${document.getElementById('previewLotCode').textContent}.pdf`);
@@ -564,15 +1119,6 @@
             }
         }
 
-        function printLotTag() {
-            const printContent = document.getElementById('lotTagPreview').innerHTML;
-            const originalContent = document.body.innerHTML;
-            document.body.innerHTML = printContent;
-            window.print();
-            document.body.innerHTML = originalContent;
-            window.location.reload(); // Khôi phục lại ứng dụng
-        }
-
         // ========== LỌC DỮ LIỆU ==========
         function filterData() {
             const search = document.getElementById('searchInput').value.toLowerCase();
@@ -584,11 +1130,19 @@
                 const lock = (row[2] || '').toLowerCase();
                 const code = (row[12] || '').toLowerCase();
                 const rowGroup = getMaterialGroup(row[1]);
-                if (search && !name.includes(search) && !lock.includes(search) && !code.includes(search)) return false;
-                if (group && rowGroup !== group) return false;
-                if (location && lock !== location.toLowerCase()) return false;
+                
+                if (search && !name.includes(search) && !lock.includes(search) && !code.includes(search)) {
+                    return false;
+                }
+                if (group && rowGroup !== group) {
+                    return false;
+                }
+                if (location && lock !== location.toLowerCase()) {
+                    return false;
+                }
                 return true;
             });
+            
             renderTable();
         }
 
@@ -596,6 +1150,7 @@
             const select = document.getElementById('locationFilter');
             const currentVal = select.value;
             select.innerHTML = '<option value="">Tất cả</option>';
+            
             const locations = [...new Set(currentData.map(row => row[2]).filter(Boolean))];
             locations.forEach(loc => {
                 const option = document.createElement('option');
@@ -603,13 +1158,19 @@
                 option.textContent = loc;
                 select.appendChild(option);
             });
-            if (locations.includes(currentVal)) select.value = currentVal;
+            
+            if (locations.includes(currentVal)) {
+                select.value = currentVal;
+            }
         }
 
-        // ========== CÁC HÀM TIỆN ÍCH ==========
+        // ========== TIỆN ÍCH ==========
         function formatNumberFull(num) {
             const n = parseFloat(num) || 0;
-            return n.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+            return n.toLocaleString('vi-VN', { 
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: 2 
+            });
         }
 
         function formatDate(dateStr) {
@@ -667,9 +1228,33 @@
             setTimeout(() => alert.remove(), 5000);
         }
 
-        // ========== CHỨC NĂNG PHỤ & DỮ LIỆU MẪU ==========
-        function editItem(index) { showNotification('info', `Chỉnh sửa mục ${index+1} - Tính năng đang phát triển`); }
+        function editItem(index) {
+            showNotification('info', `Chỉnh sửa mục ${index+1} - Tính năng đang phát triển`);
+        }
 
+        // ========== XUẤT EXCEL ==========
+        function exportToExcel() {
+            if (currentData.length === 0) {
+                showNotification('warning', 'Không có dữ liệu để xuất!');
+                return;
+            }
+            
+            const ws = XLSX.utils.aoa_to_sheet([
+                ['STT','Tên','Vị trí','Tồn đầu (kg)','Nhập (kg)','Xuất (kg)','Tồn cuối (kg)','Ngày nhập','Tuổi','Nhà CC'],
+                ...currentData.map((row,i) => [
+                    i+1, row[1], row[2], row[4], row[6], row[8], row[10],
+                    formatDate(row[11]), calculateAge(row[11]), row[14]
+                ])
+            ]);
+            
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Kho');
+            const fileName = `KHO_${new Date().toISOString().slice(0,10)}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            showNotification('success', `✅ Đã xuất file ${fileName}`);
+        }
+
+        // ========== DỮ LIỆU MẪU ==========
         function displaySampleData() {
             currentData = [
                 [1,"C9959","B16",100,2500,50,1250,30,750,120,3000,"2024-01-14T17:00:00.000Z","105104(BT)","Xe 01","CP Feedmill"],
@@ -678,6 +1263,7 @@
                 [4,"Dịch cá","T1",0,8000,20,8000,5,2000,15,14000,"2024-01-19T17:00:00.000Z","FC001","Xe bồn","FishCo"],
                 [5,"Cám mì thô","B09",50,35000,10,7000,20,14000,40,28000,"2024-01-17T17:00:00.000Z","DL001","Xe tải","Local Supplier"]
             ];
+            
             filteredData = [...currentData];
             renderTable();
             updateStatistics();
@@ -686,40 +1272,6 @@
             populateLotSelect();
             updateStatus('Đang dùng dữ liệu mẫu', 'warning');
             showNotification('warning', '⚠️ Đang hiển thị dữ liệu mẫu');
-        }
-
-        // ========== CÁC HÀM CHỜ TRIỂN KHAI (STUB) ==========
-        function submitNewTransaction() {
-            // TODO: Gửi dữ liệu form về Google Sheets
-            showNotification('info', '📝 Tính năng "Lưu giao dịch" đang được phát triển. Bạn cần tích hợp Google Apps Script.');
-            // Đóng modal sau khi thông báo
-            bootstrap.Modal.getInstance(document.getElementById('addDataModal')).hide();
-        }
-
-        function performAutoCopy() {
-            // TODO: Gọi Google Script để copy dữ liệu giữa các sheet
-            showNotification('info', '📋 Tính năng "Copy tồn đầu" đang được phát triển.');
-            bootstrap.Modal.getInstance(document.getElementById('autoCopyModal')).hide();
-        }
-
-        function exportToExcel() {
-            if (currentData.length === 0) {
-                showNotification('warning', 'Không có dữ liệu để xuất!');
-                return;
-            }
-            // Tạo worksheet từ currentData
-            const ws = XLSX.utils.aoa_to_sheet([
-                ['STT','Tên','Vị trí','Tồn đầu (kg)','Nhập (kg)','Xuất (kg)','Tồn cuối (kg)','Ngày nhập','Tuổi','Nhà CC'],
-                ...currentData.map((row,i) => [
-                    i+1, row[1], row[2], row[4], row[6], row[8], row[10],
-                    formatDate(row[11]), calculateAge(row[11]), row[14]
-                ])
-            ]);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Kho');
-            const fileName = `KHO_${new Date().toISOString().slice(0,10)}.xlsx`;
-            XLSX.writeFile(wb, fileName);
-            showNotification('success', `✅ Đã xuất file ${fileName}`);
         }
 
         console.log('✨ Ứng dụng đã sẵn sàng! Vui lòng kiểm tra cấu hình URL Google Apps Script.');
