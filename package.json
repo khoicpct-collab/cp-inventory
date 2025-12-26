@@ -4,8 +4,9 @@
   "description": "Hệ thống quản lý kho C.P.CT",
   "main": "index.html",
   "scripts": {
-    "build": "echo 'No build step required for static site'",
-    "start": "serve ."
+    "start": "serve .",
+    "dev": "serve .",
+    "deploy": "echo 'Deploy to Vercel via git push'"
   },
   "dependencies": {
     "bootstrap": "^5.3.0"
