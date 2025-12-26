@@ -400,7 +400,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         // ========== CẤU HÌNH QUAN TRỌNG ==========
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpHZ5VZgHJxUSJ6d6fTA9pPQ4TPhFu76NW_d7Wq5TUMGB4flRDIScIf0-zY8_Y7Q3hgg/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWCA713WlNLD6TAoDzXShspzttUI9T5QrlFnGkK2lat1jJsYHNxxNRSsvNozN7XU_3rg/exec';
         
         // ========== BIẾN TOÀN CỤC ==========
         let currentData = [];
@@ -532,49 +532,82 @@
             showNotification('info', `Hiển thị ${filteredData.length} nguyên liệu tại vị trí "${location}"`);
         }
 
-        // ========== TẢI DỮ LIỆU ==========
-        async function loadData() {
-            const day = document.getElementById('daySelect').value;
-            document.getElementById('currentSheet').textContent = `Ngày ${day}`;
-            updateStatus('Đang tải...', 'warning');
+       // ========== TẢI DỮ LIỆU ==========
+async function loadData() {
+    const day = document.getElementById('daySelect').value;
+    document.getElementById('currentSheet').textContent = `Ngày ${day}`;
+    updateStatus('Đang tải...', 'warning');
+    
+    try {
+        // Sử dụng JSONP thay vì fetch để tránh CORS
+        const callbackName = 'jsonpCallback_' + Date.now();
+        const url = `${APPS_SCRIPT_URL}?action=getData&sheet=${day}&callback=${callbackName}`;
+        console.log('📡 Gọi URL (JSONP):', url);
+        
+        // Tạo hàm callback tạm thời
+        window[callbackName] = function(result) {
+            console.log('✅ Dữ liệu nhận được:', result);
             
-            try {
-                const url = `${APPS_SCRIPT_URL}?action=getData&sheet=${day}`;
-                console.log('📡 Gọi URL:', url);
-                
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
-                
-                const result = await response.json();
-                console.log('✅ Dữ liệu nhận được:', result);
-                
-                if (result.error) throw new Error(result.error);
-                
-                currentData = result.data || [];
-                filteredData = [...currentData];
-                currentVisibleRows = 0;
-                
-                // Cập nhật dropdowns
-                updateMaterialFilter();
-                updateLocationFilter();
-                updateDatalists();
-                
-                // Render giao diện
-                renderTable();
-                updateStatistics();
-                updateInventoryAgeAnalysis();
-                updateLastUpdated();
-                
-                updateStatus('Đã kết nối', 'success');
-                showNotification('success', `✅ Đã tải ${currentData.length} dòng từ Ngày ${day}`);
-                
-            } catch (error) {
-                console.error('❌ Lỗi tải:', error);
-                updateStatus('Lỗi kết nối', 'danger');
-                showNotification('error', `❌ ${error.message}`);
-                setTimeout(() => { displaySampleData(); }, 500);
+            // Xóa hàm callback sau khi dùng
+            delete window[callbackName];
+            
+            if (result.error) {
+                throw new Error(result.error);
             }
-        }
+            
+            if (!result.success) {
+                throw new Error(result.message || 'Lỗi không xác định từ server');
+            }
+            
+            currentData = result.data || [];
+            filteredData = [...currentData];
+            currentVisibleRows = 0;
+            
+            // Cập nhật dropdowns
+            updateMaterialFilter();
+            updateLocationFilter();
+            updateDatalists();
+            
+            // Render giao diện
+            renderTable();
+            updateStatistics();
+            updateInventoryAgeAnalysis();
+            updateLastUpdated();
+            
+            updateStatus('Đã kết nối', 'success');
+            showNotification('success', `✅ Đã tải ${currentData.length} dòng từ Ngày ${day}`);
+        };
+        
+        // Tạo và thêm thẻ script để thực hiện JSONP request
+        const script = document.createElement('script');
+        script.src = url;
+        script.onerror = function() {
+            console.error('❌ Lỗi tải script JSONP');
+            delete window[callbackName];
+            updateStatus('Lỗi kết nối', 'danger');
+            showNotification('error', '❌ Không thể kết nối đến server');
+            setTimeout(() => { displaySampleData(); }, 500);
+        };
+        
+        // Thêm timeout cho JSONP request
+        setTimeout(function() {
+            if (window[callbackName]) {
+                console.error('⏰ Timeout JSONP request');
+                delete window[callbackName];
+                updateStatus('Timeout', 'warning');
+                showNotification('warning', '⏰ Yêu cầu timeout, thử lại...');
+            }
+        }, 10000);
+        
+        document.head.appendChild(script);
+        
+    } catch (error) {
+        console.error('❌ Lỗi tải:', error);
+        updateStatus('Lỗi kết nối', 'danger');
+        showNotification('error', `❌ ${error.message}`);
+        setTimeout(() => { displaySampleData(); }, 500);
+    }
+}
 
         function updateMaterialFilter() {
             const select = document.getElementById('materialFilter');
