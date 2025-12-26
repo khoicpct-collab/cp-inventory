@@ -1,0 +1,19 @@
+{
+  "name": "khoicpct-collab",
+  "version": "1.0.0",
+  "description": "Hệ thống quản lý kho C.P.CT",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'No build step required for static site'",
+    "start": "serve ."
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.0"
+  },
+  "devDependencies": {
+    "serve": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
