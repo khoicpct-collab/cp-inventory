@@ -1,7 +1,7 @@
 // script.js - HOÀN CHỈNH VỚI TẤT CẢ CHỨC NĂNG
 class InventoryManager {
     constructor() {
-        this.API_URL = 'https://script.google.com/macros/s/AKfycby7_CNDwE_--9A79WMQoLCbsIn2q7oT44Co4pfABVmVB48QWX-pxuz4Vtft8ei2BBgKCA/exec';
+        this.API_URL = 'https://script.google.com/macros/s/AKfycbyUXQJKUzlF_1pnIyto9f7qgCT5H3--VyV0ZFes69KuwxkqiMq1-TLKZmK5xHiZQ-BNyA/exec';
         this.currentData = [];
         this.filteredData = [];
         this.currentSheet = '15';
