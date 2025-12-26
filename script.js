@@ -440,4 +440,355 @@ class InventoryManager {
                 </td>
                 <td class="text-end">
                     <div class="fw-bold text-primary">${this.formatNumberFull(item.closingWeight)} kg</div>
-                    <small class
+                    <small class="text-muted">${item.closingBags || 0} bao</small>
+                </td>
+                <td>${this.formatDate(item.importDate)}</td>
+                <td class="text-center">
+                    <div class="age-indicator ${ageClass}" title="${age} ngày">${age}</div>
+                </td>
+                <td><small class="text-primary">${item.code || ''}</small></td>
+                <td><small>${item.supplier || ''}</small></td>
+                <td><span class="badge bg-light text-dark">${item.truck || ''}</span></td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-outline-primary" onclick="inventory.editItem(${index})" title="Sửa">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="inventory.deleteItem(${index})" title="Xóa">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>`;
+        });
+        
+        tbody.innerHTML = html;
+        this.updateRowCount();
+    }
+
+    updateRowCount() {
+        const visible = Math.min(this.visibleRows + this.ROWS_PER_PAGE, this.filteredData.length);
+        const total = this.filteredData.length;
+        
+        document.getElementById('visibleRowCount').textContent = visible;
+        document.getElementById('totalRowCount').textContent = total;
+        
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        if (visible < total) {
+            loadMoreBtn.style.display = 'block';
+            loadMoreBtn.innerHTML = `<i class="fas fa-chevron-down me-2"></i>Xem thêm (${Math.min(this.ROWS_PER_PAGE, total - visible)} dòng)`;
+        } else {
+            loadMoreBtn.style.display = 'none';
+        }
+    }
+
+    loadMoreRows() {
+        this.visibleRows += this.ROWS_PER_PAGE;
+        this.renderTable();
+    }
+
+    handleMaterialFilter(material) {
+        if (material) {
+            document.getElementById('locationFilter').value = '';
+            this.filteredData = this.currentData.filter(item => 
+                item.material && item.material.toLowerCase().includes(material.toLowerCase())
+            );
+        } else {
+            this.filteredData = [...this.currentData];
+        }
+        
+        this.visibleRows = 0;
+        this.renderTable();
+        this.updateStatistics();
+        this.updateInventoryAgeAnalysis();
+    }
+
+    handleLocationFilter(location) {
+        if (location) {
+            document.getElementById('materialFilter').value = '';
+            this.filteredData = this.currentData.filter(item => 
+                item.location && item.location.toLowerCase() === location.toLowerCase()
+            );
+        } else {
+            this.filteredData = [...this.currentData];
+        }
+        
+        this.visibleRows = 0;
+        this.renderTable();
+        this.updateStatistics();
+        this.updateInventoryAgeAnalysis();
+    }
+
+    updateStatistics() {
+        let total = {
+            openingWeight: 0,
+            importWeight: 0,
+            exportWeight: 0,
+            closingWeight: 0,
+            avgAge: 0
+        };
+        
+        let totalAge = 0;
+        let countWithDate = 0;
+        
+        this.filteredData.forEach(item => {
+            total.openingWeight += parseFloat(item.openingWeight) || 0;
+            total.importWeight += parseFloat(item.importWeight) || 0;
+            total.exportWeight += parseFloat(item.exportWeight) || 0;
+            total.closingWeight += parseFloat(item.closingWeight) || 0;
+            
+            if (item.importDate) {
+                const age = this.calculateAge(item.importDate);
+                totalAge += age;
+                countWithDate++;
+            }
+        });
+        
+        total.avgAge = countWithDate > 0 ? Math.round(totalAge / countWithDate) : 0;
+        
+        document.getElementById('totalStock').textContent = this.formatNumberFull(total.closingWeight) + ' kg';
+        document.getElementById('totalImport').textContent = this.formatNumberFull(total.importWeight) + ' kg';
+        document.getElementById('totalExport').textContent = this.formatNumberFull(total.exportWeight) + ' kg';
+        document.getElementById('avgAge').textContent = total.avgAge + ' ngày';
+    }
+
+    updateInventoryAgeAnalysis() {
+        let age0_30 = 0, age31_60 = 0, age61Plus = 0;
+        let totalWeight = 0;
+        
+        this.filteredData.forEach(item => {
+            const weight = parseFloat(item.closingWeight) || 0;
+            const age = this.calculateAge(item.importDate);
+            
+            totalWeight += weight;
+            
+            if (age <= 30) age0_30 += weight;
+            else if (age <= 60) age31_60 += weight;
+            else age61Plus += weight;
+        });
+        
+        // Update UI
+        document.getElementById('age0-30Weight').textContent = this.formatNumberFull(age0_30) + ' kg';
+        document.getElementById('age31-60Weight').textContent = this.formatNumberFull(age31_60) + ' kg';
+        document.getElementById('age61PlusWeight').textContent = this.formatNumberFull(age61Plus) + ' kg';
+        document.getElementById('totalAgeWeight').textContent = this.formatNumberFull(totalWeight) + ' kg';
+        
+        // Update progress bars
+        if (totalWeight > 0) {
+            const pct0_30 = Math.round((age0_30 / totalWeight) * 100);
+            const pct31_60 = Math.round((age31_60 / totalWeight) * 100);
+            const pct61Plus = Math.round((age61Plus / totalWeight) * 100);
+            
+            document.getElementById('age0-30Bar').style.width = pct0_30 + '%';
+            document.getElementById('age31-60Bar').style.width = pct31_60 + '%';
+            document.getElementById('age61PlusBar').style.width = pct61Plus + '%';
+            
+            document.getElementById('age0-30Percent').textContent = pct0_30;
+            document.getElementById('age31-60Percent').textContent = pct31_60;
+            document.getElementById('age61PlusPercent').textContent = pct61Plus;
+        }
+    }
+
+    exportToExcel() {
+        if (this.filteredData.length === 0) {
+            this.showNotification('warning', 'Không có dữ liệu để xuất!');
+            return;
+        }
+        
+        const wsData = [
+            ['STT', 'Nguyên liệu', 'Vị trí', 'Tồn đầu (bao)', 'Tồn đầu (kg)', 
+             'Nhập (bao)', 'Nhập (kg)', 'Xuất (bao)', 'Xuất (kg)', 
+             'Tồn cuối (bao)', 'Tồn cuối (kg)', 'Ngày nhập', 'Tuổi', 
+             'Code/NCC', 'Nhà CC', 'Truck'],
+            ...this.filteredData.map(item => [
+                item.stt,
+                item.material,
+                item.location,
+                item.openingBags,
+                item.openingWeight,
+                item.importBags,
+                item.importWeight,
+                item.exportBags,
+                item.exportWeight,
+                item.closingBags,
+                item.closingWeight,
+                this.formatDate(item.importDate),
+                this.calculateAge(item.importDate),
+                item.code,
+                item.supplier,
+                item.truck
+            ])
+        ];
+        
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, `Kho_${this.currentSheet}`);
+        
+        const fileName = `CHECKSTOCK_KIEU_${this.currentSheet}_${new Date().toISOString().slice(0,10)}.xlsx`;
+        XLSX.writeFile(wb, fileName);
+        
+        this.showNotification('success', `✅ Đã xuất file ${fileName}`);
+    }
+
+    loadSampleData() {
+        this.currentData = [
+            {
+                stt: 1,
+                material: "C9959",
+                location: "B16",
+                openingBags: 100,
+                openingWeight: 2500,
+                importBags: 50,
+                importWeight: 1250,
+                exportBags: 30,
+                exportWeight: 750,
+                closingBags: 120,
+                closingWeight: 3000,
+                importDate: "2024-01-14T17:00:00.000Z",
+                code: "105104(BT)",
+                truck: "Xe 01",
+                supplier: "CP Feedmill"
+            },
+            // ... thêm dữ liệu mẫu khác
+        ];
+        
+        this.filteredData = [...this.currentData];
+        this.visibleRows = 0;
+        
+        this.updateFilters();
+        this.renderTable();
+        this.updateStatistics();
+        this.updateInventoryAgeAnalysis();
+        
+        this.updateConnectionStatus('sample');
+        this.showNotification('warning', '⚠️ Đang hiển thị dữ liệu mẫu');
+    }
+
+    // Helper methods
+    formatNumberFull(num) {
+        const n = parseFloat(num) || 0;
+        return n.toLocaleString('vi-VN', { 
+            minimumFractionDigits: 0, 
+            maximumFractionDigits: 2 
+        });
+    }
+
+    formatDate(dateStr) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        return isNaN(date.getTime()) ? '' : date.toLocaleDateString('vi-VN');
+    }
+
+    calculateAge(dateStr) {
+        if (!dateStr) return 0;
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return 0;
+        const diffMs = Date.now() - date.getTime();
+        return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    }
+
+    getAgeClass(age) {
+        if (age <= 30) return 'age-green';
+        if (age <= 60) return 'age-yellow';
+        return 'age-red';
+    }
+
+    getMaterialGroup(name) {
+        if (!name) return 'other';
+        const n = name.toLowerCase();
+        if (n.includes('dịch') || n.includes('cá') || n.includes('dầu')) return 'liquid';
+        if (n.includes('đậu') || n.includes('cám') || n.includes('bột')) return 'bulk';
+        return 'bao';
+    }
+
+    getGroupName(group) {
+        const map = { 'bao':'Bao', 'liquid':'Lỏng', 'bulk':'Xá đổ', 'other':'Khác' };
+        return map[group] || group;
+    }
+
+    updateConnectionStatus(status) {
+        const statusEl = document.getElementById('connectionStatus');
+        const indicator = document.getElementById('statusIndicator');
+        
+        if (!statusEl || !indicator) return;
+        
+        const statusMap = {
+            'connected': { text: 'Đã kết nối', color: 'success', bg: 'bg-success' },
+            'loading': { text: 'Đang tải...', color: 'warning', bg: 'bg-warning' },
+            'error': { text: 'Lỗi kết nối', color: 'danger', bg: 'bg-danger' },
+            'sample': { text: 'Dữ liệu mẫu', color: 'warning', bg: 'bg-warning' },
+            'timeout': { text: 'Timeout', color: 'warning', bg: 'bg-warning' }
+        };
+        
+        const current = statusMap[status] || { text: 'Chưa kết nối', color: 'secondary', bg: 'bg-secondary' };
+        
+        statusEl.textContent = current.text;
+        statusEl.className = `fw-bold text-${current.color}`;
+        indicator.className = `${current.bg} rounded-circle me-2`;
+        indicator.style.width = indicator.style.height = '10px';
+    }
+
+    updateLastUpdated() {
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString('vi-VN');
+    }
+
+    showNotification(type, message) {
+        // Remove existing notifications
+        document.querySelectorAll('.alert-notification').forEach(el => el.remove());
+        
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-notification alert-dismissible fade show position-fixed`;
+        alert.style.cssText = 'top:20px; right:20px; z-index:9999; min-width:300px;';
+        alert.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                <span>${message}</span>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        document.body.appendChild(alert);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.remove();
+            }
+        }, 5000);
+    }
+
+    showLoading(show) {
+        const loadingEl = document.getElementById('loadingIndicator');
+        if (!loadingEl) return;
+        
+        if (show) {
+            loadingEl.style.display = 'block';
+        } else {
+            loadingEl.style.display = 'none';
+        }
+    }
+
+    editItem(index) {
+        const item = this.filteredData[index];
+        this.showNotification('info', `Chỉnh sửa: ${item.material} - Tính năng đang phát triển`);
+        // TODO: Implement edit modal
+    }
+
+    deleteItem(index) {
+        const item = this.filteredData[index];
+        if (confirm(`Bạn có chắc muốn xóa "${item.material}" - Vị trí "${item.location}"?`)) {
+            this.showNotification('info', `Đang xóa: ${item.material} - Tính năng đang phát triển`);
+            // TODO: Implement delete API call
+        }
+    }
+}
+
+// Khởi tạo ứng dụng
+document.addEventListener('DOMContentLoaded', () => {
+    window.inventory = new InventoryManager();
+    
+    // Expose global functions for HTML onclick handlers
+    window.loadData = () => inventory.loadData();
+    window.loadMoreRows = () => inventory.loadMoreRows();
+    window.submitNewTransaction = () => inventory.submitTransaction();
+    window.performAutoCopy = () => inventory.copyOpeningStock();
+    window.exportToExcel = () => inventory.exportToExcel();
+});
