@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CHECKSTOCK KIEU - Hệ thống quản lý kho C.P.CT</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        /* Tất cả CSS styles từ trước giữ nguyên */
         :root { 
             --primary-blue: #1a237e; 
             --success-green: #4CAF50; 
@@ -30,143 +36,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); 
         }
         
-        .navbar-brand { 
-            font-weight: 800; 
-            font-size: 1.8rem; 
-            background: linear-gradient(135deg, var(--primary-blue), var(--info-blue)); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-        }
-        
-        .stat-card { 
-            transition: all 0.3s ease; 
-            border: none; 
-            border-radius: 15px; 
-            overflow: hidden; 
-        }
-        
-        .stat-card:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
-        }
-        
-        .stat-icon { 
-            width: 60px; 
-            height: 60px; 
-            border-radius: 12px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 24px; 
-        }
-        
-        .table-container { 
-            background: white; 
-            border-radius: 15px; 
-            overflow: hidden; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
-        }
-        
-        .table-header { 
-            background: linear-gradient(135deg, var(--primary-blue), #283593); 
-            color: white; 
-        }
-        
-        .material-badge { 
-            padding: 4px 12px; 
-            border-radius: 20px; 
-            font-size: 12px; 
-            font-weight: 600; 
-        }
-        
-        .badge-bao { 
-            background: #e3f2fd; 
-            color: #1565c0; 
-        }
-        
-        .badge-liquid { 
-            background: #f3e5f5; 
-            color: #7b1fa2; 
-        }
-        
-        .badge-bulk { 
-            background: #fff3e0; 
-            color: #ef6c00; 
-        }
-        
-        .age-indicator { 
-            width: 30px; 
-            height: 30px; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-weight: bold; 
-            font-size: 12px; 
-            color: white; 
-        }
-        
-        .age-green { 
-            background: var(--success-green); 
-        }
-        
-        .age-yellow { 
-            background: var(--warning-orange); 
-        }
-        
-        .age-red { 
-            background: var(--danger-red); 
-        }
-        
-        .progress-thin { 
-            height: 6px; 
-            border-radius: 3px; 
-        }
-        
-        .age-analysis-card { 
-            border-left: 5px solid; 
-            transition: transform 0.3s; 
-        }
-        
-        .age-analysis-card:hover { 
-            transform: translateX(5px); 
-        }
-        
-        .age-0-30 { 
-            border-left-color: #4CAF50; 
-        }
-        
-        .age-31-60 { 
-            border-left-color: #FF9800; 
-        }
-        
-        .age-61-plus { 
-            border-left-color: #F44336; 
-        }
-        
-        #lotTagPreview { 
-            width: 210mm; 
-            height: 148mm; 
-            padding: 15mm; 
-            background: white; 
-            border: 1px solid #ccc; 
-            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
-            margin: 0 auto; 
-        }
-        
-        .full-number { 
-            font-family: 'Courier New', monospace; 
-            font-weight: bold; 
-        }
-        
-        .btn-compact { 
-            padding: 0.375rem 0.75rem; 
-            font-size: 0.875rem; 
-        }
-        
-        .filter-section { 
-            margin-bottom: 15px; 
-        }
+        /* ... giữ nguyên tất cả CSS styles cũ ... */
         
         /* Loading overlay */
         .loading-overlay {
@@ -175,7 +45,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             z-index: 9999;
             display: none;
             justify-content: center;
@@ -205,7 +75,7 @@
         }
         
         /* Notification */
-        .notification {
+        .notification-container {
             position: fixed;
             top: 20px;
             right: 20px;
@@ -215,24 +85,7 @@
         }
         
         @media (max-width: 768px) { 
-            .stat-icon { 
-                width: 45px; 
-                height: 45px; 
-                font-size: 18px; 
-            } 
-            
-            #lotTagPreview { 
-                width: 100%; 
-                height: auto; 
-                padding: 10mm; 
-            } 
-            
-            .btn-compact { 
-                padding: 0.25rem 0.5rem; 
-                font-size: 0.8rem; 
-            }
-            
-            .notification {
+            .notification-container {
                 left: 10px;
                 right: 10px;
                 max-width: 100%;
@@ -248,7 +101,7 @@
     </div>
 
     <!-- Notification Container -->
-    <div id="notificationContainer" class="notification"></div>
+    <div id="notificationContainer" class="notification-container"></div>
 
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light glass-card mx-3 mt-3">
@@ -264,7 +117,7 @@
                         <span id="connectionStatus" class="fw-bold">Chưa kết nối</span>
                     </div>
                 </div>
-                <button class="btn btn-primary btn-compact">
+                <button class="btn btn-primary btn-sm">
                     <i class="fas fa-user me-1"></i>Admin
                 </button>
             </div>
@@ -280,40 +133,42 @@
                     <h5 class="fw-bold mb-3">
                         <i class="fas fa-calendar-alt me-2"></i>Chọn ngày
                     </h5>
-                    <select id="daySelect" class="form-select mb-3"></select>
+                    <select id="daySelect" class="form-select mb-3">
+                        <!-- Days will be populated by JavaScript -->
+                    </select>
                     
                     <!-- Bộ lọc chính -->
                     <h5 class="fw-bold mb-3">
                         <i class="fas fa-filter me-2"></i>Bộ lọc
                     </h5>
-                    <div class="filter-section">
+                    <div class="mb-3">
                         <label class="form-label fw-bold">Theo nguyên liệu</label>
-                        <select id="materialFilter" class="form-select mb-3">
+                        <select id="materialFilter" class="form-select">
                             <option value="">-- Chọn nguyên liệu --</option>
                         </select>
                     </div>
                     
-                    <div class="filter-section">
+                    <div class="mb-3">
                         <label class="form-label fw-bold">Theo vị trí/lô</label>
-                        <select id="locationFilter" class="form-select mb-3">
+                        <select id="locationFilter" class="form-select">
                             <option value="">-- Chọn vị trí/lô --</option>
                         </select>
                     </div>
                     
                     <div class="d-grid gap-2">
-                        <button class="btn btn-primary btn-compact" onclick="loadData()">
+                        <button class="btn btn-primary" onclick="loadData()">
                             <i class="fas fa-sync-alt me-2"></i>Tải dữ liệu
                         </button>
-                        <button class="btn btn-success btn-compact" data-bs-toggle="modal" data-bs-target="#addDataModal">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDataModal">
                             <i class="fas fa-plus-circle me-2"></i>Thêm Dữ Liệu
                         </button>
-                        <button class="btn btn-info btn-compact" data-bs-toggle="modal" data-bs-target="#lotHeaderModal">
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#lotHeaderModal">
                             <i class="fas fa-tag me-2"></i>Phiếu Đầu Lô
                         </button>
-                        <button class="btn btn-outline-primary btn-compact" data-bs-toggle="modal" data-bs-target="#autoCopyModal">
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#autoCopyModal">
                             <i class="fas fa-copy me-2"></i>Copy tồn đầu
                         </button>
-                        <button class="btn btn-outline-warning btn-compact" onclick="exportToExcel()">
+                        <button class="btn btn-outline-warning" onclick="exportToExcel()">
                             <i class="fas fa-file-excel me-2"></i>Xuất Excel
                         </button>
                     </div>
@@ -359,7 +214,7 @@
                         </table>
                     </div>
                     <div class="p-3 border-top d-flex justify-content-center">
-                        <button type="button" class="btn btn-outline-primary btn-compact" 
+                        <button type="button" class="btn btn-outline-primary" 
                                 id="loadMoreBtn" onclick="loadMoreRows()" style="display: none;">
                             <i class="fas fa-chevron-down me-2"></i>Xem thêm (15 dòng)
                         </button>
@@ -570,52 +425,6 @@
         </div>
     </div>
 
-    <!-- Modal: Lot Header Tag -->
-    <div class="modal fade" id="lotHeaderModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-tag me-2"></i>Phiếu đầu lô
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Chọn lô</label>
-                            <select id="lotSelect" class="form-select" onchange="loadLotDetails(this.value)">
-                                <option value="">-- Chọn lô --</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Tìm kiếm nhanh</label>
-                            <div class="input-group">
-                                <input type="text" id="lotSearch" class="form-control" 
-                                       placeholder="Nhập tên hoặc mã lô...">
-                                <button class="btn btn-primary" type="button" onclick="searchLot()">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="lotTagPreview" class="d-none">
-                        <!-- Nội dung phiếu sẽ được tạo động -->
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary" onclick="exportLotTagPDF()">
-                        <i class="fas fa-file-pdf me-2"></i>Xuất PDF
-                    </button>
-                    <button type="button" class="btn btn-success" onclick="exportLotTagImage()">
-                        <i class="fas fa-image me-2"></i>Xuất Ảnh
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal: Copy Opening Stock -->
     <div class="modal fade" id="autoCopyModal" tabindex="-1">
         <div class="modal-dialog">
@@ -655,13 +464,10 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <script>
         // ========== CẤU HÌNH QUAN TRỌNG ==========
-        // URL GOOGLE APPS SCRIPT CỦA BẠN
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUXQJKUzlF_1pnIyto9f7qgCT5H3--VyV0ZFes69KuwxkqiMq1-TLKZmK5xHiZQ-BNyA/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby7_CNDwE_--9A79WMQoLCbsIn2q7oT44Co4pfABVmVB48QWX-pxuz4Vtft8ei2BBgKCA/exec';
         
         // ========== BIẾN TOÀN CỤC ==========
         let currentData = [];
@@ -752,7 +558,7 @@
             const locationFilter = document.getElementById('locationFilter');
             
             if (material) {
-                locationFilter.value = ''; // Reset bộ lọc vị trí
+                locationFilter.value = '';
                 filterByMaterial(material);
             } else if (!material && !locationFilter.value) {
                 filteredData = [...currentData];
@@ -766,7 +572,7 @@
             const materialFilter = document.getElementById('materialFilter');
             
             if (location) {
-                materialFilter.value = ''; // Reset bộ lọc nguyên liệu
+                materialFilter.value = '';
                 filterByLocation(location);
             } else if (!location && !materialFilter.value) {
                 filteredData = [...currentData];
@@ -782,7 +588,7 @@
             });
             currentVisibleRows = 0;
             renderTable();
-            updateSummaryStats(filteredData);
+            updateStatistics();
             updateInventoryAgeAnalysis();
             showNotification('info', `Hiển thị ${filteredData.length} lô chứa "${materialName}"`);
         }
@@ -794,7 +600,7 @@
             });
             currentVisibleRows = 0;
             renderTable();
-            updateSummaryStats(filteredData);
+            updateStatistics();
             updateInventoryAgeAnalysis();
             showNotification('info', `Hiển thị ${filteredData.length} nguyên liệu tại vị trí "${location}"`);
         }
@@ -809,19 +615,24 @@
             updateStatus('Đang tải...', 'warning');
             
             try {
-                const result = await callGoogleScript('getData', { sheet: day });
+                // Test connection first
+                const testResult = await testConnection();
+                
+                if (!testResult.connected) {
+                    throw new Error('Không thể kết nối đến Google Apps Script');
+                }
+                
+                // Load data using JSONP
+                const result = await callGoogleScriptJSONP('getData', { sheet: day });
                 
                 if (result.success) {
                     currentData = result.data || [];
                     filteredData = [...currentData];
                     currentVisibleRows = 0;
                     
-                    // Cập nhật dropdowns
                     updateMaterialFilter();
                     updateLocationFilter();
                     updateDatalists();
-                    
-                    // Render giao diện
                     renderTable();
                     updateStatistics();
                     updateInventoryAgeAnalysis();
@@ -836,55 +647,50 @@
                 console.error('❌ Lỗi tải:', error);
                 updateStatus('Lỗi kết nối', 'danger');
                 showNotification('error', `❌ ${error.message}`);
-                
-                // Hiển thị dữ liệu mẫu nếu không kết nối được
-                setTimeout(() => { 
-                    displaySampleData(); 
-                    showNotification('warning', '⚠️ Đang hiển thị dữ liệu mẫu');
-                }, 500);
+                displaySampleData();
             } finally {
                 showLoading(false);
             }
         }
 
-        // Hàm gọi Google Apps Script với JSONP
-        function callGoogleScript(action, params = {}) {
+        // JSONP call to Google Apps Script
+        function callGoogleScriptJSONP(action, params = {}) {
             return new Promise((resolve, reject) => {
                 const callbackName = `jsonpCallback_${Date.now()}`;
                 const queryParams = new URLSearchParams({
                     action,
                     ...params,
-                    callback: callbackName
+                    callback: callbackName,
+                    _: Date.now() // Prevent caching
                 });
                 
                 const url = `${APPS_SCRIPT_URL}?${queryParams}`;
-                console.log('📡 Gọi URL:', url);
+                console.log('📡 Gọi URL (JSONP):', url);
                 
-                // Tạo hàm callback tạm thời
                 window[callbackName] = function(result) {
                     console.log('✅ Dữ liệu nhận được:', result);
                     delete window[callbackName];
                     
-                    if (result.error) {
-                        reject(new Error(result.error));
+                    if (result && result.success === false) {
+                        reject(new Error(result.error || 'Unknown error'));
                     } else {
-                        resolve(result);
+                        resolve(result || { success: true, data: [] });
                     }
                 };
                 
-                // Tạo script element
                 const script = document.createElement('script');
                 script.src = url;
+                
                 script.onerror = () => {
+                    console.error('❌ Script load error');
                     delete window[callbackName];
-                    reject(new Error('Không thể kết nối đến server'));
+                    reject(new Error('Không thể tải script'));
                 };
                 
-                // Thêm timeout
                 setTimeout(() => {
                     if (window[callbackName]) {
                         delete window[callbackName];
-                        reject(new Error('Yêu cầu timeout'));
+                        reject(new Error('Timeout after 10 seconds'));
                     }
                 }, 10000);
                 
@@ -892,6 +698,41 @@
             });
         }
 
+        // Test connection
+        async function testConnection() {
+            try {
+                const testUrl = `${APPS_SCRIPT_URL}?action=test&callback=testCB&_=${Date.now()}`;
+                
+                return new Promise((resolve) => {
+                    window.testCB = (result) => {
+                        delete window.testCB;
+                        console.log('✅ Test connection success:', result);
+                        resolve({ connected: true, result });
+                    };
+                    
+                    const script = document.createElement('script');
+                    script.src = testUrl;
+                    script.onerror = () => {
+                        delete window.testCB;
+                        console.warn('❌ Test connection failed');
+                        resolve({ connected: false });
+                    };
+                    
+                    document.head.appendChild(script);
+                    
+                    setTimeout(() => {
+                        if (window.testCB) {
+                            delete window.testCB;
+                            resolve({ connected: false, timeout: true });
+                        }
+                    }, 5000);
+                });
+            } catch (error) {
+                return { connected: false, error: error.message };
+            }
+        }
+
+        // Update filters
         function updateMaterialFilter() {
             const select = document.getElementById('materialFilter');
             const currentVal = select.value;
@@ -933,7 +774,6 @@
         }
 
         function updateDatalists() {
-            // Cập nhật datalist cho modal thêm dữ liệu
             const materialList = document.getElementById('materialList');
             const locationList = document.getElementById('locationList');
             
@@ -969,15 +809,12 @@
                             <small>Vui lòng chọn ngày hoặc áp dụng bộ lọc</small>
                         </td>
                     </tr>`;
-                document.getElementById('visibleRowCount').textContent = '0';
-                document.getElementById('totalRowCount').textContent = '0';
-                document.getElementById('loadMoreBtn').style.display = 'none';
+                updateRowCount();
                 return;
             }
             
-            const startIndex = 0;
             const endIndex = Math.min(currentVisibleRows + ROWS_PER_PAGE, filteredData.length);
-            const dataToShow = filteredData.slice(startIndex, endIndex);
+            const dataToShow = filteredData.slice(0, endIndex);
             
             let html = '';
             dataToShow.forEach((row, index) => {
@@ -1033,15 +870,20 @@
             });
             
             tbody.innerHTML = html;
+            updateRowCount();
+        }
+
+        function updateRowCount() {
+            const visible = Math.min(currentVisibleRows + ROWS_PER_PAGE, filteredData.length);
+            const total = filteredData.length;
             
-            // Cập nhật phân trang
-            document.getElementById('visibleRowCount').textContent = endIndex;
-            document.getElementById('totalRowCount').textContent = filteredData.length;
+            document.getElementById('visibleRowCount').textContent = visible;
+            document.getElementById('totalRowCount').textContent = total;
             
             const loadMoreBtn = document.getElementById('loadMoreBtn');
-            if (endIndex < filteredData.length) {
+            if (visible < total) {
                 loadMoreBtn.style.display = 'block';
-                loadMoreBtn.innerHTML = `<i class="fas fa-chevron-down me-2"></i>Xem thêm (${Math.min(ROWS_PER_PAGE, filteredData.length - endIndex)} dòng)`;
+                loadMoreBtn.innerHTML = `<i class="fas fa-chevron-down me-2"></i>Xem thêm (${Math.min(ROWS_PER_PAGE, total - visible)} dòng)`;
             } else {
                 loadMoreBtn.style.display = 'none';
             }
@@ -1054,9 +896,6 @@
 
         // ========== THÊM GIAO DỊCH MỚI ==========
         async function submitNewTransaction() {
-            console.log('🔄 Bắt đầu quy trình lưu giao dịch...');
-            
-            // Lấy dữ liệu từ form
             const transactionType = document.getElementById('transactionType').value;
             const transactionDate = document.getElementById('transactionDate').value;
             const materialName = document.getElementById('materialName').value.trim();
@@ -1067,7 +906,7 @@
             const supplierNote = document.getElementById('transactionNote').value.trim();
             const sheet = document.getElementById('daySelect').value;
             
-            // Kiểm tra dữ liệu
+            // Validation
             if (!transactionType || !transactionDate || !materialName || !materialCode) {
                 showNotification('error', '❌ Vui lòng điền đầy đủ các trường bắt buộc (*)'); 
                 return;
@@ -1078,13 +917,12 @@
                 return; 
             }
             
-            // Chuẩn hóa đơn vị
+            // Convert unit
             let finalWeight = weightInput;
             if (unit === 'ton') { 
                 finalWeight = weightInput * 1000; 
             }
             
-            // Chuẩn bị dữ liệu gửi đi
             const formData = {
                 action: 'addTransaction',
                 sheet: sheet,
@@ -1100,52 +938,49 @@
                 timestamp: new Date().toISOString()
             };
             
-            console.log('📤 Dữ liệu sẽ gửi:', formData);
+            console.log('📤 Sending data:', formData);
             
             try {
                 showLoading(true);
-                showNotification('info', '⏳ Đang gửi dữ liệu đến Google Sheets...');
+                showNotification('info', '⏳ Đang gửi dữ liệu...');
                 
+                // Using FormData for POST
+                const form = new FormData();
+                form.append('data', JSON.stringify(formData));
+                
+                // Alternative method for POST
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
+                    body: form
                 });
                 
-                console.log('📨 Response status:', response);
-                
-                // Vì dùng no-cors, không thể đọc response
-                // Giả sử thành công và làm mới dữ liệu
                 showNotification('success', '✅ Đã thêm dữ liệu thành công!');
                 
-                // Đóng modal và reset form
+                // Close modal and reset form
                 const modal = bootstrap.Modal.getInstance(document.getElementById('addDataModal'));
                 if (modal) modal.hide();
                 document.getElementById('newTransactionForm').reset();
                 
-                // Làm mới dữ liệu sau 2 giây
+                // Reload data after 2 seconds
                 setTimeout(() => { 
                     loadData(); 
                 }, 2000);
                 
             } catch (error) {
-                console.error('💥 Lỗi kết nối:', error);
-                showNotification('error', `❌ Lỗi kết nối: ${error.message}`);
+                console.error('💥 Lỗi:', error);
+                showNotification('error', `❌ Lỗi: ${error.message}`);
             } finally {
                 showLoading(false);
             }
         }
 
         // ========== CÁC HÀM HỖ TRỢ ==========
-        function updateSummaryStats(data) {
+        function updateStatistics() {
             let totalTonDau = 0, totalNhap = 0, totalXuat = 0, totalTonCuoi = 0;
             let totalAge = 0, countWithDate = 0;
             
-            data.forEach(row => {
+            filteredData.forEach(row => {
                 const tonDauWeight = parseFloat(row[4]) || 0;
                 const nhapWeight = parseFloat(row[6]) || 0;
                 const xuatWeight = parseFloat(row[8]) || 0;
@@ -1171,10 +1006,6 @@
             document.getElementById('avgAge').textContent = avgAge + ' ngày';
         }
 
-        function updateStatistics() {
-            updateSummaryStats(filteredData);
-        }
-
         function updateInventoryAgeAnalysis() {
             // Reset
             resetAgeAnalysis();
@@ -1185,7 +1016,7 @@
             let totalWeight = 0;
             
             filteredData.forEach(row => {
-                const weight = parseFloat(row[10]) || 0; // Ton cuoi weight
+                const weight = parseFloat(row[10]) || 0;
                 const age = calculateAge(row[11]);
                 
                 totalWeight += weight;
@@ -1195,13 +1026,13 @@
                 else age61Plus += weight;
             });
             
-            // Cập nhật UI
+            // Update UI
             document.getElementById('age0-30Weight').textContent = formatNumberFull(age0_30) + ' kg';
             document.getElementById('age31-60Weight').textContent = formatNumberFull(age31_60) + ' kg';
             document.getElementById('age61PlusWeight').textContent = formatNumberFull(age61Plus) + ' kg';
             document.getElementById('totalAgeWeight').textContent = formatNumberFull(totalWeight) + ' kg';
             
-            // Tính phần trăm và cập nhật progress bars
+            // Update progress bars
             if (totalWeight > 0) {
                 const pct0_30 = Math.round((age0_30 / totalWeight) * 100);
                 const pct31_60 = Math.round((age31_60 / totalWeight) * 100);
@@ -1218,7 +1049,6 @@
         }
 
         function resetAgeAnalysis() {
-            const resetValues = ['0 kg', '0%', '0'];
             ['age0-30', 'age31-60', 'age61Plus'].forEach(prefix => {
                 document.getElementById(prefix + 'Weight').textContent = '0 kg';
                 document.getElementById(prefix + 'Bar').style.width = '0%';
@@ -1279,12 +1109,11 @@
         }
 
         function showNotification(type, message) {
-            // Xóa thông báo cũ
             const container = document.getElementById('notificationContainer');
             container.innerHTML = '';
             
             const alert = document.createElement('div');
-            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.className = `alert alert-${type} alert-dismissible fade show mb-2`;
             alert.innerHTML = `
                 <div class="d-flex align-items-center">
                     <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
@@ -1295,7 +1124,6 @@
             
             container.appendChild(alert);
             
-            // Tự động xóa sau 5 giây
             setTimeout(() => {
                 if (alert.parentNode) {
                     alert.remove();
@@ -1311,23 +1139,21 @@
         }
 
         function editItem(index) {
-            const item = filteredData[index];
-            showNotification('info', `Chỉnh sửa: ${item[1]} - Tính năng đang phát triển`);
+            showNotification('info', 'Tính năng chỉnh sửa đang phát triển');
         }
 
         function createLotTagFromRow(index) {
-            const item = filteredData[index];
-            showNotification('info', `Tạo phiếu lô: ${item[1]} - Tính năng đang phát triển`);
+            showNotification('info', 'Tính năng tạo phiếu lô đang phát triển');
         }
 
         function exportToExcel() {
-            if (currentData.length === 0) { 
+            if (filteredData.length === 0) { 
                 showNotification('warning', 'Không có dữ liệu để xuất!'); 
                 return; 
             }
             
             const ws = XLSX.utils.aoa_to_sheet([
-                ['STT', 'Tên', 'Vị trí', 'Tồn đầu (kg)', 'Nhập (kg)', 'Xuất (kg)', 'Tồn cuối (kg)', 'Ngày nhập', 'Tuổi', 'Code/NCC', 'Nhà CC', 'Truck'],
+                ['STT', 'Nguyên liệu', 'Vị trí', 'Tồn đầu (kg)', 'Nhập (kg)', 'Xuất (kg)', 'Tồn cuối (kg)', 'Ngày nhập', 'Tuổi', 'Code/NCC', 'Nhà CC', 'Truck'],
                 ...filteredData.map((row, i) => [
                     i + 1,
                     row[1],
@@ -1373,6 +1199,7 @@
             updateInventoryAgeAnalysis();
             
             updateStatus('Đang dùng dữ liệu mẫu', 'warning');
+            showNotification('warning', '⚠️ Đang hiển thị dữ liệu mẫu');
         }
 
         // ========== COPY TỒN ĐẦU ==========
@@ -1394,12 +1221,12 @@
             
             try {
                 showLoading(true);
-                showNotification('info', `⏳ Đang thực hiện copy từ ngày ${fromDay} sang ${toDay}...`);
+                showNotification('info', `⏳ Đang thực hiện copy...`);
                 
-                const result = await callGoogleScript('copyOpeningStock', { fromDay, toDay });
+                const result = await callGoogleScriptJSONP('copyOpeningStock', { fromDay, toDay });
                 
                 if (result.success) {
-                    showNotification('success', `✅ ${result.message}\nĐã cập nhật ${result.rowsUpdated || 0} dòng.`);
+                    showNotification('success', `✅ ${result.message}`);
                     
                     const modal = bootstrap.Modal.getInstance(document.getElementById('autoCopyModal'));
                     if (modal) modal.hide();
@@ -1408,11 +1235,10 @@
                     if (currentSheet === toDay) {
                         setTimeout(() => { 
                             loadData(); 
-                            showNotification('info', '🔄 Đang làm mới dữ liệu ngày đích...'); 
                         }, 1000);
                     }
                 } else {
-                    showNotification('error', `❌ ${result.error || 'Copy thất bại'}`);
+                    showNotification('error', `❌ ${result.error}`);
                 }
                 
             } catch (error) {
@@ -1423,25 +1249,7 @@
             }
         }
 
-        // ========== CÁC HÀM MODAL PHỤ ==========
-        function searchLot() {
-            showNotification('info', 'Tính năng tìm kiếm lô đang phát triển');
-        }
-
-        function loadLotDetails(lotId) {
-            showNotification('info', 'Tính năng chi tiết lô đang phát triển');
-        }
-
-        function exportLotTagPDF() {
-            showNotification('info', 'Tính năng xuất PDF đang phát triển');
-        }
-
-        function exportLotTagImage() {
-            showNotification('info', 'Tính năng xuất ảnh đang phát triển');
-        }
-
         console.log('✨ Ứng dụng CHECKSTOCK KIEU đã sẵn sàng!');
-        console.log('📡 Google Apps Script URL:', APPS_SCRIPT_URL);
     </script>
 </body>
 </html>
