@@ -6,7 +6,7 @@ let locks = [];
 let materials = [];
 
 // Google Apps Script URL - SỬ DỤNG URL NÀY
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby22vJkdZdDUGz_CimlDqgbEXhpsQlSZr8BZHgA7vZKv4hYtq16M0DI9axosfc8_8PEJA/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxvF_lpbP7QKH7uu5srD8empsRoPp1dYlxS68d2L8cU1Zjb4lB2eoAnR5Qp_Z3zwN9Zw/exec';
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
