@@ -3,1040 +3,1319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHECKSTOCK KIEU - Quản lý Kho Hàng</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>CHECKSTOCK KIEU - Hệ Thống Quản Lý Kho C.P.CT</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- SheetJS (XLSX) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
+        /* Additional inline styles for better visual */
+        .bg-custom-gradient {
+            background: linear-gradient(135deg, #2c5530, #4a7c59) !important;
         }
         
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+        .text-custom-primary {
+            color: #2c5530 !important;
         }
         
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--primary-color) !important;
+        .border-custom {
+            border-color: #4a7c59 !important;
         }
         
-        .card {
+        .btn-custom-primary {
+            background: linear-gradient(135deg, #4a7c59, #2c5530);
+            color: white;
             border: none;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
         }
         
-        .card-header {
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 10px 10px 0 0 !important;
-            padding: 15px 20px;
-        }
-        
-        .btn-primary {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-        
-        .btn-primary:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
-        }
-        
-        .table thead th {
-            background-color: var(--light-color);
-            border-bottom: 2px solid #dee2e6;
-            font-weight: 600;
-        }
-        
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .status-active {
-            background-color: #d5f4e6;
-            color: var(--success-color);
-        }
-        
-        .status-inactive {
-            background-color: #ffeaa7;
-            color: var(--warning-color);
-        }
-        
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(255,255,255,0.9);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--secondary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .sheet-tab {
-            padding: 8px 15px;
-            margin-right: 5px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .sheet-tab:hover {
-            background-color: #dee2e6;
-        }
-        
-        .sheet-tab.active {
-            background-color: var(--secondary-color);
+        .btn-custom-primary:hover {
+            background: linear-gradient(135deg, #3a6b49, #1c4520);
             color: white;
         }
         
-        .stat-card {
-            text-align: center;
-            padding: 20px;
+        .badge-custom {
+            background-color: #4a7c59;
+            color: white;
         }
         
-        .stat-card i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: var(--secondary-color);
+        .card-custom {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
         }
         
-        .stat-card .number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        
-        .stat-card .label {
-            color: #6c757d;
-            font-size: 0.9rem;
+        .card-custom:hover {
+            transform: translateY(-5px);
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-boxes me-2"></i>CHECKSTOCK KIEU
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#" onclick="showDashboard()">
-                            <i class="fas fa-tachometer-alt me-1"></i>Tổng quan
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showInventory()">
-                            <i class="fas fa-warehouse me-1"></i>Kho hàng
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSheets()">
-                            <i class="fas fa-file-excel me-1"></i>Sheets
-                        </a>
-                    </li>
-                </ul>
-                <div class="d-flex">
-                    <button class="btn btn-outline-primary me-2" onclick="refreshData()">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                    <span class="navbar-text">
-                        <i class="fas fa-database me-1"></i>
-                        <span id="data-status">Đang kết nối...</span>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </nav>
-
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-        <div class="spinner"></div>
-        <div class="mt-3" id="loadingText">Đang tải dữ liệu...</div>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Đang tải dữ liệu...</div>
     </div>
 
     <!-- Main Container -->
-    <div class="container-fluid mt-4">
-        <div id="dashboardView" style="display: none;">
-            <!-- Dashboard content will be loaded here -->
-        </div>
-
-        <div id="inventoryView" style="display: none;">
-            <!-- Inventory content will be loaded here -->
-        </div>
-
-        <div id="sheetsView" style="display: none;">
-            <!-- Sheets management content will be loaded here -->
-        </div>
-    </div>
-
-    <!-- Templates -->
-    <template id="dashboardTemplate">
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Tổng quan Kho hàng</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row" id="statsContainer">
-                            <!-- Stats will be loaded here -->
+    <div class="container-fluid px-4 py-3">
+        <!-- Header Section -->
+        <header class="main-header mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="display-5 fw-bold">
+                        <i class="fas fa-warehouse me-2"></i>CHECKSTOCK KIEU
+                    </h1>
+                    <p class="lead mb-0">Hệ Thống Quản Lý Kho - C.P.CT</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-md-end align-items-start align-items-md-center">
+                        <div class="connection-status">
+                            <span class="status-indicator" id="statusIndicator"></span>
+                            <span id="connectionStatus" class="fw-bold">Đang kết nối...</span>
+                        </div>
+                        <div class="text-white">
+                            <small id="lastUpdated">Cập nhật: --:--:--</small>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Dữ liệu mới nhất</h5>
-                        <div class="sheet-tabs" id="dashboardSheetTabs">
-                            <!-- Sheet tabs will be loaded here -->
+            
+            <!-- Day Selector -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-calendar-alt fa-lg me-2 text-white"></i>
+                            <label for="daySelect" class="form-label text-white mb-0 me-2 fw-bold">Chọn ngày:</label>
+                            <select id="daySelect" class="form-select form-select-lg w-auto">
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover" id="dashboardTable">
-                                <thead>
-                                    <tr id="dashboardTableHeader">
-                                        <!-- Headers will be loaded here -->
-                                    </tr>
-                                </thead>
-                                <tbody id="dashboardTableBody">
-                                    <!-- Data will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Thông tin hệ thống</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <strong><i class="fas fa-link me-2"></i>Google Sheets:</strong><br>
-                            <a href="https://docs.google.com/spreadsheets/d/1wfLbCJdmOkCUwm_NK3ocE2JlHjKpjwyBnOKQpi3SOos" 
-                               target="_blank" class="small">
-                                CHECKSTOCK_INVENTORY.xlsx
-                            </a>
-                        </div>
-                        <div class="mb-3">
-                            <strong><i class="fas fa-database me-2"></i>Tổng số sheets:</strong>
-                            <span id="totalSheetsCount" class="badge bg-primary ms-2">0</span>
-                        </div>
-                        <div class="mb-3">
-                            <strong><i class="fas fa-clock me-2"></i>Cập nhật lần cuối:</strong><br>
-                            <span id="lastUpdateTime" class="small">-</span>
-                        </div>
-                        <hr>
-                        <div class="alert alert-info small">
-                            <i class="fas fa-lightbulb me-2"></i>
-                            <strong>Hướng dẫn:</strong> Click vào sheet để xem dữ liệu chi tiết
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="inventoryTemplate">
-        <div class="row mb-3">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-warehouse me-2"></i>Quản lý Kho hàng</h5>
-                        <div>
-                            <div class="input-group input-group-sm" style="width: 300px;">
-                                <input type="text" class="form-control" placeholder="Tìm kiếm..." id="searchInput">
-                                <button class="btn btn-outline-secondary" type="button" onclick="searchData()">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <div class="sheet-tabs d-flex flex-wrap" id="inventorySheetTabs">
-                                    <!-- Sheet tabs will be loaded here -->
-                                </div>
-                            </div>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover" id="inventoryTable">
-                                <thead>
-                                    <tr id="inventoryTableHeader">
-                                        <!-- Headers will be loaded here -->
-                                    </tr>
-                                </thead>
-                                <tbody id="inventoryTableBody">
-                                    <!-- Data will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="mt-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    Hiển thị <span id="rowCount" class="fw-bold">0</span> dòng
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-outline-primary" onclick="exportToExcel()">
-                                        <i class="fas fa-file-excel me-1"></i>Xuất Excel
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="sheetsTemplate">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-file-excel me-2"></i>Quản lý Sheets</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row" id="sheetsContainer">
-                            <!-- Sheets will be loaded here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // CONFIGURATION
-        const CONFIG = {
-            SPREADSHEET_ID: '1wfLbCJdmOkCUwm_NK3ocE2JlHjKpjwyBnOKQpi3SOos',
-            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwxvF_lpbP7QKH7uu5srD8empsRoPp1dYlxS68d2L8cU1Zjb4lB2eoAnR5Qp_Z3zwN9Zw/exec',
-            CACHE_DURATION: 300000, // 5 minutes
-            DEFAULT_SHEET: '01'
-        };
-
-        // STATE MANAGEMENT
-        let appState = {
-            currentView: 'dashboard',
-            currentSheet: CONFIG.DEFAULT_SHEET,
-            sheetsList: [],
-            currentData: null,
-            cache: {},
-            searchTerm: ''
-        };
-
-        // INITIALIZE APP
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 CHECKSTOCK KIEU - Khởi động...');
-            console.log('📡 Google Apps Script URL:', CONFIG.APPS_SCRIPT_URL);
-            
-            // Show dashboard by default
-            showDashboard();
-            
-            // Load sheets list
-            loadSheetsList();
-        });
-
-        // VIEW MANAGEMENT
-        function showDashboard() {
-            hideAllViews();
-            document.getElementById('dashboardView').style.display = 'block';
-            appState.currentView = 'dashboard';
-            updateActiveNav('dashboard');
-            loadDashboard();
-        }
-
-        function showInventory() {
-            hideAllViews();
-            document.getElementById('inventoryView').style.display = 'block';
-            appState.currentView = 'inventory';
-            updateActiveNav('inventory');
-            loadInventory();
-        }
-
-        function showSheets() {
-            hideAllViews();
-            document.getElementById('sheetsView').style.display = 'block';
-            appState.currentView = 'sheets';
-            updateActiveNav('sheets');
-            loadSheetsView();
-        }
-
-        function hideAllViews() {
-            document.getElementById('dashboardView').style.display = 'none';
-            document.getElementById('inventoryView').style.display = 'none';
-            document.getElementById('sheetsView').style.display = 'none';
-        }
-
-        function updateActiveNav(view) {
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            if (view === 'dashboard') {
-                document.querySelector('.nav-link[href="#"]').classList.add('active');
-            } else if (view === 'inventory') {
-                document.querySelectorAll('.nav-link')[1].classList.add('active');
-            } else if (view === 'sheets') {
-                document.querySelectorAll('.nav-link')[2].classList.add('active');
-            }
-        }
-
-        // LOADING MANAGEMENT
-        function showLoading(message = 'Đang tải dữ liệu...') {
-            const overlay = document.getElementById('loadingOverlay');
-            const text = document.getElementById('loadingText');
-            text.textContent = message;
-            overlay.style.display = 'flex';
-        }
-
-        function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
-
-        // DATA FETCHING
-        function loadSheetsList() {
-            const cacheKey = 'sheets_list';
-            const cached = getFromCache(cacheKey);
-            
-            if (cached) {
-                appState.sheetsList = cached;
-                updateDataStatus('Đã tải danh sách sheets');
-                return;
-            }
-            
-            showLoading('Đang tải danh sách sheets...');
-            
-            const url = `${CONFIG.APPS_SCRIPT_URL}?action=getSheets&callback=jsonpCallback${Date.now()}`;
-            
-            window[`jsonpCallback${Date.now()}`] = function(response) {
-                console.log('📊 Sheets list received:', response);
-                
-                if (response.success && response.sheets) {
-                    appState.sheetsList = response.sheets;
-                    saveToCache(cacheKey, response.sheets);
-                    updateDataStatus(`Có ${response.sheets.length} sheets`);
-                    updateTotalSheetsCount(response.sheets.length);
-                    
-                    // Update last update time
-                    document.getElementById('lastUpdateTime').textContent = 
-                        new Date().toLocaleString('vi-VN');
-                } else {
-                    updateDataStatus('Lỗi tải sheets: ' + (response.error || 'Unknown'));
-                    console.error('Error loading sheets:', response);
-                }
-                
-                hideLoading();
-            };
-            
-            // Create script element for JSONP
-            const script = document.createElement('script');
-            script.src = url;
-            document.head.appendChild(script);
-            
-            // Clean up after 10 seconds
-            setTimeout(() => {
-                if (script.parentNode) {
-                    script.parentNode.removeChild(script);
-                }
-            }, 10000);
-        }
-
-        function loadSheetData(sheetName, forceRefresh = false) {
-            const cacheKey = `sheet_${sheetName}`;
-            
-            if (!forceRefresh) {
-                const cached = getFromCache(cacheKey);
-                if (cached) {
-                    console.log(`📦 Using cached data for sheet ${sheetName}`);
-                    appState.currentData = cached;
-                    appState.currentSheet = sheetName;
-                    renderCurrentData();
-                    return;
-                }
-            }
-            
-            showLoading(`Đang tải dữ liệu từ sheet ${sheetName}...`);
-            updateDataStatus(`Đang tải sheet: ${sheetName}`);
-            
-            const url = `${CONFIG.APPS_SCRIPT_URL}?action=getData&sheet=${sheetName}&callback=jsonpCallback${Date.now()}`;
-            
-            window[`jsonpCallback${Date.now()}`] = function(response) {
-                console.log(`📡 Dữ liệu từ sheet ${sheetName}:`, response);
-                
-                if (response.success && response.rows) {
-                    appState.currentData = response;
-                    appState.currentSheet = sheetName;
-                    
-                    // Save to cache
-                    saveToCache(cacheKey, response);
-                    
-                    // Update UI
-                    updateDataStatus(`Sheet ${sheetName}: ${response.rows.length} dòng`);
-                    renderCurrentData();
-                    updateSheetTabs();
-                } else {
-                    updateDataStatus(`Lỗi sheet ${sheetName}: ${response.error || 'No data'}`);
-                    showError(`Không thể tải dữ liệu từ sheet ${sheetName}`);
-                }
-                
-                hideLoading();
-            };
-            
-            // Create script element for JSONP
-            const script = document.createElement('script');
-            script.src = url;
-            document.head.appendChild(script);
-        }
-
-        // CACHE MANAGEMENT
-        function saveToCache(key, data) {
-            appState.cache[key] = {
-                data: data,
-                timestamp: Date.now()
-            };
-            
-            // Also save to localStorage for persistence
-            try {
-                localStorage.setItem(`cache_${key}`, JSON.stringify({
-                    data: data,
-                    timestamp: Date.now()
-                }));
-            } catch (e) {
-                console.log('LocalStorage not available for caching');
-            }
-        }
-
-        function getFromCache(key) {
-            // Check memory cache first
-            if (appState.cache[key]) {
-                const cached = appState.cache[key];
-                if (Date.now() - cached.timestamp < CONFIG.CACHE_DURATION) {
-                    return cached.data;
-                }
-            }
-            
-            // Check localStorage
-            try {
-                const stored = localStorage.getItem(`cache_${key}`);
-                if (stored) {
-                    const cached = JSON.parse(stored);
-                    if (Date.now() - cached.timestamp < CONFIG.CACHE_DURATION) {
-                        appState.cache[key] = cached;
-                        return cached.data;
-                    }
-                }
-            } catch (e) {
-                // localStorage error, ignore
-            }
-            
-            return null;
-        }
-
-        // UI RENDERING
-        function renderCurrentData() {
-            if (!appState.currentData) return;
-            
-            const data = appState.currentData;
-            
-            // Filter if search term exists
-            let filteredRows = data.rows;
-            if (appState.searchTerm) {
-                const searchLower = appState.searchTerm.toLowerCase();
-                filteredRows = data.rows.filter(row => {
-                    return Object.values(row).some(value => 
-                        String(value).toLowerCase().includes(searchLower)
-                    );
-                });
-            }
-            
-            if (appState.currentView === 'dashboard') {
-                renderDashboardTable(data.headers, filteredRows.slice(0, 10)); // Show only 10 rows in dashboard
-            } else if (appState.currentView === 'inventory') {
-                renderInventoryTable(data.headers, filteredRows);
-                document.getElementById('rowCount').textContent = filteredRows.length;
-            }
-        }
-
-        function renderDashboardTable(headers, rows) {
-            const tableHeader = document.getElementById('dashboardTableHeader');
-            const tableBody = document.getElementById('dashboardTableBody');
-            
-            // Clear existing content
-            tableHeader.innerHTML = '';
-            tableBody.innerHTML = '';
-            
-            // Create headers (show only first 6 columns for dashboard)
-            const displayHeaders = headers.slice(0, 6);
-            displayHeaders.forEach(header => {
-                const th = document.createElement('th');
-                th.textContent = header;
-                th.style.whiteSpace = 'nowrap';
-                tableHeader.appendChild(th);
-            });
-            
-            // Add more header if there are more columns
-            if (headers.length > 6) {
-                const th = document.createElement('th');
-                th.textContent = '...';
-                th.title = `Còn ${headers.length - 6} cột nữa`;
-                tableHeader.appendChild(th);
-            }
-            
-            // Create rows
-            rows.forEach(row => {
-                const tr = document.createElement('tr');
-                tr.style.cursor = 'pointer';
-                tr.onclick = () => {
-                    showInventory();
-                    loadSheetData(appState.currentSheet, true);
-                };
-                
-                // Add first 6 columns
-                displayHeaders.forEach(header => {
-                    const td = document.createElement('td');
-                    td.textContent = row[header] || '';
-                    td.style.maxWidth = '200px';
-                    td.style.overflow = 'hidden';
-                    td.style.textOverflow = 'ellipsis';
-                    td.style.whiteSpace = 'nowrap';
-                    tr.appendChild(td);
-                });
-                
-                // Add ellipsis if there are more columns
-                if (headers.length > 6) {
-                    const td = document.createElement('td');
-                    td.textContent = '...';
-                    td.className = 'text-muted';
-                    tr.appendChild(td);
-                }
-                
-                tableBody.appendChild(tr);
-            });
-            
-            // If no data
-            if (rows.length === 0) {
-                const tr = document.createElement('tr');
-                const td = document.createElement('td');
-                td.colSpan = displayHeaders.length + (headers.length > 6 ? 1 : 0);
-                td.textContent = 'Không có dữ liệu';
-                td.className = 'text-center text-muted py-4';
-                tr.appendChild(td);
-                tableBody.appendChild(tr);
-            }
-        }
-
-        function renderInventoryTable(headers, rows) {
-            const tableHeader = document.getElementById('inventoryTableHeader');
-            const tableBody = document.getElementById('inventoryTableBody');
-            
-            // Clear existing content
-            tableHeader.innerHTML = '';
-            tableBody.innerHTML = '';
-            
-            // Create headers
-            headers.forEach(header => {
-                const th = document.createElement('th');
-                th.textContent = header;
-                th.style.whiteSpace = 'nowrap';
-                tableHeader.appendChild(th);
-            });
-            
-            // Create rows
-            rows.forEach(row => {
-                const tr = document.createElement('tr');
-                
-                headers.forEach(header => {
-                    const td = document.createElement('td');
-                    const value = row[header] || '';
-                    
-                    // Style numeric columns
-                    if (header.includes('Bag') || header.includes('Weight') || header.includes('Ton')) {
-                        td.className = 'text-end';
-                        if (!isNaN(value) && value !== '') {
-                            td.textContent = Number(value).toLocaleString('vi-VN');
-                        } else {
-                            td.textContent = value;
-                        }
-                    } else if (header.includes('Ngay') || header.includes('Date')) {
-                        td.className = 'text-center';
-                        td.textContent = value;
-                    } else {
-                        td.textContent = value;
-                    }
-                    
-                    tr.appendChild(td);
-                });
-                
-                tableBody.appendChild(tr);
-            });
-            
-            // If no data
-            if (rows.length === 0) {
-                const tr = document.createElement('tr');
-                const td = document.createElement('td');
-                td.colSpan = headers.length;
-                td.textContent = appState.searchTerm ? 
-                    `Không tìm thấy kết quả cho "${appState.searchTerm}"` : 
-                    'Không có dữ liệu trong sheet này';
-                td.className = 'text-center text-muted py-4';
-                tr.appendChild(td);
-                tableBody.appendChild(tr);
-            }
-        }
-
-        function updateSheetTabs() {
-            const tabsContainer = appState.currentView === 'dashboard' ? 
-                document.getElementById('dashboardSheetTabs') : 
-                document.getElementById('inventorySheetTabs');
-            
-            if (!tabsContainer || !appState.sheetsList.length) return;
-            
-            tabsContainer.innerHTML = '';
-            
-            appState.sheetsList.forEach(sheet => {
-                const tab = document.createElement('span');
-                tab.className = `sheet-tab ${sheet.name === appState.currentSheet ? 'active' : ''}`;
-                tab.textContent = sheet.name;
-                tab.title = `${sheet.name} (${sheet.lastRow} dòng)`;
-                tab.onclick = () => {
-                    loadSheetData(sheet.name, true);
-                };
-                
-                tabsContainer.appendChild(tab);
-            });
-        }
-
-        function loadDashboard() {
-            const container = document.getElementById('dashboardView');
-            const template = document.getElementById('dashboardTemplate');
-            
-            container.innerHTML = template.innerHTML;
-            
-            // Load default sheet data
-            loadSheetData(appState.currentSheet);
-            
-            // Update stats
-            updateStats();
-        }
-
-        function loadInventory() {
-            const container = document.getElementById('inventoryView');
-            const template = document.getElementById('inventoryTemplate');
-            
-            container.innerHTML = template.innerHTML;
-            
-            // Load sheet data if not loaded
-            if (!appState.currentData || appState.currentSheet !== CONFIG.DEFAULT_SHEET) {
-                loadSheetData(CONFIG.DEFAULT_SHEET);
-            } else {
-                renderCurrentData();
-                updateSheetTabs();
-            }
-            
-            // Setup search
-            document.getElementById('searchInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    searchData();
-                }
-            });
-        }
-
-        function loadSheetsView() {
-            const container = document.getElementById('sheetsView');
-            const template = document.getElementById('sheetsTemplate');
-            
-            container.innerHTML = template.innerHTML;
-            
-            renderSheetsList();
-        }
-
-        function renderSheetsList() {
-            const container = document.getElementById('sheetsContainer');
-            
-            if (!appState.sheetsList.length) {
-                container.innerHTML = `
-                    <div class="col-12">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Đang tải danh sách sheets...
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = '';
-            
-            appState.sheetsList.forEach(sheet => {
-                const col = document.createElement('div');
-                col.className = 'col-md-4 mb-3';
-                
-                const hasData = sheet.lastRow > 1;
-                const dataRows = sheet.lastRow - 1;
-                
-                col.innerHTML = `
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <i class="fas fa-file-excel me-2 ${hasData ? 'text-success' : 'text-muted'}"></i>
-                                ${sheet.name}
-                            </h5>
-                            <div class="mb-2">
-                                <span class="badge ${hasData ? 'bg-success' : 'bg-secondary'} me-2">
-                                    ${dataRows} dòng
-                                </span>
-                                <span class="badge bg-info">
-                                    ${sheet.lastCol} cột
-                                </span>
-                            </div>
-                            <p class="card-text small text-muted">
-                                Sheet ${sheet.index} - ${hasData ? 'Có dữ liệu' : 'Chưa có dữ liệu'}
-                            </p>
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <button class="btn btn-sm btn-primary w-100" onclick="loadSheetData('${sheet.name}', true)">
-                                <i class="fas fa-eye me-1"></i>Xem dữ liệu
+                        
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-light btn-lg" onclick="openAddTransactionModal()">
+                                <i class="fas fa-plus-circle me-2"></i>Thêm giao dịch
+                            </button>
+                            <button class="btn btn-warning btn-lg" onclick="openAutoCopyModal()">
+                                <i class="fas fa-copy me-2"></i>Copy tồn kho
+                            </button>
+                            <button class="btn btn-success btn-lg" onclick="exportToExcel()">
+                                <i class="fas fa-file-excel me-2"></i>Xuất Excel
+                            </button>
+                            <button class="btn btn-info btn-lg" onclick="refreshData()">
+                                <i class="fas fa-sync-alt me-2"></i>Làm mới
                             </button>
                         </div>
                     </div>
-                `;
+                </div>
+            </div>
+        </header>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card card-custom bg-primary text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 opacity-75">TỔNG TỒN KHO</h6>
+                                <h2 class="card-title mb-0" id="totalStock">0 kg</h2>
+                            </div>
+                            <i class="fas fa-boxes fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card card-custom bg-success text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 opacity-75">TỔNG NHẬP HÔM NAY</h6>
+                                <h2 class="card-title mb-0" id="totalImport">0 kg</h2>
+                            </div>
+                            <i class="fas fa-arrow-down fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card card-custom bg-danger text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 opacity-75">TỔNG XUẤT HÔM NAY</h6>
+                                <h2 class="card-title mb-0" id="totalExport">0 kg</h2>
+                            </div>
+                            <i class="fas fa-arrow-up fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card card-custom bg-warning text-dark h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2 opacity-75">TUỔI TB TỒN KHO</h6>
+                                <h2 class="card-title mb-0" id="avgAge">0 ngày</h2>
+                            </div>
+                            <i class="fas fa-clock fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title text-custom-primary mb-4">
+                    <i class="fas fa-filter me-2"></i>Bộ lọc dữ liệu
+                </h5>
+                <div class="row g-3">
+                    <div class="col-lg-4 col-md-6">
+                        <label for="materialFilter" class="form-label fw-bold">Lọc theo nguyên liệu:</label>
+                        <select id="materialFilter" class="form-select form-select-lg">
+                            <option value="">-- Tất cả nguyên liệu --</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <label for="locationFilter" class="form-label fw-bold">Lọc theo vị trí:</label>
+                        <select id="locationFilter" class="form-select form-select-lg">
+                            <option value="">-- Tất cả vị trí --</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <label for="ageFilter" class="form-label fw-bold">Lọc theo tuổi:</label>
+                        <select id="ageFilter" class="form-select form-select-lg">
+                            <option value="">-- Tất cả tuổi --</option>
+                            <option value="0-30">0-30 ngày</option>
+                            <option value="31-60">31-60 ngày</option>
+                            <option value="61+">Trên 60 ngày</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Age Inventory Analysis -->
+        <div class="card card-custom mb-4">
+            <div class="card-body">
+                <h5 class="card-title text-custom-primary mb-4">
+                    <i class="fas fa-chart-bar me-2"></i>Phân tích tuổi tồn kho
+                </h5>
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                            <div>
+                                <h6 class="mb-1">0-30 ngày</h6>
+                                <h4 class="mb-0 text-success" id="age0-30Weight">0 kg</h4>
+                            </div>
+                            <span class="badge bg-success fs-6" id="age0-30Percent">0%</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 10px;">
+                            <div id="age0-30Bar" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                            <div>
+                                <h6 class="mb-1">31-60 ngày</h6>
+                                <h4 class="mb-0 text-warning" id="age31-60Weight">0 kg</h4>
+                            </div>
+                            <span class="badge bg-warning fs-6" id="age31-60Percent">0%</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 10px;">
+                            <div id="age31-60Bar" class="progress-bar bg-warning" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                            <div>
+                                <h6 class="mb-1">61+ ngày</h6>
+                                <h4 class="mb-0 text-danger" id="age61PlusWeight">0 kg</h4>
+                            </div>
+                            <span class="badge bg-danger fs-6" id="age61PlusPercent">0%</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 10px;">
+                            <div id="age61PlusBar" class="progress-bar bg-danger" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="card card-custom">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="card-title text-custom-primary mb-0">
+                        <i class="fas fa-table me-2"></i>Dữ liệu tồn kho
+                    </h5>
+                    <div class="text-muted">
+                        Hiển thị: <span id="visibleRowCount" class="fw-bold">0</span> / 
+                        <span id="totalRowCount" class="fw-bold">0</span> dòng
+                    </div>
+                </div>
                 
-                container.appendChild(col);
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="bg-custom-gradient text-white">
+                            <tr>
+                                <th>STT</th>
+                                <th>Nguyên liệu</th>
+                                <th>Vị trí</th>
+                                <th>Loại</th>
+                                <th class="text-end">Tồn đầu (kg)</th>
+                                <th class="text-end">Nhập (kg)</th>
+                                <th class="text-end">Xuất (kg)</th>
+                                <th class="text-end">Tồn cuối (kg)</th>
+                                <th>Ngày nhập</th>
+                                <th class="text-center">Tuổi</th>
+                                <th>Mã/NCC</th>
+                                <th>Nhà CC</th>
+                                <th>Xe</th>
+                                <th class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTable">
+                            <!-- Data will be populated by JavaScript -->
+                            <tr>
+                                <td colspan="14" class="text-center py-5">
+                                    <div class="spinner-border text-custom-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-3 text-muted">Đang tải dữ liệu...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button id="loadMoreBtn" class="btn btn-outline-primary btn-lg" onclick="loadMoreRows()" style="display: none;">
+                        <i class="fas fa-chevron-down me-2"></i>Xem thêm dữ liệu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div class="modal fade" id="addTransactionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-custom-gradient text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus-circle me-2"></i>Thêm giao dịch mới
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="transactionForm" onsubmit="event.preventDefault(); submitTransaction();">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="transactionType" class="form-label fw-bold">Loại giao dịch *</label>
+                                <select id="transactionType" class="form-select" required>
+                                    <option value="">-- Chọn loại --</option>
+                                    <option value="import">Nhập kho</option>
+                                    <option value="export">Xuất kho</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="transactionDate" class="form-label fw-bold">Ngày giao dịch *</label>
+                                <input type="date" id="transactionDate" class="form-control" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="materialName" class="form-label fw-bold">Tên nguyên liệu *</label>
+                                <input type="text" id="materialName" class="form-control" list="materialList" required>
+                                <datalist id="materialList"></datalist>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="materialCode" class="form-label fw-bold">Mã/Vị trí *</label>
+                                <input type="text" id="materialCode" class="form-control" list="locationList" required>
+                                <datalist id="locationList"></datalist>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="bagQuantity" class="form-label fw-bold">Số lượng (bao)</label>
+                                <input type="number" id="bagQuantity" class="form-control" step="0.01" min="0" oninput="calculateWeightFromBags()">
+                                <small class="text-muted">25kg/bao</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="weight" class="form-label fw-bold">Trọng lượng *</label>
+                                <div class="input-group">
+                                    <input type="number" id="weight" class="form-control" step="0.001" min="0.001" required>
+                                    <select id="unit" class="form-select" style="max-width: 100px;">
+                                        <option value="kg">kg</option>
+                                        <option value="ton">tấn</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="supplier" class="form-label fw-bold">Nhà cung cấp</label>
+                                <input type="text" id="supplier" class="form-control">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="truck" class="form-label fw-bold">Số xe</label>
+                                <input type="text" id="truck" class="form-control">
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="notes" class="form-label fw-bold">Ghi chú</label>
+                                <textarea id="notes" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer mt-4">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-custom-primary">
+                                <i class="fas fa-save me-2"></i>Lưu giao dịch
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto Copy Modal -->
+    <div class="modal fade" id="autoCopyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">
+                        <i class="fas fa-copy me-2"></i>Copy tồn kho giữa các ngày
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Tính năng này cho phép copy tồn cuối ngày này sang tồn đầu ngày khác
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="copyFrom" class="form-label fw-bold">Copy từ ngày</label>
+                            <select id="copyFrom" class="form-select">
+                                <!-- Options will be populated -->
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="copyTo" class="form-label fw-bold">Sang ngày</label>
+                            <select id="copyTo" class="form-select">
+                                <!-- Options will be populated -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Lưu ý:</strong> Dữ liệu tồn đầu ngày đích sẽ bị ghi đè hoàn toàn!
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-warning" onclick="performAutoCopy()">
+                        <i class="fas fa-play me-2"></i>Thực hiện Copy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Main Application Script -->
+    <script>
+        // Configuration
+        const CONFIG = {
+            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwxvF_lpbP7QKH7uu5srD8empsRoPp1dYlxS68d2L8cU1Zjb4lB2eoAnR5Qp_Z3zwN9Zw/exec',
+            ROWS_PER_PAGE: 20,
+            CURRENT_DAY: new Date().getDate().toString().padStart(2, '0')
+        };
+
+        // Global state
+        let inventoryManager = {
+            currentData: [],
+            filteredData: [],
+            visibleRows: 0,
+            currentDay: CONFIG.CURRENT_DAY,
+            allMaterials: new Set(),
+            allLocations: new Set(),
+            isInitialized: false
+        };
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 CHECKSTOCK KIEU - Khởi động hệ thống...');
+            
+            // Initialize UI components
+            initializeUI();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Set default dates
+            setDefaultDates();
+            
+            // Test connection first
+            await testConnection();
+            
+            // Load initial data
+            await loadData();
+            
+            inventoryManager.isInitialized = true;
+            console.log('✅ Hệ thống đã sẵn sàng');
+        });
+
+        function initializeUI() {
+            // Initialize day selector
+            const daySelect = document.getElementById('daySelect');
+            daySelect.innerHTML = '';
+            for (let i = 1; i <= 31; i++) {
+                const day = i.toString().padStart(2, '0');
+                const option = document.createElement('option');
+                option.value = day;
+                option.textContent = `Ngày ${day}`;
+                if (day === inventoryManager.currentDay) {
+                    option.selected = true;
+                }
+                daySelect.appendChild(option);
+            }
+
+            // Initialize copy modal dropdowns
+            const fromSelect = document.getElementById('copyFrom');
+            const toSelect = document.getElementById('copyTo');
+            
+            if (fromSelect && toSelect) {
+                fromSelect.innerHTML = '';
+                toSelect.innerHTML = '';
+                
+                for (let i = 1; i <= 31; i++) {
+                    const day = i.toString().padStart(2, '0');
+                    
+                    [fromSelect, toSelect].forEach(select => {
+                        const option = document.createElement('option');
+                        option.value = day;
+                        option.textContent = `Ngày ${day}`;
+                        select.appendChild(option);
+                    });
+                }
+                
+                // Set defaults
+                fromSelect.value = inventoryManager.currentDay;
+                toSelect.value = (parseInt(inventoryManager.currentDay) + 1).toString().padStart(2, '0');
+            }
+        }
+
+        function setupEventListeners() {
+            // Day selector
+            document.getElementById('daySelect').addEventListener('change', async function(e) {
+                inventoryManager.currentDay = e.target.value;
+                inventoryManager.visibleRows = 0;
+                await loadData();
+            });
+
+            // Filter listeners
+            document.getElementById('materialFilter').addEventListener('change', function(e) {
+                applyFilters();
+            });
+
+            document.getElementById('locationFilter').addEventListener('change', function(e) {
+                applyFilters();
+            });
+
+            document.getElementById('ageFilter').addEventListener('change', function(e) {
+                applyFilters();
+            });
+
+            // Auto-calculate weight from bags
+            document.getElementById('bagQuantity').addEventListener('input', calculateWeightFromBags);
+
+            // Unit conversion
+            document.getElementById('unit').addEventListener('change', function(e) {
+                const weightInput = document.getElementById('weight');
+                const currentValue = parseFloat(weightInput.value) || 0;
+                
+                if (e.target.value === 'ton' && currentValue > 0) {
+                    weightInput.value = (currentValue / 1000).toFixed(3);
+                } else if (e.target.value === 'kg' && currentValue > 0) {
+                    weightInput.value = (currentValue * 1000).toFixed(2);
+                }
             });
         }
 
-        function updateStats() {
-            const container = document.getElementById('statsContainer');
+        function calculateWeightFromBags() {
+            const bags = parseFloat(document.getElementById('bagQuantity').value) || 0;
+            if (bags > 0) {
+                document.getElementById('weight').value = (bags * 25).toFixed(2);
+            }
+        }
+
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('transactionDate').value = today;
+        }
+
+        async function testConnection() {
+            try {
+                showLoading(true);
+                updateConnectionStatus('Đang kiểm tra kết nối...', 'warning');
+                
+                const response = await fetch(`${CONFIG.SCRIPT_URL}?action=test&timestamp=${Date.now()}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    updateConnectionStatus('Đã kết nối thành công', 'success');
+                    showNotification('success', '✅ Kết nối Google Sheets thành công');
+                    return true;
+                } else {
+                    throw new Error(result.error || 'Kết nối thất bại');
+                }
+            } catch (error) {
+                console.error('❌ Lỗi kết nối:', error);
+                updateConnectionStatus('Lỗi kết nối', 'danger');
+                showNotification('error', `❌ Không thể kết nối đến Google Sheets: ${error.message}`);
+                return false;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function loadData() {
+            try {
+                showLoading(true);
+                updateConnectionStatus('Đang tải dữ liệu...', 'warning');
+                
+                const response = await fetch(`${CONFIG.SCRIPT_URL}?action=getData&sheet=${inventoryManager.currentDay}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Không thể lấy dữ liệu');
+                }
+                
+                inventoryManager.currentData = result.data || [];
+                inventoryManager.filteredData = [...inventoryManager.currentData];
+                inventoryManager.visibleRows = 0;
+                
+                // Update filters and UI
+                updateFilters();
+                renderTable();
+                updateStatistics();
+                updateInventoryAgeAnalysis();
+                updateLastUpdated();
+                
+                updateConnectionStatus('Đã tải dữ liệu', 'success');
+                showNotification('success', `✅ Đã tải ${inventoryManager.currentData.length} dòng từ Ngày ${inventoryManager.currentDay}`);
+                
+            } catch (error) {
+                console.error('❌ Lỗi tải dữ liệu:', error);
+                updateConnectionStatus('Lỗi tải dữ liệu', 'danger');
+                showNotification('error', `❌ ${error.message}`);
+                
+                // Fallback to sample data
+                loadSampleData();
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function updateFilters() {
+            // Update material filter
+            inventoryManager.allMaterials.clear();
+            inventoryManager.currentData.forEach(row => {
+                if (row.material) inventoryManager.allMaterials.add(row.material);
+            });
             
-            if (!appState.currentData) {
-                container.innerHTML = `
-                    <div class="col-12">
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            Chưa có dữ liệu để hiển thị thống kê
-                        </div>
-                    </div>
-                `;
+            const materialSelect = document.getElementById('materialFilter');
+            const currentMaterial = materialSelect.value;
+            materialSelect.innerHTML = '<option value="">-- Tất cả nguyên liệu --</option>';
+            
+            Array.from(inventoryManager.allMaterials).sort().forEach(material => {
+                const option = document.createElement('option');
+                option.value = material;
+                option.textContent = material;
+                materialSelect.appendChild(option);
+            });
+            
+            if (inventoryManager.allMaterials.has(currentMaterial)) {
+                materialSelect.value = currentMaterial;
+            }
+
+            // Update location filter
+            inventoryManager.allLocations.clear();
+            inventoryManager.currentData.forEach(row => {
+                if (row.location) inventoryManager.allLocations.add(row.location);
+            });
+            
+            const locationSelect = document.getElementById('locationFilter');
+            const currentLocation = locationSelect.value;
+            locationSelect.innerHTML = '<option value="">-- Tất cả vị trí --</option>';
+            
+            Array.from(inventoryManager.allLocations).sort().forEach(location => {
+                const option = document.createElement('option');
+                option.value = location;
+                option.textContent = location;
+                locationSelect.appendChild(option);
+            });
+            
+            if (inventoryManager.allLocations.has(currentLocation)) {
+                locationSelect.value = currentLocation;
+            }
+
+            // Update datalists for forms
+            updateDatalists();
+        }
+
+        function updateDatalists() {
+            const materialList = document.getElementById('materialList');
+            const locationList = document.getElementById('locationList');
+            
+            if (materialList) {
+                materialList.innerHTML = '';
+                inventoryManager.allMaterials.forEach(material => {
+                    const option = document.createElement('option');
+                    option.value = material;
+                    materialList.appendChild(option);
+                });
+            }
+            
+            if (locationList) {
+                locationList.innerHTML = '';
+                inventoryManager.allLocations.forEach(location => {
+                    const option = document.createElement('option');
+                    option.value = location;
+                    locationList.appendChild(option);
+                });
+            }
+        }
+
+        function applyFilters() {
+            const materialFilter = document.getElementById('materialFilter').value.toLowerCase();
+            const locationFilter = document.getElementById('locationFilter').value.toLowerCase();
+            const ageFilter = document.getElementById('ageFilter').value;
+            
+            inventoryManager.filteredData = inventoryManager.currentData.filter(item => {
+                // Material filter
+                if (materialFilter && !item.material?.toLowerCase().includes(materialFilter)) {
+                    return false;
+                }
+                
+                // Location filter
+                if (locationFilter && item.location?.toLowerCase() !== locationFilter) {
+                    return false;
+                }
+                
+                // Age filter
+                if (ageFilter) {
+                    const age = calculateAge(item.importDate);
+                    switch (ageFilter) {
+                        case '0-30':
+                            if (age > 30) return false;
+                            break;
+                        case '31-60':
+                            if (age <= 30 || age > 60) return false;
+                            break;
+                        case '61+':
+                            if (age <= 60) return false;
+                            break;
+                    }
+                }
+                
+                return true;
+            });
+            
+            inventoryManager.visibleRows = 0;
+            renderTable();
+            updateStatistics();
+            updateInventoryAgeAnalysis();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('dataTable');
+            
+            if (inventoryManager.filteredData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="14" class="text-center py-5">
+                            <i class="fas fa-database fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Không có dữ liệu</p>
+                            <small>Vui lòng thay đổi bộ lọc hoặc chọn ngày khác</small>
+                        </td>
+                    </tr>`;
+                updateRowCount();
                 return;
             }
             
-            const data = appState.currentData;
-            const rows = data.rows;
+            const start = 0;
+            const end = Math.min(inventoryManager.visibleRows + CONFIG.ROWS_PER_PAGE, inventoryManager.filteredData.length);
+            const dataToShow = inventoryManager.filteredData.slice(start, end);
             
-            // Calculate stats
-            const totalRows = rows.length;
-            const numericColumns = data.headers.filter(h => 
-                h.includes('Bag') || h.includes('Weight') || h.includes('Ton')
-            );
-            
-            let totalBags = 0;
-            let totalWeight = 0;
-            
-            rows.forEach(row => {
-                numericColumns.forEach(col => {
-                    const val = parseFloat(row[col]) || 0;
-                    if (col.includes('Bag')) totalBags += val;
-                    if (col.includes('Weight')) totalWeight += val;
-                });
+            let html = '';
+            dataToShow.forEach((item, index) => {
+                const age = calculateAge(item.importDate);
+                const ageClass = getAgeClass(age);
+                const groupClass = `badge-${getMaterialGroup(item.material)}`;
+                const groupName = getGroupName(getMaterialGroup(item.material));
+                
+                html += `
+                <tr>
+                    <td class="text-center fw-bold">${item.stt || index + 1}</td>
+                    <td>
+                        <div class="fw-bold">${item.material || ''}</div>
+                        <small class="text-muted">${item.code || ''}</small>
+                    </td>
+                    <td><span class="badge bg-secondary">${item.location || ''}</span></td>
+                    <td><span class="badge ${groupClass}">${groupName}</span></td>
+                    <td class="text-end">
+                        <div class="fw-bold">${formatNumberFull(item.openingWeight)} kg</div>
+                        <small class="text-muted">${item.openingBags || 0} bao</small>
+                    </td>
+                    <td class="text-end text-success">
+                        <div class="fw-bold">${formatNumberFull(item.importWeight)} kg</div>
+                        <small class="text-muted">${item.importBags || 0} bao</small>
+                    </td>
+                    <td class="text-end text-danger">
+                        <div class="fw-bold">${formatNumberFull(item.exportWeight)} kg</div>
+                        <small class="text-muted">${item.exportBags || 0} bao</small>
+                    </td>
+                    <td class="text-end">
+                        <div class="fw-bold text-primary">${formatNumberFull(item.closingWeight)} kg</div>
+                        <small class="text-muted">${item.closingBags || 0} bao</small>
+                    </td>
+                    <td>${formatDate(item.importDate)}</td>
+                    <td class="text-center">
+                        <div class="age-indicator ${ageClass}" title="${age} ngày">${age}</div>
+                    </td>
+                    <td><small class="text-primary">${item.code || ''}</small></td>
+                    <td><small>${item.supplier || ''}</small></td>
+                    <td><span class="badge bg-light text-dark">${item.truck || ''}</span></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary" onclick="editItem(${index})" title="Sửa">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteItem(${index})" title="Xóa">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
             });
             
-            container.innerHTML = `
-                <div class="col-md-3 mb-3">
-                    <div class="stat-card">
-                        <i class="fas fa-layer-group"></i>
-                        <div class="number">${totalRows}</div>
-                        <div class="label">Tổng số dòng</div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="stat-card">
-                        <i class="fas fa-box"></i>
-                        <div class="number">${totalBags.toLocaleString('vi-VN')}</div>
-                        <div class="label">Tổng số bao</div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="stat-card">
-                        <i class="fas fa-weight-hanging"></i>
-                        <div class="number">${totalWeight.toLocaleString('vi-VN')}</div>
-                        <div class="label">Tổng trọng lượng</div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="stat-card">
-                        <i class="fas fa-file-alt"></i>
-                        <div class="number">${data.headers.length}</div>
-                        <div class="label">Số cột dữ liệu</div>
-                    </div>
-                </div>
-            `;
+            tbody.innerHTML = html;
+            updateRowCount();
         }
 
-        // UTILITY FUNCTIONS
-        function updateDataStatus(message) {
-            const statusEl = document.getElementById('data-status');
-            if (statusEl) {
-                statusEl.textContent = message;
-                statusEl.title = new Date().toLocaleString('vi-VN');
-            }
-        }
-
-        function updateTotalSheetsCount(count) {
-            const countEl = document.getElementById('totalSheetsCount');
-            if (countEl) {
-                countEl.textContent = count;
-            }
-        }
-
-        function searchData() {
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                appState.searchTerm = searchInput.value.trim();
-                renderCurrentData();
-            }
-        }
-
-        function refreshData() {
-            showLoading('Đang làm mới dữ liệu...');
+        function updateRowCount() {
+            const visible = Math.min(inventoryManager.visibleRows + CONFIG.ROWS_PER_PAGE, inventoryManager.filteredData.length);
+            const total = inventoryManager.filteredData.length;
             
-            // Clear cache for current sheet
-            const cacheKey = `sheet_${appState.currentSheet}`;
-            delete appState.cache[cacheKey];
+            document.getElementById('visibleRowCount').textContent = visible;
+            document.getElementById('totalRowCount').textContent = total;
+            
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (visible < total) {
+                loadMoreBtn.style.display = 'block';
+                loadMoreBtn.innerHTML = `<i class="fas fa-chevron-down me-2"></i>Xem thêm (${Math.min(CONFIG.ROWS_PER_PAGE, total - visible)} dòng)`;
+            } else {
+                loadMoreBtn.style.display = 'none';
+            }
+        }
+
+        function loadMoreRows() {
+            inventoryManager.visibleRows += CONFIG.ROWS_PER_PAGE;
+            renderTable();
+        }
+
+        function updateStatistics() {
+            let total = {
+                openingWeight: 0,
+                importWeight: 0,
+                exportWeight: 0,
+                closingWeight: 0,
+                avgAge: 0
+            };
+            
+            let totalAge = 0;
+            let countWithDate = 0;
+            
+            inventoryManager.filteredData.forEach(item => {
+                total.openingWeight += parseFloat(item.openingWeight) || 0;
+                total.importWeight += parseFloat(item.importWeight) || 0;
+                total.exportWeight += parseFloat(item.exportWeight) || 0;
+                total.closingWeight += parseFloat(item.closingWeight) || 0;
+                
+                if (item.importDate) {
+                    const age = calculateAge(item.importDate);
+                    totalAge += age;
+                    countWithDate++;
+                }
+            });
+            
+            total.avgAge = countWithDate > 0 ? Math.round(totalAge / countWithDate) : 0;
+            
+            document.getElementById('totalStock').textContent = formatNumberFull(total.closingWeight) + ' kg';
+            document.getElementById('totalImport').textContent = formatNumberFull(total.importWeight) + ' kg';
+            document.getElementById('totalExport').textContent = formatNumberFull(total.exportWeight) + ' kg';
+            document.getElementById('avgAge').textContent = total.avgAge + ' ngày';
+        }
+
+        function updateInventoryAgeAnalysis() {
+            let age0_30 = 0, age31_60 = 0, age61Plus = 0;
+            let totalWeight = 0;
+            
+            inventoryManager.filteredData.forEach(item => {
+                const weight = parseFloat(item.closingWeight) || 0;
+                const age = calculateAge(item.importDate);
+                
+                totalWeight += weight;
+                
+                if (age <= 30) age0_30 += weight;
+                else if (age <= 60) age31_60 += weight;
+                else age61Plus += weight;
+            });
+            
+            // Update UI
+            document.getElementById('age0-30Weight').textContent = formatNumberFull(age0_30) + ' kg';
+            document.getElementById('age31-60Weight').textContent = formatNumberFull(age31_60) + ' kg';
+            document.getElementById('age61PlusWeight').textContent = formatNumberFull(age61Plus) + ' kg';
+            
+            // Update progress bars
+            if (totalWeight > 0) {
+                const pct0_30 = Math.round((age0_30 / totalWeight) * 100);
+                const pct31_60 = Math.round((age31_60 / totalWeight) * 100);
+                const pct61Plus = Math.round((age61Plus / totalWeight) * 100);
+                
+                document.getElementById('age0-30Bar').style.width = pct0_30 + '%';
+                document.getElementById('age31-60Bar').style.width = pct31_60 + '%';
+                document.getElementById('age61PlusBar').style.width = pct61Plus + '%';
+                
+                document.getElementById('age0-30Percent').textContent = pct0_30 + '%';
+                document.getElementById('age31-60Percent').textContent = pct31_60 + '%';
+                document.getElementById('age61PlusPercent').textContent = pct61Plus + '%';
+            }
+        }
+
+        async function submitTransaction() {
+            const formData = {
+                sheet: inventoryManager.currentDay,
+                transactionType: document.getElementById('transactionType').value,
+                materialName: document.getElementById('materialName').value.trim(),
+                location: document.getElementById('materialCode').value.trim(),
+                bagQuantity: document.getElementById('bagQuantity').value,
+                weight: document.getElementById('weight').value,
+                unit: document.getElementById('unit').value,
+                transactionDate: document.getElementById('transactionDate').value,
+                notes: document.getElementById('notes').value.trim(),
+                materialCode: document.getElementById('materialCode').value.trim(),
+                supplier: document.getElementById('supplier').value.trim(),
+                truck: document.getElementById('truck').value.trim()
+            };
+
+            // Validation
+            const errors = [];
+            if (!formData.transactionType) errors.push('Vui lòng chọn loại giao dịch');
+            if (!formData.materialName) errors.push('Vui lòng nhập tên nguyên liệu');
+            if (!formData.location) errors.push('Vui lòng nhập mã/vị trí');
+            if (!formData.weight || parseFloat(formData.weight) <= 0) errors.push('Trọng lượng phải lớn hơn 0');
+            if (!formData.transactionDate) errors.push('Vui lòng chọn ngày giao dịch');
+            
+            if (errors.length > 0) {
+                showNotification('error', `❌ ${errors.join('<br>')}`);
+                return;
+            }
+
+            try {
+                showLoading(true);
+                showNotification('info', '⏳ Đang lưu giao dịch...');
+                
+                const response = await fetch(CONFIG.SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'addTransaction',
+                        ...formData
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('success', '✅ Giao dịch đã được lưu thành công');
+                    
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addTransactionModal'));
+                    if (modal) modal.hide();
+                    
+                    // Reset form
+                    document.getElementById('transactionForm').reset();
+                    setDefaultDates();
+                    
+                    // Reload data after 1 second
+                    setTimeout(async () => {
+                        await loadData();
+                    }, 1000);
+                } else {
+                    throw new Error(result.error || 'Không thể lưu giao dịch');
+                }
+            } catch (error) {
+                console.error('❌ Lỗi lưu giao dịch:', error);
+                showNotification('error', `❌ Lỗi: ${error.message}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function performAutoCopy() {
+            const fromDay = document.getElementById('copyFrom').value;
+            const toDay = document.getElementById('copyTo').value;
+            
+            if (!fromDay || !toDay) {
+                showNotification('warning', '⚠️ Vui lòng chọn cả ngày nguồn và ngày đích');
+                return;
+            }
+            
+            if (fromDay === toDay) {
+                showNotification('warning', '⚠️ Không thể copy tồn kho trong cùng một ngày');
+                return;
+            }
+            
+            if (!confirm(`Bạn có chắc muốn COPY TỒN CUỐI ngày ${fromDay} sang TỒN ĐẦU ngày ${toDay}?\n\nLưu ý: Dữ liệu Tồn đầu ngày ${toDay} sẽ bị ghi đè hoàn toàn.`)) {
+                return;
+            }
             
             try {
-                localStorage.removeItem(`cache_${cacheKey}`);
-            } catch (e) {
-                // ignore
+                showLoading(true);
+                showNotification('info', `⏳ Đang thực hiện copy từ ngày ${fromDay} sang ${toDay}...`);
+                
+                const response = await fetch(CONFIG.SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'copyOpeningStock',
+                        fromDay: fromDay,
+                        toDay: toDay
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('success', `✅ Đã copy tồn kho từ ngày ${fromDay} sang ${toDay} thành công`);
+                    
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('autoCopyModal'));
+                    if (modal) modal.hide();
+                    
+                    // Reload if current sheet is destination
+                    if (inventoryManager.currentDay === toDay) {
+                        setTimeout(async () => {
+                            await loadData();
+                        }, 1000);
+                    }
+                } else {
+                    throw new Error(result.error || 'Không thể copy dữ liệu');
+                }
+            } catch (error) {
+                console.error('❌ Lỗi copy:', error);
+                showNotification('error', `❌ Lỗi: ${error.message}`);
+            } finally {
+                showLoading(false);
             }
-            
-            // Reload sheets list
-            loadSheetsList();
-            
-            // Reload current sheet data
-            setTimeout(() => {
-                loadSheetData(appState.currentSheet, true);
-            }, 1000);
         }
 
         function exportToExcel() {
-            if (!appState.currentData) {
-                showError('Không có dữ liệu để xuất');
+            if (inventoryManager.filteredData.length === 0) {
+                showNotification('warning', 'Không có dữ liệu để xuất!');
                 return;
             }
             
-            const data = appState.currentData;
-            const headers = data.headers;
-            const rows = data.rows;
+            const wsData = [
+                ['STT', 'Nguyên liệu', 'Vị trí', 'Loại', 'Tồn đầu (bao)', 'Tồn đầu (kg)', 
+                 'Nhập (bao)', 'Nhập (kg)', 'Xuất (bao)', 'Xuất (kg)', 
+                 'Tồn cuối (bao)', 'Tồn cuối (kg)', 'Ngày nhập', 'Tuổi (ngày)', 
+                 'Mã/NCC', 'Nhà CC', 'Xe', 'Ghi chú'],
+                ...inventoryManager.filteredData.map(item => [
+                    item.stt,
+                    item.material,
+                    item.location,
+                    getGroupName(getMaterialGroup(item.material)),
+                    item.openingBags || 0,
+                    item.openingWeight || 0,
+                    item.importBags || 0,
+                    item.importWeight || 0,
+                    item.exportBags || 0,
+                    item.exportWeight || 0,
+                    item.closingBags || 0,
+                    item.closingWeight || 0,
+                    formatDate(item.importDate),
+                    calculateAge(item.importDate),
+                    item.code || '',
+                    item.supplier || '',
+                    item.truck || '',
+                    item.notes || ''
+                ])
+            ];
             
-            // Create CSV content
-            let csvContent = headers.join(',') + '\n';
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, `Kho_${inventoryManager.currentDay}`);
             
-            rows.forEach(row => {
-                const rowValues = headers.map(header => {
-                    let value = row[header] || '';
-                    // Escape quotes and wrap in quotes if contains comma
-                    value = String(value).replace(/"/g, '""');
-                    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-                        value = `"${value}"`;
-                    }
-                    return value;
-                });
-                csvContent += rowValues.join(',') + '\n';
-            });
+            // Auto-size columns
+            const wscols = wsData[0].map(() => ({wch: 15}));
+            ws['!cols'] = wscols;
             
-            // Create download link
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `CHECKSTOCK_${appState.currentSheet}_${new Date().toISOString().slice(0,10)}.csv`;
-            link.click();
+            const fileName = `CHECKSTOCK_KIEU_${inventoryManager.currentDay}_${new Date().toISOString().slice(0,10)}.xlsx`;
+            XLSX.writeFile(wb, fileName);
             
-            URL.revokeObjectURL(url);
+            showNotification('success', `✅ Đã xuất file ${fileName}`);
         }
 
-        function showError(message) {
-            // Create toast notification
-            const toast = document.createElement('div');
-            toast.className = 'position-fixed top-0 end-0 p-3';
-            toast.style.zIndex = '9999';
+        function loadSampleData() {
+            inventoryManager.currentData = [
+                {
+                    stt: 1,
+                    material: "C9959",
+                    location: "B16",
+                    openingBags: 100,
+                    openingWeight: 2500,
+                    importBags: 50,
+                    importWeight: 1250,
+                    exportBags: 30,
+                    exportWeight: 750,
+                    closingBags: 120,
+                    closingWeight: 3000,
+                    importDate: new Date().toISOString(),
+                    code: "105104(BT)",
+                    truck: "Xe 01",
+                    supplier: "CP Feedmill",
+                    notes: "Mẫu dữ liệu"
+                },
+                {
+                    stt: 2,
+                    material: "Đậu nành",
+                    location: "A10",
+                    openingBags: 200,
+                    openingWeight: 5000,
+                    importBags: 100,
+                    importWeight: 2500,
+                    exportBags: 80,
+                    exportWeight: 2000,
+                    closingBags: 220,
+                    closingWeight: 5500,
+                    importDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+                    code: "DN001",
+                    truck: "Xe 02",
+                    supplier: "Công ty Đậu",
+                    notes: "Nhập từ kho chính"
+                },
+                {
+                    stt: 3,
+                    material: "Dầu cám",
+                    location: "L05",
+                    openingBags: 50,
+                    openingWeight: 1250,
+                    importBags: 25,
+                    importWeight: 625,
+                    exportBags: 10,
+                    exportWeight: 250,
+                    closingBags: 65,
+                    closingWeight: 1625,
+                    importDate: new Date(Date.now() - 70 * 24 * 60 * 60 * 1000).toISOString(),
+                    code: "DC002",
+                    truck: "Xe 03",
+                    supplier: "Nhà máy dầu",
+                    notes: "Dạng lỏng"
+                }
+            ];
             
-            toast.innerHTML = `
-                <div class="toast show" role="alert">
-                    <div class="toast-header bg-danger text-white">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <strong class="me-auto">Lỗi</strong>
-                        <button type="button" class="btn-close btn-close-white" onclick="this.parentElement.parentElement.remove()"></button>
-                    </div>
-                    <div class="toast-body">
-                        ${message}
-                    </div>
+            inventoryManager.filteredData = [...inventoryManager.currentData];
+            inventoryManager.visibleRows = 0;
+            
+            updateFilters();
+            renderTable();
+            updateStatistics();
+            updateInventoryAgeAnalysis();
+            
+            updateConnectionStatus('Dữ liệu mẫu', 'warning');
+            showNotification('warning', '⚠️ Đang hiển thị dữ liệu mẫu');
+        }
+
+        // Helper functions
+        function formatNumberFull(num) {
+            const n = parseFloat(num) || 0;
+            return n.toLocaleString('vi-VN', { 
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: 2 
+            });
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return isNaN(date.getTime()) ? '' : date.toLocaleDateString('vi-VN');
+        }
+
+        function calculateAge(dateStr) {
+            if (!dateStr) return 0;
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return 0;
+            const diffMs = Date.now() - date.getTime();
+            return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        }
+
+        function getAgeClass(age) {
+            if (age <= 30) return 'age-green';
+            if (age <= 60) return 'age-yellow';
+            return 'age-red';
+        }
+
+        function getMaterialGroup(name) {
+            if (!name) return 'other';
+            const n = name.toLowerCase();
+            if (n.includes('dịch') || n.includes('cá') || n.includes('dầu') || n.includes('lỏng')) return 'liquid';
+            if (n.includes('đậu') || n.includes('cám') || n.includes('bột') || n.includes('xá')) return 'bulk';
+            return 'bao';
+        }
+
+        function getGroupName(group) {
+            const map = { 'bao': 'Bao', 'liquid': 'Lỏng', 'bulk': 'Xá đổ', 'other': 'Khác' };
+            return map[group] || group;
+        }
+
+        function updateConnectionStatus(text, type = 'secondary') {
+            const statusEl = document.getElementById('connectionStatus');
+            const indicator = document.getElementById('statusIndicator');
+            
+            if (!statusEl || !indicator) return;
+            
+            statusEl.textContent = text;
+            statusEl.className = `fw-bold text-${type}`;
+            indicator.className = `status-indicator bg-${type}`;
+        }
+
+        function updateLastUpdated() {
+            document.getElementById('lastUpdated').textContent = `Cập nhật: ${new Date().toLocaleTimeString('vi-VN')}`;
+        }
+
+        function showNotification(type, message) {
+            // Remove existing notifications
+            document.querySelectorAll('.alert-notification').forEach(el => el.remove());
+            
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-notification alert-dismissible fade show position-fixed`;
+            alert.style.cssText = 'top:20px; right:20px; z-index:9999; min-width:300px; max-width:500px;';
+            alert.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                    <span class="flex-grow-1">${message}</span>
+                    <button type="button" class="btn-close ms-2" onclick="this.parentElement.parentElement.remove()"></button>
                 </div>
             `;
             
-            document.body.appendChild(toast);
+            document.body.appendChild(alert);
             
             // Auto remove after 5 seconds
             setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.parentNode.removeChild(toast);
+                if (alert.parentNode) {
+                    alert.remove();
                 }
             }, 5000);
         }
 
-        // Make functions available globally
-        window.showDashboard = showDashboard;
-        window.showInventory = showInventory;
-        window.showSheets = showSheets;
-        window.refreshData = refreshData;
-        window.searchData = searchData;
-        window.exportToExcel = exportToExcel;
-        window.loadSheetData = loadSheetData;
+        function showLoading(show) {
+            const loadingEl = document.getElementById('loadingOverlay');
+            if (!loadingEl) return;
+            
+            if (show) {
+                loadingEl.style.display = 'flex';
+            } else {
+                loadingEl.style.display = 'none';
+            }
+        }
+
+        function editItem(index) {
+            const item = inventoryManager.filteredData[index];
+            showNotification('info', `Chỉnh sửa: ${item.material} - Tính năng đang phát triển`);
+            // TODO: Implement edit modal
+        }
+
+        function deleteItem(index) {
+            const item = inventoryManager.filteredData[index];
+            if (confirm(`Bạn có chắc muốn xóa "${item.material}" - Vị trí "${item.location}"?`)) {
+                showNotification('info', `Đang xóa: ${item.material} - Tính năng đang phát triển`);
+                // TODO: Implement delete API call
+            }
+        }
+
+        // Global functions for HTML onclick handlers
+        window.openAddTransactionModal = function() {
+            const modal = new bootstrap.Modal(document.getElementById('addTransactionModal'));
+            modal.show();
+        };
+
+        window.openAutoCopyModal = function() {
+            const modal = new bootstrap.Modal(document.getElementById('autoCopyModal'));
+            modal.show();
+        };
+
+        window.refreshData = async function() {
+            await loadData();
+        };
+
+        window.loadMoreRows = function() {
+            loadMoreRows();
+        };
     </script>
 </body>
 </html>
